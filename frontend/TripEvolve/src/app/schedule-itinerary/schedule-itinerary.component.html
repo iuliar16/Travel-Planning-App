@@ -1,0 +1,11 @@
+
+<button (click)="generateSchedule()">Generează Itinerariu</button>
+<div *ngIf="itineraryResult; else noData">
+    <p>Rezultatul itinerariului:</p>
+    <pre>{{ itineraryResult }}</pre>
+  </div>
+  
+  <ng-template #noData>
+    <p>Nu există date de afișat.</p>
+  </ng-template>
+  

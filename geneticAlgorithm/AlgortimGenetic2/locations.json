@@ -1,0 +1,113 @@
+{
+  "noPlaces": 13,
+  "places": [
+    {
+      "name": "Palatul Culturii",
+      "opentime": "9:00",
+      "closetime": "18:00",
+      "spendtime": "120",
+       "lat": "47.15739",
+      "long": "27.58695",
+      "type": "museum"
+    },
+    {
+      "name": "Palas Mall",
+      "opentime": "10:00",
+      "closetime": "22:00",
+      "spendtime": "180",
+      "lat": "47.157665",
+      "long": "27.58954",
+      "type": "shopping mall"
+    },
+      {
+      "name": "Parcul Copou",
+      "opentime": "10:00",
+      "closetime": "22:00",
+      "spendtime": "60",
+      "lat": "47.17893",
+      "long": "27.56762",
+      "type": "park"
+    },
+      {
+      "name": "Bojdeuca lui Ion Creanga",
+      "opentime": "10:00",
+      "closetime": "17:00",
+      "spendtime": "90",
+        "lat": "47.17549",
+      "long": "27.58281",
+      "type": "museum"
+    },
+      {
+      "name": "Catedrala Mitropolitana",
+      "opentime": "6:00",
+      "closetime": "21:00",
+      "spendtime": "60",
+        "lat": "47.1616",
+      "long": "27.5820",
+      "type": "church"
+    },
+      {
+      "name": "Gradina Botanica Anastasie Fatu",
+      "opentime": "9:00",
+      "closetime": "17:00",
+      "spendtime": "90",
+        "lat": "47.18782",
+      "long": "27.55691",
+      "type": "park"
+    },
+      {
+      "name": "Esplanada Elisabeta",
+      "opentime": "10:00",
+      "closetime": "23:00",
+      "spendtime": "45",
+        "lat": "47.16915",
+      "long": "27.57612",
+      "type": "museum"
+    },
+      {
+      "name": "Palatul Roznovanu",
+      "opentime": "10:00",
+      "closetime": "17:00",
+      "spendtime": "60",
+        "lat": "47.16187",
+      "long": "27.58429",
+      "type": "museum"
+    },
+    {
+      "name": "Sala Pasilor Pierduti",
+      "opentime": "8:00",
+      "closetime": "21:00",
+      "spendtime": "60",
+        "lat": "47.17538",
+      "long": "27.57152",
+      "type": "museum"
+    },
+        {
+      "name": "Manastirea Sfintii Trei Ierarhi",
+      "opentime": "6:00",
+      "closetime": "21:00",
+      "spendtime": "60",
+       "lat": "47.15986",
+      "long": "27.58438",
+      "type": "church"
+    },
+        {
+      "name": "Teatrul National Vasile Alecsandri",
+      "opentime": "8:00",
+      "closetime": "21:00",
+      "spendtime": "60",
+        "lat": "47.16351",
+      "long": "27.58493",
+      "type": "museum"
+    },
+        {
+      "name": "Manastirea Golia",
+      "opentime": "8:00",
+      "closetime": "21:00",
+      "spendtime": "60",
+        "lat": "47.16496",
+      "long": " 27.58937",
+      "type": "church"
+    }
+  ]
+}
