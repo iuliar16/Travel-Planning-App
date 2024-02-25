@@ -13,51 +13,18 @@ else:
     }
 
 
+tipuri_spendtime = {
+    "museum": 120,
+    "zoo": 180,
+    "park": 90,
+    "shopping mall": 120,
+    "church": 60,
+}
 def timp_in_minute(ora):
     if ora == 'non-stop':
         return 0
     ore, minute = map(int, ora.split(':'))
     return ore * 60 + minute
-
-
-def calcul_distanta(lat1, lon1, lat2, lon2):
-    # Conversie din grade in radiani
-    lat1_rad = math.radians(float(lat1))
-    lon1_rad = math.radians(float(lon1))
-    lat2_rad = math.radians(float(lat2))
-    lon2_rad = math.radians(float(lon2))
-
-    delta_lat = lat2_rad - lat1_rad
-    delta_lon = lon2_rad - lon1_rad
-
-    # 6371=raza medie a Pamantului in km
-    distance = math.sqrt(delta_lat ** 2 + delta_lon ** 2) * 6371
-
-    return distance
-
-
-def fitness(ruta, matrice_distantelor, ora_start):
-    timp_curent = timp_in_minute(ora_start)
-    penalizare_asteptare = 0
-    distanta_totala = 0
-    penalizare_preferinte = 0
-
-    for i in range(len(ruta) - 1):
-        distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]]
-
-        locatie = locatii[ruta[i]]
-        opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
-
-        if locatie['type'] not in user_preferences['preferredLocations']:
-            penalizare_preferinte += 1000
-
-        if timp_curent < opentime:  # daca sosim inainte de deschidere
-            penalizare_asteptare += opentime - timp_curent
-            timp_curent = opentime  # actualizam timpul curent la ora de deschidere
-
-    fitness_total = distanta_totala + penalizare_preferinte + penalizare_asteptare
-    return 1 / (1 + fitness_total)
-
 
 def initializare_populatie(dimensiune_populatie, n, locatii_ramase):
     populatie = [random.sample(locatii_ramase, n) for _ in range(dimensiune_populatie)]
@@ -75,6 +42,94 @@ def mutatie(ruta, probabilitate_mutatie):
     if random.random() < probabilitate_mutatie:
         idx1, idx2 = random.sample(range(len(ruta)), 2)
         ruta[idx1], ruta[idx2] = ruta[idx2], ruta[idx1]
+
+def calcul_distanta(lat1, lon1, lat2, lon2):
+    # Conversie din grade in radiani
+    lat1_rad = math.radians(float(lat1))
+    lon1_rad = math.radians(float(lon1))
+    lat2_rad = math.radians(float(lat2))
+    lon2_rad = math.radians(float(lon2))
+
+    delta_lat = lat2_rad - lat1_rad
+    delta_lon = lon2_rad - lon1_rad
+
+    # 6371=raza medie a Pamantului in km
+    distance = math.sqrt(delta_lat ** 2 + delta_lon ** 2) * 6371
+
+    return distance
+
+def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
+    timp_curent = timp_in_minute(ora_start)
+    orar = []
+
+    #parametri de care se tine cont in calcularea fitness-ului
+    penalizare_inchidere = 0
+    penalizare_asteptare = 0
+    distanta_totala = 0
+    penalizare_preferinte = 0
+
+    for i in range(len(ruta) - 1):
+        distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]]
+
+        locatie = locatii[ruta[i]]
+        opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
+        closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
+        spendtime = tipuri_spendtime.get(locatie['type'], 60)
+
+        if locatie['type'] not in user_preferences['preferredLocations']:
+            penalizare_preferinte += 1000
+
+        if timp_curent < opentime:  # daca sosim inainte de deschidere
+            penalizare_asteptare += opentime - timp_curent
+            timp_curent = opentime  # actualizam timpul curent la ora de deschidere
+
+        if timp_curent > closetime:
+            penalizare_inchidere += 1500
+
+        if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
+            penalizare_inchidere += 500
+
+        if colecteaza_orar:
+            ora_sosire = f"{int(timp_curent) // 60:02d}:{int(timp_curent)  % 60:02d}"
+            timp_curent += spendtime
+            ora_plecare = f"{int(timp_curent)  // 60:02d}:{int(timp_curent)  % 60:02d}"
+            orar.append((ruta[i], ora_sosire, ora_plecare, int(matrice_timp_mers[ruta[i]][ruta[i + 1]])))
+            timp_curent -= spendtime
+
+        timp_deplasare = matrice_timp_mers[ruta[i]][ruta[i + 1]]
+        timp_curent += timp_deplasare
+
+        timp_curent += spendtime
+
+    # procesez ultima locatie separat
+    locatie = locatii[ruta[len(ruta) - 1]]
+    opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
+    closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
+    spendtime = tipuri_spendtime.get(locatie['type'], 60)
+    if locatie['type'] not in user_preferences['preferredLocations']:
+        penalizare_preferinte += 1000
+
+    if timp_curent < opentime:  # daca sosim inainte de deschidere
+        penalizare_asteptare += opentime - timp_curent
+        timp_curent = opentime  # actualizam timpul curent la ora de deschidere
+
+    if timp_curent > closetime:
+        penalizare_inchidere += 1500
+
+    if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
+        penalizare_inchidere += 500
+    if colecteaza_orar:
+        ora_sosire = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
+        timp_curent += spendtime
+        ora_plecare = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
+        orar.append((ruta[len(ruta) - 1], ora_sosire, ora_plecare,-1))
+        #print(orar)
+
+    fitness_total = distanta_totala + penalizare_preferinte + penalizare_asteptare + penalizare_inchidere
+    if colecteaza_orar:
+        return 1 / (1 + fitness_total), orar
+    else:
+        return 1 / (1 + fitness_total)
 
 
 def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_generatii, ora_start):
@@ -101,7 +156,9 @@ def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_gene
     cea_mai_buna_ruta = populatie[0]
    # print(cea_mai_buna_ruta)
 
-    return cea_mai_buna_ruta
+    _, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor, ora_start, colecteaza_orar=True)
+    return cea_mai_buna_ruta, orar_cea_mai_buna_ruta
+   # return cea_mai_buna_ruta
 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -146,9 +203,13 @@ def ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor):
     rezultate_zilnice = []
 
     for _ in range(nr_zile):
-        cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor, dimensiune_populatie=50,
-                                             nr_generatii=100, ora_start='09:00')
-        rezultate_zilnice.append(cea_mai_buna_ruta)
+        # cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor, dimensiune_populatie=50,
+        #                                      nr_generatii=100, ora_start='09:00')
+        cea_mai_buna_ruta, orar_cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor,
+                                                                     dimensiune_populatie=50, nr_generatii=100,
+                                                                     ora_start='09:00')
+        rezultate_zilnice.append((cea_mai_buna_ruta, orar_cea_mai_buna_ruta))
+
 
         # pt urmatoarea zi rulez din nou algoritmul dar nu iau un calcul locatiile deja alese
         for idx in cea_mai_buna_ruta:
@@ -156,10 +217,21 @@ def ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor):
                 locatii_ramase.remove(idx)
 
     return rezultate_zilnice
+def afiseaza_itinerarii(itinerarii_zilnice, locatii):
+    for zi, (ruta, orar) in enumerate(itinerarii_zilnice, start=1):
+        print(f"Ziua {zi}:")
+        for locatie_idx, ora_sosire, ora_plecare,timp in orar:
+            nume_locatie = locatii[locatie_idx]['name']
+            if timp != -1:
+                print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}. Mergi {timp} minute pana la:  ")
+            else:
+                print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}")
+        print("\n")
 
 
 nr_zile = 2
 itinerarii_zilnice = ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor)
-for zi, ruta in enumerate(itinerarii_zilnice, start=1):
-    nume_locatii = afiseaza_nume_locatii(ruta, locatii)
-    print(f"Ziua {zi}: {' -> '.join(nume_locatii)}")
+afiseaza_itinerarii(itinerarii_zilnice, locatii)
+
+
+
