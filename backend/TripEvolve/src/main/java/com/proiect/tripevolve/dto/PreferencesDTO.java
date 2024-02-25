@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class UserPreferencesDTO {
+public class PreferencesDTO {
     @JsonProperty("preferredLocations")
     private List<String> preferredLocations;
 }

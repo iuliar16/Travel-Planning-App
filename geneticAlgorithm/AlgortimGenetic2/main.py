@@ -84,7 +84,7 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
             timp_curent = opentime  # actualizam timpul curent la ora de deschidere
 
         if timp_curent > closetime:
-            penalizare_inchidere += 1500
+            penalizare_inchidere += 1000
 
         if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
             penalizare_inchidere += 500
@@ -123,7 +123,7 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
         timp_curent += spendtime
         ora_plecare = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
         orar.append((ruta[len(ruta) - 1], ora_sosire, ora_plecare,-1))
-        #print(orar)
+        print(orar)
 
     fitness_total = distanta_totala + penalizare_preferinte + penalizare_asteptare + penalizare_inchidere
     if colecteaza_orar:
@@ -154,7 +154,6 @@ def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_gene
 
     # determin cea mai buna ruta
     cea_mai_buna_ruta = populatie[0]
-   # print(cea_mai_buna_ruta)
 
     _, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor, ora_start, colecteaza_orar=True)
     return cea_mai_buna_ruta, orar_cea_mai_buna_ruta
@@ -171,7 +170,6 @@ locatii = data['places']
 numar_locatii = len(locatii)
 
 # MATRICEA DISTANTELOR
-
 matrice_distantelor = [[0 for _ in range(numar_locatii)] for _ in range(numar_locatii)]
 for i in range(numar_locatii):
     for j in range(numar_locatii):
@@ -203,8 +201,6 @@ def ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor):
     rezultate_zilnice = []
 
     for _ in range(nr_zile):
-        # cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor, dimensiune_populatie=50,
-        #                                      nr_generatii=100, ora_start='09:00')
         cea_mai_buna_ruta, orar_cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor,
                                                                      dimensiune_populatie=50, nr_generatii=100,
                                                                      ora_start='09:00')
