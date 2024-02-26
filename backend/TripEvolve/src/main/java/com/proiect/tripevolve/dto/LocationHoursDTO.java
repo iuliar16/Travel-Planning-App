@@ -1,8 +1,6 @@
 package com.proiect.tripevolve.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -12,10 +10,11 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @ToString
+@Entity(name="Location_hours")
 public class LocationHoursDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer locationHours_id;
+    private Integer location_hours_id;
     private Integer location_id;
     private String day_of_week;
     private LocalTime openTime;

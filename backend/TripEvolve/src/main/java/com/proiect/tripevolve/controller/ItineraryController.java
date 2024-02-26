@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -42,8 +43,8 @@ public class ItineraryController {
     }
 
     @GetMapping("/userId")
-    ResponseEntity<Optional<ItineraryDTO>> getItineraryByUserId(@RequestParam Integer userId) {
-        Optional<ItineraryDTO> itineraryDTO = this.itineraryService.findByUserId(userId);
+    ResponseEntity<List<ItineraryDTO>> getItinerariesByUserId(@RequestParam Integer userId) {
+        List<ItineraryDTO> itineraryDTO = this.itineraryService.findByUserId(userId);
         return new ResponseEntity<>(itineraryDTO, HttpStatus.OK);
 
     }

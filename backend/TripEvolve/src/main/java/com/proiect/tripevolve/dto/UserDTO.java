@@ -6,22 +6,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Entity(name="Itinerary")
-public class ItineraryDTO {
+@Entity(name="User")
+public class UserDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer itinerary_id;
     private Integer user_id;
-    private String title;
-    private Date startDate;
-    private Date endDate;
-    private String city;
-    private Integer duration;
+    private String firstname;
+    private String lastname;
+    private String email;
+    private String role;
 }

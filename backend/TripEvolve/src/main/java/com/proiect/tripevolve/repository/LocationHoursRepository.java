@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface LocationHoursRepository extends JpaRepository<LocationHoursDTO, Integer> {
 
-    @Query("SELECT l FROM LocationDTO l WHERE l.location_id=:location_id")
+    @Query("SELECT l FROM Location_hours l WHERE l.location_id=:location_id")
     Optional<LocationHoursDTO> findByLocationId(@Param("location_id") Integer location_id);
 }

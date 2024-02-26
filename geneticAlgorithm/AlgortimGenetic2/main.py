@@ -12,7 +12,6 @@ else:
         "preferredLocations": ["museum", "park", "church"],
     }
 
-
 tipuri_spendtime = {
     "museum": 120,
     "zoo": 180,

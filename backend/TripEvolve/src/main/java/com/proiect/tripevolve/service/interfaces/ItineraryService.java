@@ -11,7 +11,7 @@ public interface ItineraryService{
     List<ItineraryDTO> getAll();
     Optional<ItineraryDTO> findById(Integer itinerary_id);
 
-    Optional<ItineraryDTO> findByUserId(Integer user_id);
+    List<ItineraryDTO> findByUserId(Integer user_id);
 
     ItineraryDTO add(ItineraryDTO itineraryDTO);
     void deleteById(Integer location_id);

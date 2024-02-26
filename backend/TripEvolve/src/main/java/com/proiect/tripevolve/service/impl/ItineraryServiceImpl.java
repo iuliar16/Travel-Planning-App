@@ -63,7 +63,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public Optional<ItineraryDTO> findByUserId(Integer user_id) {
+    public List<ItineraryDTO> findByUserId(Integer user_id) {
         return itineraryRepository.findByUserId(user_id);
     }
 
