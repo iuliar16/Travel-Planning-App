@@ -14,8 +14,16 @@
       "type": "fast food",
       "opentime": "09:00",
       "closetime": "20:00",
-      "lat": 44.4278,
-      "long": 26.1036
+      "lat": "44.4278",
+      "long": "26.1036"
+    },
+        {
+      "name": "Time Out",
+      "type": "restaurant",
+      "opentime": "10:00",
+      "closetime": "17:00",
+      "lat": "47.17205",
+      "long": "27.57536"
     }
   ]
 }

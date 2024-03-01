@@ -108,6 +108,63 @@
         "lat": "47.16496",
       "long": " 27.58937",
       "type": "church"
+    },
+    {
+      "name": "Restaurant Veranda",
+      "opentime": "12:00",
+      "closetime": "00:00",
+      "spendtime": "90",
+      "lat": "47.16157",
+      "long": "27.59044",
+      "type": "restaurant"
+    },
+    {
+      "name": "Pizza Man",
+      "opentime": "09:30",
+      "closetime": "22:30",
+      "lat": "47.15322",
+      "long": "27.58907",
+      "type": "restaurant"
+    },
+     {
+      "name": "Odeon",
+      "opentime": "09:00",
+      "closetime": "23:00",
+      "lat": "47.14861",
+      "long": "27.58508",
+      "type": "restaurant"
+    },
+     {
+      "name": "Wok Up",
+      "opentime": "10:00",
+      "closetime": "22:00",
+      "lat": "47.15579",
+      "long": "27.58306",
+      "type": "restaurant"
+    },
+     {
+      "name": "Miraval",
+      "opentime": "11:00",
+      "closetime": "23:59",
+      "lat": "47.15595",
+      "long": "27.586533",
+      "type": "restaurant"
+    },
+     {
+      "name": "Time Out",
+      "type": "restaurant",
+      "opentime": "10:00",
+      "closetime": "17:00",
+      "lat": "47.17205",
+      "long": "27.57536"
+    },
+     {
+      "name": "Mamma Mia",
+      "type": "restaurant",
+      "opentime": "00:00",
+      "closetime": "23:59",
+      "lat": "47.16447",
+      "long": "47.16447"
     }
   ]
 }
