@@ -21,19 +21,33 @@ tipuri_spendtime = {
     "restaurant": 120
 }
 
-
 def timp_in_minute(ora):
     if ora == 'non-stop':
         return 0
     ore, minute = map(int, ora.split(':'))
     return ore * 60 + minute
 
-def initializare_populatie(dimensiune_populatie, n, locatii_ramase):
+
+#  nr locatii diferit de la zi la zi
+def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase):
     populatie = []
     for _ in range(dimensiune_populatie):
-        individ = random.sample(locatii_ramase, n)
+        individ = random.sample(locatii_ramase, nr_max_locatii)
+        total = timp_in_minute('9:00')
+
+        # Calculăm timpul total până la fiecare locație și verificăm dacă depășește ora limită
+        for i, locatie_idx in enumerate(individ):
+            locatie = locatii[locatie_idx]
+            timp_petrecut = tipuri_spendtime.get(locatie['type'], 60)
+            timp_deplasare = matrice_timp_mers[individ[i - 1]][locatie_idx] if i > 0 else 0
+            total += timp_petrecut + timp_deplasare
+
+            if total > timp_in_minute('21:00') and len(individ[:i]) > 3:
+                individ = individ[:i]
+                break
+
         # verific daca s-au generat fix 2 restaurante in lista
-        restaurante = [locatie for locatie in individ if locatii[locatie]['type'] == 'restaurant']
+        restaurante = [loc for loc in individ if locatii[loc]['type'] == 'restaurant']
         if len(restaurante) != 2:
             # daca nu am fix 2 restaurante, le inlocuiesc
             for i in range(len(individ)):
@@ -48,50 +62,10 @@ def initializare_populatie(dimensiune_populatie, n, locatii_ramase):
         if restaurante:
             ultimul_restaurant = [idx for idx, val in enumerate(individ) if val in restaurante][-1]
             individ[-1], individ[ultimul_restaurant] = individ[ultimul_restaurant], individ[-1]
+
         populatie.append(individ)
-    print(populatie)
+
     return populatie
-
-# def initializare_populatie(dimensiune_populatie, n, locatii_ramase):
-#     populatie = []
-#     for _ in range(dimensiune_populatie):
-#         individ = random.sample(locatii_ramase, n)
-#         timp_total = 0
-#         for i in range(len(individ) - 2):
-#             locatie_curenta = locatii[individ[i]]
-#             timp_total += tipuri_spendtime.get(locatie_curenta['type'], 60)  # Timpul petrecut la locația curentă
-#             timp_total += matrice_timp_mers[individ[i]][individ[i + 1]]  # Timpul deplasării între locații
-#         timp_total += tipuri_spendtime.get(locatii[individ[-1]]['type'], 60)
-#         print(individ)
-#         print(timp_total)
-#
-#         if timp_total > 1439:
-#             print("inainte")
-#             print(individ)
-#             # Redu lista de locații pentru a se potrivi cu 1440 de minute
-#             timp_total = 0
-#             for i in range(len(individ)-1):
-#                 timp_total += tipuri_spendtime.get(locatii[individ[i]]['type'], 60) + matrice_timp_mers[individ[i]][individ[i + 1]]
-#                 print(timp_total)
-#                 if timp_total > 1439:
-#                     individ = individ[:i]
-#                     break
-#             print("dupa")
-#             print(individ)
-#         # Verifică dacă timpul total depășește ora 19:00
-#         while timp_total > timp_in_minute('19:00'):
-#             # Elimină ultima locație din listă
-#             locatie_elim = individ.pop()
-#             timp_total -= tipuri_spendtime.get(locatii[locatie_elim]['type'],
-#                                                60)  # Scade timpul petrecut la locația eliminată
-#             if len(individ) > 0:
-#                 timp_total -= matrice_timp_mers[individ[-1]][
-#                     locatie_elim]  # Scade timpul deplasării către locația eliminată
-#
-#         populatie.append(individ)
-#     print(populatie)
-#     return populatie
-
 
 
 def crossover(parinte1, parinte2):
@@ -102,8 +76,6 @@ def crossover(parinte1, parinte2):
 
 
 def mutatie(ruta, probabilitate_mutatie):
-    if len(ruta) < 2:
-        return
     if random.random() < probabilitate_mutatie:
         idx1, idx2 = random.sample(range(len(ruta)), 2)
         ruta[idx1], ruta[idx2] = ruta[idx2], ruta[idx1]
@@ -133,17 +105,19 @@ def normalizare_restaurante(ruta, timp_curent):
             # ar trebui sa existe un restaurant la pranz si unul seara
             # if not (12 * 60 <= timp_curent <= 14 * 60 or 18 * 60 <= timp_curent <= 20 * 60):
             if not 12 * 60 <= timp_curent <= 14 * 60:
-                penalizare_ore = 1000
+                penalizare_ore = 100
         break
-
 
     # prima locatie din zi nu ar trebui sa fie un restaurant
     if locatii[ruta[0]]['type'] == 'restaurant':
-        penalizare_ore += 500
+        penalizare_ore += 50
 
     for i in range(len(ruta) - 2):
         if locatii[ruta[i]]['type'] == 'restaurant' and locatii[ruta[i + 1]]['type'] == 'restaurant':
-            penalizare_ore += 5000
+            penalizare_ore += 500
+
+    if locatii[ruta[len(ruta) - 2]]['type'] == 'restaurant' and locatii[ruta[len(ruta) - 1]]['type'] == 'restaurant':
+        penalizare_ore += 500
 
     return penalizare_ore
 
@@ -158,8 +132,13 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
     distanta_totala = 0
     penalizare_preferinte = 0
     penalizare_restaurant = 0
+    penalizare_nr_locatii = 0
+    penalizare_ora_final = 0
+    penalizare_mers = 0
+    if len(ruta) < 5:
+        penalizare_nr_locatii = 500
     for i in range(len(ruta) - 1):
-        distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]]
+        distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]] * 10
 
         locatie = locatii[ruta[i]]
         opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
@@ -167,17 +146,17 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
         spendtime = tipuri_spendtime.get(locatie['type'], 60)
 
         if locatie['type'] not in user_preferences['preferredLocations']:
-            penalizare_preferinte += 1000
+            penalizare_preferinte += 100
 
         if timp_curent < opentime:  # daca sosim inainte de deschidere
             penalizare_asteptare += opentime - timp_curent
             timp_curent = opentime  # actualizam timpul curent la ora de deschidere
 
         if timp_curent > closetime:
-            penalizare_inchidere += 500
+            penalizare_inchidere += 50
 
         if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
-            penalizare_inchidere += 500
+            penalizare_inchidere += 50
 
         # penalizare restaurant
         penalizare_restaurant = normalizare_restaurante(ruta, timp_curent)
@@ -190,6 +169,8 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
             timp_curent -= spendtime
 
         timp_deplasare = matrice_timp_mers[ruta[i]][ruta[i + 1]]
+        penalizare_mers += timp_deplasare * 10
+
         timp_curent += timp_deplasare
 
         timp_curent += spendtime
@@ -200,17 +181,17 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
     closetime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['closetime'])
     spendtime = tipuri_spendtime.get(locatie['type'], 60)
     if locatie['type'] not in user_preferences['preferredLocations']:
-        penalizare_preferinte += 1000
+        penalizare_preferinte += 200
 
     if timp_curent < opentime:  # daca sosim inainte de deschidere
         penalizare_asteptare += opentime - timp_curent
         timp_curent = opentime  # actualizam timpul curent la ora de deschidere
 
     if timp_curent > closetime:
-        penalizare_inchidere += 1500
+        penalizare_inchidere += 50
 
     if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
-        penalizare_inchidere += 500
+        penalizare_inchidere += 25
     if colecteaza_orar:
         ora_sosire = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
         timp_curent += spendtime
@@ -218,8 +199,10 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
         orar.append((ruta[len(ruta) - 1], ora_sosire, ora_plecare, -1))
         print(orar)
 
+    if timp_curent < timp_in_minute('20:00'):
+        penalizare_ora_final = 500
     fitness_total = distanta_totala + penalizare_preferinte + penalizare_asteptare + \
-                    penalizare_inchidere + penalizare_restaurant
+                    penalizare_inchidere + penalizare_restaurant + penalizare_nr_locatii + penalizare_ora_final + penalizare_mers
     if colecteaza_orar:
         return 1 / (1 + fitness_total), orar
     else:
@@ -228,7 +211,7 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
 
 def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_generatii, ora_start):
     lungime_locatii = len(locatii)
-    populatie = initializare_populatie(dimensiune_populatie, min(5, lungime_locatii), locatii)
+    populatie = initializare_populatie(dimensiune_populatie, min(10, lungime_locatii), locatii)
     for generatie in range(nr_generatii):
         # sortare populatie dupa fitness
         sorted_populatie = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, ora_start),
@@ -286,11 +269,6 @@ matrice_timp_mers = []
 for rand in matrice_distantelor:
     rand_timp = [calculeaza_timp_mers(distanta) for distanta in rand]
     matrice_timp_mers.append(rand_timp)
-
-
-def afiseaza_nume_locatii(ruta, locatii):
-    nume_locatii = [locatii[idx]['name'] for idx in ruta]
-    return nume_locatii
 
 
 def ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor):
