@@ -2,11 +2,11 @@ package com.proiect.tripevolve.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proiect.tripevolve.dto.ItineraryDTO;
-import com.proiect.tripevolve.dto.PreferencesDTO;
 import com.proiect.tripevolve.repository.ItineraryRepository;
 import com.proiect.tripevolve.service.interfaces.ItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,11 +23,13 @@ public class ItineraryServiceImpl implements ItineraryService {
         this.itineraryRepository = itineraryRepository;
     }
 
-    public String generateItinerary(PreferencesDTO preferences) {
+    public String generateItinerary(@RequestBody List<String> preferences) {
         try {
+            System.out.println(preferences);
 
             ObjectMapper mapper = new ObjectMapper();
             String preferencesJson = mapper.writeValueAsString(preferences);
+            System.out.println(preferencesJson);
             String fetching = "python " + "C:\\Users\\Iulia\\Licenta-2024\\geneticAlgorithm\\AlgortimGenetic2\\main.py \"" + preferencesJson.replace("\"", "\\\"") + "\"";
             String[] commandToExecute = new String[]{"cmd.exe", "/c", fetching};
 

@@ -1,25 +1,90 @@
+import requests
 import json
 import math
 import os
 import random
 import sys
 
+categorii_locatii = ["catering.restaurant", "entertainment.museum", "entertainment.culture",
+                     "building.spa", "commercial.shopping_mall", "commercial.outdoor_and_sport", "entertainment.zoo",
+                     "entertainment.cinema", "leisure.picnic", "religion.place_of_worship", "tourism.sights.castle",
+                     "adult.nightclub", "adult.casino", "sport.swimming_pool", "leisure.park"]
+
+tipuri_spendtime = {
+    "entertainment.culture": 120,
+    "building.spa": 120,
+    "entertaiment.museum": 120,
+    "commercial.outdoor_and_sport": 120,
+    "entertainment.cinema": 120,
+    "leisure.picnic": 120,
+    "entertainment.zoo": 180,
+    "leisure.park": 90,
+    "sport.swimming_pool": 190,
+    "adult.casino": 120,
+    "commercial.shopping_mall": 120,
+    "tourism.sights.castle": 90,
+    "religion.place_of_worship": 60,
+    "catering.restaurant": 120,
+    "tourism": 120,  # must-see
+}
 if len(sys.argv) > 1:
     preferences_str = sys.argv[1]
     user_preferences = json.loads(preferences_str)
 else:
-    user_preferences = {
-        "preferredLocations": ["park", "restaurant"],
-    }
+    user_preferences = ["catering.restaurant", "commercial.shopping_mall", "building.spa", "leisure.park", "tourism"]
 
-tipuri_spendtime = {
-    "museum": 120,
-    "zoo": 180,
-    "park": 90,
-    "shopping mall": 120,
-    "church": 60,
-    "restaurant": 120
-}
+
+def fetch_location_data(destination, api_key):
+    geo_url = f"https://api.geoapify.com/v1/geocode/search?text={destination}&format=json&apiKey={api_key}"
+    response = requests.get(geo_url)
+    data = response.json()
+
+    if data["results"]:
+        place_id = data["results"][0]["place_id"]
+        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences)}&filter=place:{place_id}&lang=en&limit=50&apiKey={api_key}"
+        response = requests.get(url)
+        return response.json()["features"]
+    else:
+        return []
+
+
+def transform_api_data(api_data):
+    locations = []
+    for feature in api_data:
+        properties = feature["properties"]
+        tipuri_locatie = properties.get("categories", [])
+        tip_preferat = None
+        for preferinta in categorii_locatii:
+            if preferinta in tipuri_locatie:
+                tip_preferat = preferinta
+                break
+        location = {
+            "name": properties["name"],
+            "opentime": "09:00",
+            "closetime": "21:00",
+            # "opentime": properties.get("opening_hours", "09:00"),
+            # "closetime": properties.get("closing_hours", "20:00"),
+            "lat": properties["lat"],
+            "long": properties["lon"],
+            "type": tip_preferat if tip_preferat else "altceva",
+            "place_id": properties["place_id"]
+        }
+        locations.append(location)
+    return locations
+
+
+# destinatie = input("Introduceți numele destinației: ")
+destinatie="Iasi"
+apiKey = "cbf45ace8f3144d7bb52ac6ebaf99926"
+api_data = fetch_location_data(destinatie, apiKey)
+
+if api_data:
+    locatii = transform_api_data(api_data)
+    print("Datele transformate din API:", locatii)
+else:
+    locatii = []
+    print("Nu au fost gzsite locatii pentru interogarea specificata.")
+
 
 def timp_in_minute(ora):
     if ora == 'non-stop':
@@ -35,27 +100,27 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase)
         individ = random.sample(locatii_ramase, nr_max_locatii)
         total = timp_in_minute('9:00')
 
-        # Calculăm timpul total până la fiecare locație și verificăm dacă depășește ora limită
         for i, locatie_idx in enumerate(individ):
             locatie = locatii[locatie_idx]
             timp_petrecut = tipuri_spendtime.get(locatie['type'], 60)
             timp_deplasare = matrice_timp_mers[individ[i - 1]][locatie_idx] if i > 0 else 0
             total += timp_petrecut + timp_deplasare
 
+            #  pastrez doar primele locatii
             if total > timp_in_minute('21:00') and len(individ[:i]) > 3:
                 individ = individ[:i]
                 break
 
         # verific daca s-au generat fix 2 restaurante in lista
-        restaurante = [loc for loc in individ if locatii[loc]['type'] == 'restaurant']
+        restaurante = [loc for loc in individ if locatii[loc]['type'] == 'catering.restaurant']
         if len(restaurante) != 2:
             # daca nu am fix 2 restaurante, le inlocuiesc
             for i in range(len(individ)):
-                if locatii[individ[i]]['type'] == 'restaurant' and len(restaurante) != 2:
+                if locatii[individ[i]]['type'] == 'catering.restaurant' and len(restaurante) != 2:
                     restaurante.remove(individ[i])
                     while True:
                         noua_locatie = random.choice(locatii_ramase)
-                        if noua_locatie not in individ and locatii[noua_locatie]['type'] != 'restaurant':
+                        if noua_locatie not in individ and locatii[noua_locatie]['type'] != 'catering.restaurant':
                             individ[i] = noua_locatie
                             break
         # caut ultimul restaurant si il pun pe ultimul loc
@@ -101,22 +166,22 @@ def normalizare_restaurante(ruta, timp_curent):
     penalizare_ore = 0
     for i in range(len(ruta) - 1):
         locatie = locatii[ruta[i]]
-        if locatie['type'] == 'restaurant':
-            # ar trebui sa existe un restaurant la pranz si unul seara
-            # if not (12 * 60 <= timp_curent <= 14 * 60 or 18 * 60 <= timp_curent <= 20 * 60):
-            if not 12 * 60 <= timp_curent <= 14 * 60:
+        if locatie['type'] == 'catering.restaurant':
+            # restaurantul de seara e sigur pe ultima pozitie, penalizez doar primul restaurant gasit pentru a ma asigura ca e la pranz
+            if not 12 * 60 <= timp_curent <= 15 * 60:
                 penalizare_ore = 100
         break
 
     # prima locatie din zi nu ar trebui sa fie un restaurant
-    if locatii[ruta[0]]['type'] == 'restaurant':
+    if locatii[ruta[0]]['type'] == 'catering.restaurant':
         penalizare_ore += 50
 
     for i in range(len(ruta) - 2):
-        if locatii[ruta[i]]['type'] == 'restaurant' and locatii[ruta[i + 1]]['type'] == 'restaurant':
+        if locatii[ruta[i]]['type'] == 'catering.restaurant' and locatii[ruta[i + 1]]['type'] == 'catering.restaurant':
             penalizare_ore += 500
 
-    if locatii[ruta[len(ruta) - 2]]['type'] == 'restaurant' and locatii[ruta[len(ruta) - 1]]['type'] == 'restaurant':
+    if locatii[ruta[len(ruta) - 2]]['type'] == 'catering.restaurant' and locatii[ruta[len(ruta) - 1]][
+        'type'] == 'catering.restaurant':
         penalizare_ore += 500
 
     return penalizare_ore
@@ -144,8 +209,7 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
         opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
         closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
         spendtime = tipuri_spendtime.get(locatie['type'], 60)
-
-        if locatie['type'] not in user_preferences['preferredLocations']:
+        if locatie['type'] not in user_preferences:
             penalizare_preferinte += 100
 
         if timp_curent < opentime:  # daca sosim inainte de deschidere
@@ -179,8 +243,9 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
     locatie = locatii[ruta[len(ruta) - 1]]
     opentime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['opentime'])
     closetime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['closetime'])
-    spendtime = tipuri_spendtime.get(locatie['type'], 60)
-    if locatie['type'] not in user_preferences['preferredLocations']:
+    # spendtime = tipuri_spendtime.get(locatie['type'], 60)
+    spendtime = 120
+    if locatie['type'] not in user_preferences:
         penalizare_preferinte += 200
 
     if timp_curent < opentime:  # daca sosim inainte de deschidere
@@ -240,13 +305,7 @@ def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_gene
 # return cea_mai_buna_ruta
 
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-locations_file_path = os.path.join(dir_path, 'locations.json')
-
-with open(locations_file_path, 'r') as file:
-    data = json.load(file)
-
-locatii = data['places']
+# locatii = data['places']
 numar_locatii = len(locatii)
 
 # MATRICEA DISTANTELOR

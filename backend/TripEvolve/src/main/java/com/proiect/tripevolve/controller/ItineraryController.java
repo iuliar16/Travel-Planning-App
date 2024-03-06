@@ -24,7 +24,7 @@ public class ItineraryController {
 
 
     @PostMapping("/generate-schedule")
-    public String generateItinerary(@RequestBody PreferencesDTO preferences) {
+    public String generateItinerary(@RequestBody List<String> preferences) {
         return itineraryService.generateItinerary(preferences);
     }
     @GetMapping

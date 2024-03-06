@@ -28,6 +28,6 @@ import java.util.List;
 @Getter
 @Setter
 public class PreferencesDTO {
-    @JsonProperty("preferredLocations")
-    private List<String> preferredLocations;
+    @JsonProperty("preferences")
+    private List<String> preferences;
 }
