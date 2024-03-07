@@ -13,7 +13,10 @@ export class ScheduleItineraryComponent {
 
   generateSchedule() {
     console.log('here');
-    const preferences = ["catering.restaurant", "commercial.shopping_mall"];
+    const preferences = {
+      preferredLocations: ["catering.restaurant", "commercial.shopping_mall", "tourism"],
+    };
+    // const preferences = ["catering.restaurant", "commercial.shopping_mall"];
     this.scheduleService.generateSchedule(preferences).subscribe(result => {
       this.itineraryResult = result;
     });

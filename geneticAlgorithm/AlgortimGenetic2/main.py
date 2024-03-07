@@ -30,10 +30,12 @@ tipuri_spendtime = {
 if len(sys.argv) > 1:
     preferences_str = sys.argv[1]
     user_preferences = json.loads(preferences_str)
+    print(user_preferences)
 else:
-    user_preferences = ["catering.restaurant", "commercial.shopping_mall", "building.spa", "leisure.park", "tourism"]
-
-
+    user_preferences = {
+        "preferredLocations": ["catering.restaurant", "commercial.shopping_mall", "building.spa", "leisure.park",
+                               "tourism"],
+    }
 def fetch_location_data(destination, api_key):
     geo_url = f"https://api.geoapify.com/v1/geocode/search?text={destination}&format=json&apiKey={api_key}"
     response = requests.get(geo_url)
@@ -41,7 +43,7 @@ def fetch_location_data(destination, api_key):
 
     if data["results"]:
         place_id = data["results"][0]["place_id"]
-        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences)}&filter=place:{place_id}&lang=en&limit=50&apiKey={api_key}"
+        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences['preferredLocations'])}&filter=place:{place_id}&lang=en&limit=50&apiKey={api_key}"
         response = requests.get(url)
         return response.json()["features"]
     else:
@@ -80,7 +82,7 @@ api_data = fetch_location_data(destinatie, apiKey)
 
 if api_data:
     locatii = transform_api_data(api_data)
-    print("Datele transformate din API:", locatii)
+    # print("Datele transformate din API:", locatii)
 else:
     locatii = []
     print("Nu au fost gzsite locatii pentru interogarea specificata.")
@@ -209,7 +211,7 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
         opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
         closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
         spendtime = tipuri_spendtime.get(locatie['type'], 60)
-        if locatie['type'] not in user_preferences:
+        if locatie['type'] not in user_preferences['preferredLocations']:
             penalizare_preferinte += 100
 
         if timp_curent < opentime:  # daca sosim inainte de deschidere
@@ -243,9 +245,8 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
     locatie = locatii[ruta[len(ruta) - 1]]
     opentime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['opentime'])
     closetime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['closetime'])
-    # spendtime = tipuri_spendtime.get(locatie['type'], 60)
-    spendtime = 120
-    if locatie['type'] not in user_preferences:
+    spendtime = tipuri_spendtime.get(locatie['type'], 60)
+    if locatie['type'] not in user_preferences['preferredLocations']:
         penalizare_preferinte += 200
 
     if timp_curent < opentime:  # daca sosim inainte de deschidere

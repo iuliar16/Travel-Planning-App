@@ -2,6 +2,7 @@ package com.proiect.tripevolve.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proiect.tripevolve.dto.ItineraryDTO;
+import com.proiect.tripevolve.dto.PreferencesDTO;
 import com.proiect.tripevolve.repository.ItineraryRepository;
 import com.proiect.tripevolve.service.interfaces.ItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         this.itineraryRepository = itineraryRepository;
     }
 
-    public String generateItinerary(@RequestBody List<String> preferences) {
+    public String generateItinerary(PreferencesDTO preferences) {
         try {
             System.out.println(preferences);
 
@@ -31,28 +32,28 @@ public class ItineraryServiceImpl implements ItineraryService {
             String preferencesJson = mapper.writeValueAsString(preferences);
             System.out.println(preferencesJson);
             String fetching = "python " + "C:\\Users\\Iulia\\Licenta-2024\\geneticAlgorithm\\AlgortimGenetic2\\main.py \"" + preferencesJson.replace("\"", "\\\"") + "\"";
+            System.out.println(fetching);
             String[] commandToExecute = new String[]{"cmd.exe", "/c", fetching};
-
+            System.out.println(preferencesJson.replace("\"", "\\\""));
             Process p=Runtime.getRuntime().exec(commandToExecute);
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
+            int exitCode = p.waitFor();
             String line;
             StringBuilder output = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
             }
+            System.out.println(output);
 
-            int exitCode = p.waitFor();
-            if (exitCode == 0) {
-                return output.toString();
-            } else {
-                return "eroare la citire " + exitCode;
-            }
+            return output.toString();
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return "eroare la executarea scriptului: " + e.getMessage();
         }
     }
+
 
     @Override
     public List<ItineraryDTO> getAll() {

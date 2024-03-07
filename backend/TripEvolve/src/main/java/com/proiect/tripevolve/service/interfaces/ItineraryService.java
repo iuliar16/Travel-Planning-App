@@ -1,13 +1,14 @@
 package com.proiect.tripevolve.service.interfaces;
 
 import com.proiect.tripevolve.dto.ItineraryDTO;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.proiect.tripevolve.dto.PreferencesDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ItineraryService{
-    String generateItinerary(@RequestBody List<String> preferencess);
+
+    String generateItinerary(PreferencesDTO preferences);
     List<ItineraryDTO> getAll();
     Optional<ItineraryDTO> findById(Integer itinerary_id);
 
