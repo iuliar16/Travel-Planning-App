@@ -4,6 +4,10 @@ import { ScheduleItineraryComponent } from './schedule-itinerary/schedule-itiner
 import { IntroComponent } from './intro/intro.component';
 import { AuthComponent } from './auth/auth.component';
 import { LoginComponent } from './login/login.component';
+import { AddTripComponent } from './add-trip/add-trip.component';
+import { WhereAreYouTravellingComponent } from './where-are-you-travelling/where-are-you-travelling.component';
+import { WhenDoYouWantToGoComponent } from './when-do-you-want-to-go/when-do-you-want-to-go.component';
+import { HowDoYouWantToSpendYourTimeComponent } from './how-do-you-want-to-spend-your-time/how-do-you-want-to-spend-your-time.component';
 
 const routes: Routes = [
   {
@@ -21,6 +25,18 @@ const routes: Routes = [
   {
     path: 'sign-in',
     component: LoginComponent,
+  },
+  {
+    path: 'addTrip-location',
+    component: WhereAreYouTravellingComponent
+  },
+  {
+    path: 'addTrip-dates',
+    component: WhenDoYouWantToGoComponent
+  },
+  {
+    path: 'addTrip-spendtime',
+    component: HowDoYouWantToSpendYourTimeComponent
   },
   {
     path: '**',

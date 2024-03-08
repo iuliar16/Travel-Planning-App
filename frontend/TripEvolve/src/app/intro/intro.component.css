@@ -1,9 +1,9 @@
 
 #sect1 {
-    background-image: url('../../assets/images/lov.jpg');
+    background: url('../../assets/images/lov.jpg') no-repeat left;
     background-size: contain;
-    background-repeat: no-repeat; 
     width: 100%; 
+    margin-left:-10;
     padding-top: 50px;
     height: 80vh; 
     background-color: #fbfbfb;

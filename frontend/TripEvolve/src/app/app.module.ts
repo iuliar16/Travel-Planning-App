@@ -16,6 +16,10 @@ import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HomeComponent } from './home/home.component';
+import { AddTripComponent } from './add-trip/add-trip.component';
+import { WhereAreYouTravellingComponent } from './where-are-you-travelling/where-are-you-travelling.component';
+import { WhenDoYouWantToGoComponent } from './when-do-you-want-to-go/when-do-you-want-to-go.component';
+import { HowDoYouWantToSpendYourTimeComponent } from './how-do-you-want-to-spend-your-time/how-do-you-want-to-spend-your-time.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +29,11 @@ import { HomeComponent } from './home/home.component';
     IntroComponent,
     AuthComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    AddTripComponent,
+    WhereAreYouTravellingComponent,
+    WhenDoYouWantToGoComponent,
+    HowDoYouWantToSpendYourTimeComponent
   ],
   imports: [
     BrowserModule,
