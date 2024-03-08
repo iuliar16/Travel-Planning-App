@@ -1,0 +1,57 @@
+
+#sect1 {
+    background-image: url('../../assets/images/lov.jpg');
+    background-size: contain;
+    background-repeat: no-repeat; 
+    width: 100%; 
+    padding-top: 50px;
+    height: 80vh; 
+    background-color: #fbfbfb;
+}
+.container{
+    color:lightgray;
+}
+.slogan1{
+    font-size: 50px;
+}
+.slogan2{
+    font-size: 50px;
+}
+.highlight {
+    color: #004AAD;
+}
+.highlight2{
+    color:#FBA834;
+}
+.text {
+    font-size: 20px; 
+    line-height: 1.6; 
+    font-family: "Roboto", sans-serif;
+}
+.started{
+    border: 1px solid #004AAD;
+    padding: 5px 10px;
+    background-color:#004AAD;
+    color:white;
+    cursor: pointer;
+    font-size: 25px;
+    border-radius: 4px;
+
+}
+.started:hover{
+    background-color:#1778e0;
+}
+
+.right {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 40%;
+    margin-left: 900px;
+    margin-top: -550px;
+    font-family: "Roboto", sans-serif;
+    font-size: 20px;
+    line-height: 1.6;
+  }
+  

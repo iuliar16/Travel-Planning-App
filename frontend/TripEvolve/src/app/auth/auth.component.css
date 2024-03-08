@@ -1,0 +1,40 @@
+.container {
+    margin-top: 500;
+    width: 20%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.signin{
+    text-decoration: none;
+    color: #004AAD;
+}
+.signin:hover{
+    color:#1778e0;
+}
+.btn {
+    background-color: #004AAD;
+    color: #fff;
+    border: 1px solid #004AAD;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 7px;
+    width:108%;
+}
+
+.btn:hover{
+    background-color: #1778e0;
+}

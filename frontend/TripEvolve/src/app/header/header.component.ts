@@ -6,16 +6,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-  showDropdown: boolean = false;
+  ImagePath: string;
 
-  constructor() { }
+  constructor() { 
+    this.ImagePath = '../../assets/images/logo.png';
+  }
 
   ngOnInit(): void {
   }
 
   toggleDropdown(): void {
-    console.log("click");
-    this.showDropdown = !this.showDropdown;
+  
   }
 
 

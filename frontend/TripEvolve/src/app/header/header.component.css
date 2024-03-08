@@ -1,192 +1,194 @@
 .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 20px;
-    font-family: "Roboto", sans-serif;
-    color: lightgray;
-    box-shadow: 0px 8px 8px lightgray;
-    padding: 10px 24px 10px 34px;
-    position: relative;
-    background-color: #25283d;
-  }
-  
-  .buttons-container {
-    display: flex;
-    margin-right: -15px;
-  }
-  
-  .buttons-container button {
-    background-color: #ffff;
-    border: 1px solid lightgray;
-    margin-left: 16px;
-    padding: 10px 16px;
-    color: #25283d;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .buttons-container button:first-child {
-    margin-left: 0;
-  }
-  
-  .logo {
-    height: 40px;
-    width: 150px;
-  }
-  
-  .logo:hover {
-    transform: scale(1.1);
-    transition: transform 0.5s;
-    cursor: pointer;
-  }
-  
-  .button {
-    border-radius: 4px;
-  }
-  
-  .button:hover {
-    cursor: pointer;
-  }
-  
-  .signin_icon {
-    font-size: 22px;
-    margin-right: 5px;
-  }
-  .user-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    top: -2px;
-    background-color: white;
-    color: #ffffff;
-    font-weight: bold;
-    margin-left: 20px;
-    cursor: pointer;
-    position: relative;
-    right: 5px;
-  }
-  .user {
-    color: #25283d;
-  }
-  
-  .logout-popup {
-    position: absolute;
-    top: calc(100% + 12px);
-    right: -30px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px;
-    padding-right: 24px;
-    padding-bottom: 16px;
-    min-width: 180px;
-  }
-  
-  .logout-popup button {
-    padding: 10px 5px 8px 4px;
-    margin-top: 6px;
-    width: 180px;
-    border: 1px solid #25283d;
-    color: #25283d;
-    background-color: #ffffff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 15px;
-    font-weight: bold;
-    display: inline;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    line-height: 1;
-  }
-  
-  .my-acc {
-    margin-left: 15px !important;
-  }
-  .logout-popup button:hover {
-    background-color: #333b72;
-    color: #ffffff;
-  }
-  
-  .logout-popup button:focus {
-    outline: none;
-  }
-  
-  .signout_icon {
-    font-size: 20px;
-    top: -2px;
-    left: 5px;
-  }
-  .edit_account {
-    font-size: 20px;
-    top: -2px;
-    left: 5px;
-  }
-  .confirm-popup {
-    position: fixed;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-  
-  .confirm-content {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .confirm-message {
-    margin-bottom: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #25283d;
-  }
-  
-  .confirm-buttons {
-    display: flex;
-  }
-  
-  .confirm-btn-cancel {
-    margin: 0;
-    width: 80px;
-  }
-  .confirm-btn-ok {
-    background-color: #25283d !important;
-    color: #fff !important;
-  }
-  .confirm-btn-cancel:hover {
-    background-color: rgb(250, 250, 250) !important;
-    color: #333b72 !important;
-  }
-  
-  .confirm-btn-ok:hover {
-    background-color: #333b72 !important;
-  }
-  
-  .page-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-  }
-  
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-family: "Roboto", sans-serif;
+  color: lightgray;
+  box-shadow: 0px 8px 8px lightgray;
+  padding: 10px 24px 10px 34px;
+  position: relative;
+  background-color: white;
+}
+
+.buttons-container {
+  display: flex;
+  margin-left: auto;
+}
+
+#sign-up, #sign-in {
+  border: 1px solid #004AAD;
+  background-color: #ffff;
+  padding: 5px 10px;
+  color: #004AAD;
+  font-size: 18px;
+  cursor: pointer;
+  display:flex;
+  margin-left: 10px;
+}
+
+
+.logo {
+  height: 40px;
+  width: 150px;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+  transition: transform 0.5s;
+  cursor: pointer;
+}
+
+.button {
+  border-radius: 4px;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.signin_icon {
+  font-size: 22px;
+  margin-right: 5px;
+}
+
+.user-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  top: -2px;
+  background-color: white;
+  color: #ffffff;
+  font-weight: bold;
+  margin-left: 20px;
+  cursor: pointer;
+  position: relative;
+  right: 5px;
+}
+
+.user {
+  color: #25283d;
+}
+
+.logout-popup {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: -30px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  padding-right: 24px;
+  padding-bottom: 16px;
+  min-width: 180px;
+}
+
+.logout-popup button {
+  padding: 10px 5px 8px 4px;
+  margin-top: 6px;
+  width: 180px;
+  border: 1px solid #25283d;
+  color: #25283d;
+  background-color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  display: inline;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  line-height: 1;
+}
+
+.my-acc {
+  margin-left: 15px !important;
+}
+
+.logout-popup button:hover {
+  background-color: #333b72;
+  color: #ffffff;
+}
+
+.logout-popup button:focus {
+  outline: none;
+}
+
+.signout_icon {
+  font-size: 20px;
+  top: -2px;
+  left: 5px;
+}
+
+.edit_account {
+  font-size: 20px;
+  top: -2px;
+  left: 5px;
+}
+
+.confirm-popup {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.confirm-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirm-message {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #25283d;
+}
+
+.confirm-buttons {
+  display: flex;
+}
+
+.confirm-btn-cancel {
+  margin: 0;
+  width: 80px;
+}
+
+.confirm-btn-ok {
+  background-color: #25283d !important;
+  color: #fff !important;
+}
+
+.confirm-btn-cancel:hover {
+  background-color: rgb(250, 250, 250) !important;
+  color: #333b72 !important;
+}
+
+.confirm-btn-ok:hover {
+  background-color: #333b72 !important;
+}
+
+.page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}

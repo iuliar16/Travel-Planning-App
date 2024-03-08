@@ -1,43 +1,17 @@
-<!-- <header>
-    <span>Trip Evolve</span>
-    <div class="dropdown">
-      <button class="dropbtn" (click)="toggleDropdown()">
-        <mat-icon>person</mat-icon>
-      </button>
-      <div class="dropdown-content" *ngIf="showDropdown"> 
-        <a (click)="deschideContul()">My account</a>
-        <a (click)="deconectare()">Sign Out</a>
-      </div>
-    </div>
-  </header>
-   -->
-<!-- <div class="header-content">
+<div class="header-content">
+    <a routerLink="/intro">
+        <img align="left" [src]="ImagePath" style="width: 200px; height: 60px" class="logo" />
+    </a>
     <div class="buttons-container">
-        <button id="domain" mat-raised-button routerLink="/domains" routerLinkActive="active_route"
-            [routerLinkActiveOptions]="{ exact: true }" >
-            <mat-icon>domain</mat-icon>
-            Domenii
+        <button id="sign-in" routerLink="/sign-in" routerLinkActive="active_route"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <mat-icon class="signin_icon">person_outline</mat-icon>
+            Sign In
         </button>
-        <button id="domain" mat-raised-button routerLink="/domains" routerLinkActive="active_route"
-            [routerLinkActiveOptions]="{ exact: true }" >
-            <mat-icon>domain</mat-icon>
-            Domenii
+        <button id="sign-up" routerLink="/sign-up" routerLinkActive="active_route"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <mat-icon class="signin_icon">person_outline</mat-icon>
+            Sign Up
         </button>
-        <button id="domain" mat-raised-button routerLink="/domains" routerLinkActive="active_route"
-            [routerLinkActiveOptions]="{ exact: true }" >
-            <mat-icon>domain</mat-icon>
-            Domenii
-        </button>
-        <div class="user-icon" (click)="toggleDropdown()">
-            <mat-icon class="user">account_circle</mat-icon>
-            <div class="logout-popup">
-                <button mat-raised-button class="my-acc">
-                    <mat-icon class="edit_account">account_box</mat-icon> Contul meu
-                </button>
-                <button mat-raised-button>
-                    <mat-icon class="signout_icon">exit_to_app</mat-icon>Deconectează-te
-                </button>
-            </div>
-        </div>
     </div>
-</div> -->
+</div>

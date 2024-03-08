@@ -10,12 +10,22 @@ import { AppComponent } from './app.component';
 import { ScheduleItineraryComponent } from './schedule-itinerary/schedule-itinerary.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HeaderComponent } from './header/header.component';
+import { IntroComponent } from './intro/intro.component';
+import { AuthComponent } from './auth/auth.component';
+import { FormsModule } from '@angular/forms';
+import { LoginComponent } from './login/login.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ScheduleItineraryComponent,
-    HeaderComponent
+    HeaderComponent,
+    IntroComponent,
+    AuthComponent,
+    LoginComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -25,6 +35,8 @@ import { HeaderComponent } from './header/header.component';
     MatInputModule,
     MatMenuModule,
     BrowserAnimationsModule,
+    FormsModule,
+    MatCheckboxModule,
   ],
   providers: [
     provideClientHydration()

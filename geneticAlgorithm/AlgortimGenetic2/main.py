@@ -5,6 +5,8 @@ import os
 import random
 import sys
 
+from hours_parser import parse_hours
+
 categorii_locatii = ["catering.restaurant", "entertainment.museum", "entertainment.culture",
                      "building.spa", "commercial.shopping_mall", "commercial.outdoor_and_sport", "entertainment.zoo",
                      "entertainment.cinema", "leisure.picnic", "religion.place_of_worship", "tourism.sights.castle",
@@ -30,7 +32,6 @@ tipuri_spendtime = {
 if len(sys.argv) > 1:
     preferences_str = sys.argv[1]
     user_preferences = json.loads(preferences_str)
-    print(user_preferences)
 else:
     user_preferences = {
         "preferredLocations": ["catering.restaurant", "commercial.shopping_mall", "building.spa", "leisure.park",
@@ -43,7 +44,7 @@ def fetch_location_data(destination, api_key):
 
     if data["results"]:
         place_id = data["results"][0]["place_id"]
-        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences['preferredLocations'])}&filter=place:{place_id}&lang=en&limit=50&apiKey={api_key}"
+        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences['preferredLocations'])}&filter=place:{place_id}&lang=en&limit=5&apiKey={api_key}"
         response = requests.get(url)
         return response.json()["features"]
     else:
@@ -60,6 +61,9 @@ def transform_api_data(api_data):
             if preferinta in tipuri_locatie:
                 tip_preferat = preferinta
                 break
+        opening_hours=properties.get("opening_hours", "Mo-Su 10:00-23:00")
+        parsed_hours_json = parse_hours(opening_hours)
+        print(parsed_hours_json)
         location = {
             "name": properties["name"],
             "opentime": "09:00",
@@ -76,16 +80,16 @@ def transform_api_data(api_data):
 
 
 # destinatie = input("Introduceți numele destinației: ")
-destinatie="Iasi"
+destinatie="rome"
 apiKey = "cbf45ace8f3144d7bb52ac6ebaf99926"
 api_data = fetch_location_data(destinatie, apiKey)
 
 if api_data:
     locatii = transform_api_data(api_data)
-    # print("Datele transformate din API:", locatii)
+    print("Datele transformate din API:", locatii)
 else:
     locatii = []
-    print("Nu au fost gzsite locatii pentru interogarea specificata.")
+    print("Nu au fost gasite locatii pentru interogarea specificata.")
 
 
 def timp_in_minute(ora):
@@ -362,5 +366,5 @@ def afiseaza_itinerarii(itinerarii_zilnice, locatii):
 
 
 nr_zile = 2
-itinerarii_zilnice = ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor)
-afiseaza_itinerarii(itinerarii_zilnice, locatii)
+# itinerarii_zilnice = ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor)
+# afiseaza_itinerarii(itinerarii_zilnice, locatii)
