@@ -1,0 +1,53 @@
+.container {
+    width: 99%;
+    height: 225px;
+    border: 1px solid rgb(219, 214, 214);
+    border-radius: 1%;
+    display: flex;
+}
+
+h2,
+h3 {
+    margin-left: 20px;
+}
+
+.title {
+    color: #004AAD;
+    font-size: 25px;
+    margin-bottom: 4px;
+}
+
+.city {
+    color: rgb(0, 0, 0);
+    font-size: 15px;
+}
+
+.dates {
+    color: rgb(65, 63, 63);
+    font-size: 17px;
+}
+
+.options {
+    color: #004AAD;
+    display: flex;
+    margin-left: 20px;
+}
+
+.info {
+    display: block;
+}
+
+.share-btn {
+    color: #004AAD;
+    border: none;
+    background-color: transparent;
+    margin-bottom: 4px;
+    margin-left: 2px;
+    font-size: 16px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+mat-icon {
+    font-size: 20px;
+}

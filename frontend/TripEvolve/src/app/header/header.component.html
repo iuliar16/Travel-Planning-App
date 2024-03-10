@@ -13,5 +13,19 @@
             <mat-icon class="signin_icon">person_outline</mat-icon>
             Sign Up
         </button>
+        <div class="user-icon" (click)="onClickIcon()">
+            <div class="user-icons">
+                <mat-icon class="user">account_circle</mat-icon>
+                <mat-icon class="user-arrow">keyboard_arrow_down</mat-icon>
+            </div>
+            <div class="logout-popup" *ngIf="showLogout">
+                <button routerLink="/my-account" class="my-acc">
+                    <mat-icon class="edit_account">account_box</mat-icon> Profile
+                </button>
+                <button class="my-acc">
+                    <mat-icon class="signout_icon">exit_to_app</mat-icon>Sign out
+                </button>
+            </div>
+        </div>
     </div>
 </div>

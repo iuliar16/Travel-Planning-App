@@ -1,1 +1,18 @@
-<p>home works!</p>
+<div class="nav-container">
+    <ul class="nav-ul">
+        <li><a class="active">Upcoming Trips</a></li>
+        <li><a>Past Trips</a></li>
+        <li><a>Popular Destinations</a></li>
+        <li><a>Community Trips</a></li>
+    </ul>
+</div>
+<div class="container">
+    <button class="add-trip-container" routerLink="/add-trip">
+        <mat-icon>add_circle_outline</mat-icon>
+        <span class="txt">Add Trip</span>
+    </button>
+
+    <ul>
+        <li><app-trip-card></app-trip-card></li>
+    </ul>
+</div>

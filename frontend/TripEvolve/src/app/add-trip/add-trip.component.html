@@ -1,1 +1,30 @@
-<p>add-trip works!</p>
+<form #registerForm="ngForm">
+    <div class="form-group">
+        <h3>Trip Name</h3>
+        <input type="text" id="tripName" placeholder="Enter Trip name" name="tripName">
+    </div>
+    <br>
+    <div class="form-group">
+        <h3>Where do you want to go?<span style="color: red;">*</span></h3>
+        <mat-form-field>
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput type="search" placeholder="Search by city or town" name="location" class="search-input" required>
+        </mat-form-field>
+    </div>
+    <br>
+    <div class="form-group">
+        <h3>How do you want to spend your time?<span style="color: red;">*</span></h3>
+        <p style="color:#757575">Select as many as you wish.</p>
+        <br>
+        <div class="options-container">
+            <div class="option" *ngFor="let location of locations" [class.selected]="isLocationSelected(location)"
+                (click)="toggleLocation(location)">{{ location }}</div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <button type="button" class="cancel">Cancel</button>
+        <button type="submit" class="save">Submit</button>
+    </div>
+</form>

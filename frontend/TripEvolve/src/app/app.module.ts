@@ -17,9 +17,11 @@ import { LoginComponent } from './login/login.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HomeComponent } from './home/home.component';
 import { AddTripComponent } from './add-trip/add-trip.component';
-import { WhereAreYouTravellingComponent } from './where-are-you-travelling/where-are-you-travelling.component';
-import { WhenDoYouWantToGoComponent } from './when-do-you-want-to-go/when-do-you-want-to-go.component';
-import { HowDoYouWantToSpendYourTimeComponent } from './how-do-you-want-to-spend-your-time/how-do-you-want-to-spend-your-time.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { TripCardComponent } from './home/trip-card/trip-card.component';
+import { MyAccountComponent } from './my-account/my-account.component';
 
 @NgModule({
   declarations: [
@@ -31,9 +33,8 @@ import { HowDoYouWantToSpendYourTimeComponent } from './how-do-you-want-to-spend
     LoginComponent,
     HomeComponent,
     AddTripComponent,
-    WhereAreYouTravellingComponent,
-    WhenDoYouWantToGoComponent,
-    HowDoYouWantToSpendYourTimeComponent
+    TripCardComponent,
+    MyAccountComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,9 +46,12 @@ import { HowDoYouWantToSpendYourTimeComponent } from './how-do-you-want-to-spend
     BrowserAnimationsModule,
     FormsModule,
     MatCheckboxModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    provideNativeDateAdapter(),
   ],
   bootstrap: [AppComponent]
 })

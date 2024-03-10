@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ScheduleService } from '../services/schedule-itinerary.service';
+import { ScheduleService } from '../services/generate-itinerary/schedule-itinerary.service';
 
 @Component({
   selector: 'app-schedule-itinerary',

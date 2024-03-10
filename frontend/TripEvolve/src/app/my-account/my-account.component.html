@@ -1,0 +1,16 @@
+<div class="elements">
+  <ul>
+    <li routerLink="/my-account">Personal information</li>
+  </ul>
+
+  <div class="info-cont">
+    <h3 class="info-h3">Personal info</h3>
+    <div class="info-user">
+      <h3>{{ utilizator.firstname + " " + utilizator.lastname }}</h3>
+      <h3>{{ utilizator.email }}</h3>
+      <button class="edit-btn" mat-raised-button routerLink="/edit-info">
+        Edit Personal Info
+      </button>
+    </div>
+  </div>
+</div>

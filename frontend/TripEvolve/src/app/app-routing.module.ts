@@ -5,9 +5,8 @@ import { IntroComponent } from './intro/intro.component';
 import { AuthComponent } from './auth/auth.component';
 import { LoginComponent } from './login/login.component';
 import { AddTripComponent } from './add-trip/add-trip.component';
-import { WhereAreYouTravellingComponent } from './where-are-you-travelling/where-are-you-travelling.component';
-import { WhenDoYouWantToGoComponent } from './when-do-you-want-to-go/when-do-you-want-to-go.component';
-import { HowDoYouWantToSpendYourTimeComponent } from './how-do-you-want-to-spend-your-time/how-do-you-want-to-spend-your-time.component';
+import { HomeComponent } from './home/home.component';
+import { MyAccountComponent } from './my-account/my-account.component';
 
 const routes: Routes = [
   {
@@ -27,16 +26,16 @@ const routes: Routes = [
     component: LoginComponent,
   },
   {
-    path: 'addTrip-location',
-    component: WhereAreYouTravellingComponent
+    path: 'add-trip',
+    component: AddTripComponent,
   },
   {
-    path: 'addTrip-dates',
-    component: WhenDoYouWantToGoComponent
+    path: 'home',
+    component: HomeComponent,
   },
   {
-    path: 'addTrip-spendtime',
-    component: HowDoYouWantToSpendYourTimeComponent
+    path: 'my-account',
+    component: MyAccountComponent,
   },
   {
     path: '**',
