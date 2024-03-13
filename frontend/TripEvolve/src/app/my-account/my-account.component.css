@@ -25,10 +25,11 @@ li:hover {
     color: #ba9797;
 }
 
+
 .info-cont {
     background-color: white;
-    margin-left: 5%;
-    margin-top: 5%;
+    margin:0 auto;
+    margin-top: 10%;
     width: 700px;
     height: 230px;
     border: 0.5px solid grey;
@@ -66,14 +67,28 @@ li:hover {
 .edit-btn{
     color: white;
     border: 1px solid #004AAD;
-    padding:10px 20px;
+    padding:5px 5px;
     background-color: #004AAD;
-    margin-bottom: 4px;
-    margin-top:10px;
-    margin-left:70%;
+    /* margin-bottom: 4px; */
+    margin-top:5px;
+    /* margin-left:70%; */
+    margin-right:10px;
     font-size: 16px;
     cursor: pointer;
+    display:flex;
+    justify-content: space-between;
+    text-align: center;
+}
+.edit_account{
+    font-size: 24px;
+}
+.edit_account:hover{
+    background-color: #90a0b5;
 }
 .edit-btn:hover{
     background-color: #1778e0;
+}
+.btn{
+    float:right;
+    display:flex;
 }

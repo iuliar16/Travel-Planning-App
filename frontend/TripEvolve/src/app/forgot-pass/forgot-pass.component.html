@@ -1,0 +1,20 @@
+<div class="back-icon" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+</div>
+
+<div class="container">
+    <br>
+    <h2 style="font-size: 40px; text-align: center;">Reset Password</h2>
+    <p style="font-size: 15px;">Please enter the email address you used when signing up for TripEvolve.</p>
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+
+        <div class="form-group">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"
+                [(ngModel)]="formData.email" required>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Continue</button>
+    </form>
+    <br>
+
+</div>

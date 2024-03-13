@@ -22,6 +22,15 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { TripCardComponent } from './home/trip-card/trip-card.component';
 import { MyAccountComponent } from './my-account/my-account.component';
+import { EditInfoComponent } from './edit-info/edit-info.component';
+import { ForgotPassComponent } from './forgot-pass/forgot-pass.component';
+import { ResetPassComponent } from './reset-pass/reset-pass.component';
+import { SubHeaderComponent } from './sub-header/sub-header.component';
+import { PastTripsComponent } from './past-trips/past-trips.component';
+import { ManageSharingComponent } from './manage-sharing/manage-sharing.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ShareTripPopupComponent } from './share-trip-popup/share-trip-popup.component';
+import { PublicShareComponent } from './public-share/public-share.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +44,14 @@ import { MyAccountComponent } from './my-account/my-account.component';
     AddTripComponent,
     TripCardComponent,
     MyAccountComponent,
+    EditInfoComponent,
+    ForgotPassComponent,
+    ResetPassComponent,
+    SubHeaderComponent,
+    PastTripsComponent,
+    ManageSharingComponent,
+    ShareTripPopupComponent,
+    PublicShareComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,6 +65,7 @@ import { MyAccountComponent } from './my-account/my-account.component';
     MatCheckboxModule,
     MatDatepickerModule,
     MatFormFieldModule,
+    MatDialogModule,
   ],
   providers: [
     provideClientHydration(),

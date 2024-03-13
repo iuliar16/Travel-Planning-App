@@ -45,7 +45,6 @@ mat-icon {
 .user, .user-arrow {
   display: flex;
   justify-content: center;
-  /* text-align: center; */
   color: #004AAD;
 }
 .user-arrow{
@@ -55,23 +54,26 @@ mat-icon {
 
 .signout_icon, .edit_account {
   font-size: 20px;
-  /* text-align: center; */
-  /* margin-left:5px; */
+  margin-left:-50px;
+  margin-top:10px;
 }
 .my-acc, .my-acc1{
   margin-bottom:10px;
+  
 }
 .user-icons{
-  border:1px solid #004AAD;
-  padding:5px 10px;
+  border:2px solid #004AAD;
+  padding:4px 7px;
   display:flex;
+  border-radius: 5%;
 }
 .logout-popup {
+  margin-right: 50px;
+  border:1px solid #e2e7ed;
   display: inline-block;
   justify-content: center;
-  /* text-align: center; */
   position: absolute;
-  top: 100%;
+  top: 120%;
   padding: 10px;
   z-index: 100; 
   background-color: white;

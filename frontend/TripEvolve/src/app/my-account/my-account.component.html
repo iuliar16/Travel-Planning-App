@@ -1,16 +1,20 @@
 <div class="elements">
-  <ul>
-    <li routerLink="/my-account">Personal information</li>
-  </ul>
 
   <div class="info-cont">
-    <h3 class="info-h3">Personal info</h3>
+    <h3 class="info-h3">Personal Info</h3>
     <div class="info-user">
       <h3>{{ utilizator.firstname + " " + utilizator.lastname }}</h3>
       <h3>{{ utilizator.email }}</h3>
-      <button class="edit-btn" mat-raised-button routerLink="/edit-info">
-        Edit Personal Info
-      </button>
+      <div class="btn">
+        <button class="edit-btn" mat-raised-button routerLink="/edit-info">
+          <mat-icon class="edit_account">edit</mat-icon>
+          Edit Personal Info
+        </button>
+        <button class="edit-btn" mat-raised-button routerLink="/forgot-pass">
+          <mat-icon class="edit_account">edit</mat-icon>
+          Reset Password
+        </button>
+      </div>
     </div>
   </div>
 </div>

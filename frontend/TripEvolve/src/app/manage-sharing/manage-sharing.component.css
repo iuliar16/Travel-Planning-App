@@ -1,0 +1,53 @@
+.title{
+    display: flex;
+    justify-content: space-between;
+
+}
+.container {
+    width: 50%;
+    height: 225px;
+    border: 1px solid rgb(219, 214, 214);
+    border-radius: 1%;
+    display: block;
+    margin:0 auto;
+    margin-top:30px;
+}
+mat-icon{
+    margin-top:25px;
+    margin-left:20px;
+    cursor: pointer;
+}
+.participants{
+    border:1px solid rgb(219, 214, 214);
+    background-color: white;
+    height:100%;
+    margin:0 auto;
+}
+.share-btns{
+    color:#004AAD;
+    display:flex;
+}
+.share-btn{
+    margin-right: 10px;
+    font-size: 15px;
+    background-color: transparent;
+    border:none;
+    margin-top:25px;
+    color:#004AAD;
+    cursor: pointer;
+}
+.share-btn2{
+    font-size: 15px;
+    margin-top:25px;
+    border:none;
+    color:#004AAD;
+    background-color: transparent;
+    cursor: pointer;
+}
+.icons{
+    display: block;
+}
+.bdrop {
+    backdrop-filter: blur(5px);
+    transition: none;
+}

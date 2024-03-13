@@ -7,6 +7,11 @@ import { LoginComponent } from './login/login.component';
 import { AddTripComponent } from './add-trip/add-trip.component';
 import { HomeComponent } from './home/home.component';
 import { MyAccountComponent } from './my-account/my-account.component';
+import { EditInfoComponent } from './edit-info/edit-info.component';
+import { ForgotPassComponent } from './forgot-pass/forgot-pass.component';
+import { ResetPassComponent } from './reset-pass/reset-pass.component';
+import { PastTripsComponent } from './past-trips/past-trips.component';
+import { ManageSharingComponent } from './manage-sharing/manage-sharing.component';
 
 const routes: Routes = [
   {
@@ -36,6 +41,26 @@ const routes: Routes = [
   {
     path: 'my-account',
     component: MyAccountComponent,
+  },
+  {
+    path: 'edit-info',
+    component: EditInfoComponent,
+  },
+  {
+    path: 'forgot-pass',
+    component: ForgotPassComponent,
+  },
+  {
+    path: 'reset-pass',
+    component: ResetPassComponent,
+  },
+  {
+    path: 'past-trips',
+    component: PastTripsComponent,
+  },
+  {
+    path: 'manage-sharing',
+    component: ManageSharingComponent,
   },
   {
     path: '**',

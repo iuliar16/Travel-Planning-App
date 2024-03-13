@@ -62,11 +62,20 @@ button {
     cursor: pointer;
 }
 
+button.cancel:hover{
+    border: 1px solid #FBA834;
+    background-color:#e89803;
+}
 button.cancel {
-    background-color: #dc3545;
+    border: 1px solid #FBA834;
+    background-color:#FBA834;
     margin-right: 10px;
 }
-
+.btns{
+    display:flex;
+    float:right;
+    margin-right:10px;
+}
 .option {
     display: inline-block;
     padding: 5px 10px;
@@ -92,5 +101,6 @@ button.save {
 
 button.save:hover {
     background-color: #1778e0;
+    border: 1px solid #1778e0;
 }
 
