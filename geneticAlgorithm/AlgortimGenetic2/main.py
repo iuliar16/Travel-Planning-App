@@ -1,3 +1,5 @@
+import datetime
+
 import requests
 import json
 import math
@@ -7,6 +9,24 @@ import sys
 
 from hours_parser import parse_hours
 
+default_opening_hours = {
+    "Mo": [{"start": "09:00", "end": "21:00"}],
+    "Tu": [{"start": "09:00", "end": "21:00"}],
+    "We": [{"start": "09:00", "end": "21:00"}],
+    "Th": [{"start": "09:00", "end": "21:00"}],
+    "Fr": [{"start": "09:00", "end": "21:00"}],
+    "Sa": [{"start": "09:00", "end": "21:00"}],
+    "Su": [{"start": "09:00", "end": "21:00"}],
+}
+# {
+#     "Mo": [{"start": "10:00", "end": "16:00"}],
+#  "Tu": [{"start": "10:00", "end": "16:00"}],
+#  "We": [{"start": "10:00", "end": "16:00"}],
+#  "Th": [{"start": "10:00", "end": "16:00"}],
+#  "Fr": [{"start": "10:00", "end": "16:00"}],
+#  "Sa": [{"start": "10:00", "end": "16:00"}],
+#  "Su": [{"start": "10:00", "end": "18:00"}]
+#  }
 categorii_locatii = ["catering.restaurant", "entertainment.museum", "entertainment.culture",
                      "building.spa", "commercial.shopping_mall", "commercial.outdoor_and_sport", "entertainment.zoo",
                      "entertainment.cinema", "leisure.picnic", "religion.place_of_worship", "tourism.sights.castle",
@@ -37,6 +57,8 @@ else:
         "preferredLocations": ["catering.restaurant", "commercial.shopping_mall", "building.spa", "leisure.park",
                                "tourism"],
     }
+
+
 def fetch_location_data(destination, api_key):
     geo_url = f"https://api.geoapify.com/v1/geocode/search?text={destination}&format=json&apiKey={api_key}"
     response = requests.get(geo_url)
@@ -44,7 +66,7 @@ def fetch_location_data(destination, api_key):
 
     if data["results"]:
         place_id = data["results"][0]["place_id"]
-        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences['preferredLocations'])}&filter=place:{place_id}&lang=en&limit=5&apiKey={api_key}"
+        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences['preferredLocations'])}&filter=place:{place_id}&lang=en&limit=100&apiKey={api_key}"
         response = requests.get(url)
         return response.json()["features"]
     else:
@@ -56,31 +78,39 @@ def transform_api_data(api_data):
     for feature in api_data:
         properties = feature["properties"]
         tipuri_locatie = properties.get("categories", [])
+
         tip_preferat = None
         for preferinta in categorii_locatii:
             if preferinta in tipuri_locatie:
                 tip_preferat = preferinta
                 break
-        opening_hours=properties.get("opening_hours", "Mo-Su 10:00-23:00")
-        parsed_hours_json = parse_hours(opening_hours)
-        print(parsed_hours_json)
+
+        opening = properties.get("opening_hours", "Mo-Su 10:00-23:00")
+        try:
+            parsed_hours_json = parse_hours(opening)
+            print(parsed_hours_json)
+            error=0
+        except Exception as e:
+            print(f"Error parsing opening hours: {e}")
+            print("Skipping to the next location...")
+            error=1
+            continue
+
         location = {
             "name": properties["name"],
-            "opentime": "09:00",
-            "closetime": "21:00",
-            # "opentime": properties.get("opening_hours", "09:00"),
-            # "closetime": properties.get("closing_hours", "20:00"),
             "lat": properties["lat"],
             "long": properties["lon"],
             "type": tip_preferat if tip_preferat else "altceva",
-            "place_id": properties["place_id"]
+            "place_id": properties["place_id"],
+            # "opening_hours": parsed_hours_json if error == 0 else default_opening_hours
+            "opening_hours": default_opening_hours
         }
         locations.append(location)
     return locations
 
 
 # destinatie = input("Introduceți numele destinației: ")
-destinatie="rome"
+destinatie = "Iasi"
 apiKey = "cbf45ace8f3144d7bb52ac6ebaf99926"
 api_data = fetch_location_data(destinatie, apiKey)
 
@@ -95,6 +125,8 @@ else:
 def timp_in_minute(ora):
     if ora == 'non-stop':
         return 0
+    if ora == '00:00':
+        ora = '24:00'
     ore, minute = map(int, ora.split(':'))
     return ore * 60 + minute
 
@@ -113,7 +145,7 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase)
             total += timp_petrecut + timp_deplasare
 
             #  pastrez doar primele locatii
-            if total > timp_in_minute('21:00') and len(individ[:i]) > 3:
+            if total > timp_in_minute('21:00') and len(individ[:i]) > 4:
                 individ = individ[:i]
                 break
 
@@ -193,7 +225,23 @@ def normalizare_restaurante(ruta, timp_curent):
     return penalizare_ore
 
 
-def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
+def get_opening_hours(zi, timp_curent, hours):
+    g = 0
+    opentime = timp_in_minute('9:00')
+    closetime = timp_in_minute('21:00')
+    if zi in hours:
+        for hours_range in hours[zi]:
+            start_time = timp_in_minute(hours_range['start'])
+            end_time = timp_in_minute(hours_range['end'])
+            if start_time <= timp_curent < end_time:  # verific daca ma aflu in oricare interval de functionare al locatiei din ziua respectiva
+                opentime = timp_in_minute(hours_range['start'])
+                closetime = timp_in_minute(hours_range['end'])
+                g = 1
+                break
+    return g, opentime, closetime
+
+
+def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
     timp_curent = timp_in_minute(ora_start)
     orar = []
 
@@ -206,17 +254,22 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
     penalizare_nr_locatii = 0
     penalizare_ora_final = 0
     penalizare_mers = 0
+    penalizare_ore_functionare = 0
     if len(ruta) < 5:
         penalizare_nr_locatii = 500
     for i in range(len(ruta) - 1):
         distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]] * 10
 
         locatie = locatii[ruta[i]]
-        opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
-        closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
+        # opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
+        # closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
         spendtime = tipuri_spendtime.get(locatie['type'], 60)
-        if locatie['type'] not in user_preferences['preferredLocations']:
-            penalizare_preferinte += 100
+
+        g, opentime, closetime = get_opening_hours(zi, timp_curent, locatie['opening_hours'])
+
+        # de pastrat, cred ca o sa mearga dupa ce integrez si cu hours parser
+        if g == 0:  # locatia este pusa in solutie astfel incat se afla in afara orelor de functionare
+            penalizare_ore_functionare = 200
 
         if timp_curent < opentime:  # daca sosim inainte de deschidere
             penalizare_asteptare += opentime - timp_curent
@@ -227,6 +280,10 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
 
         if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
             penalizare_inchidere += 50
+
+        # penalizare preferinte
+        if locatie['type'] not in user_preferences['preferredLocations']:
+            penalizare_preferinte += 100
 
         # penalizare restaurant
         penalizare_restaurant = normalizare_restaurante(ruta, timp_curent)
@@ -247,9 +304,15 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
 
     # procesez ultima locatie separat
     locatie = locatii[ruta[len(ruta) - 1]]
-    opentime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['opentime'])
-    closetime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['closetime'])
+    # opentime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['opentime'])
+    # closetime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['closetime'])
     spendtime = tipuri_spendtime.get(locatie['type'], 60)
+
+    #  odata integrat complet api-ul cu hours parser in get_opening_hours o sa am si indicele locatiei pt care extrag opening hours
+    g, opentime, closetime = get_opening_hours(zi, timp_curent, locatie['opening_hours'])
+    if g == 0:  # locatia este pusa in solutie astfel incat se afla in afara orelor de functionare
+        penalizare_ore_functionare = 200
+
     if locatie['type'] not in user_preferences['preferredLocations']:
         penalizare_preferinte += 200
 
@@ -272,19 +335,20 @@ def fitness(ruta, matrice_distantelor, ora_start, colecteaza_orar=False):
     if timp_curent < timp_in_minute('20:00'):
         penalizare_ora_final = 500
     fitness_total = distanta_totala + penalizare_preferinte + penalizare_asteptare + \
-                    penalizare_inchidere + penalizare_restaurant + penalizare_nr_locatii + penalizare_ora_final + penalizare_mers
+                    penalizare_inchidere + penalizare_restaurant + penalizare_nr_locatii + penalizare_ora_final \
+                    + penalizare_mers + penalizare_ore_functionare
     if colecteaza_orar:
         return 1 / (1 + fitness_total), orar
     else:
         return 1 / (1 + fitness_total)
 
 
-def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_generatii, ora_start):
+def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_generatii, ora_start, zi):
     lungime_locatii = len(locatii)
     populatie = initializare_populatie(dimensiune_populatie, min(10, lungime_locatii), locatii)
     for generatie in range(nr_generatii):
         # sortare populatie dupa fitness
-        sorted_populatie = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, ora_start),
+        sorted_populatie = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, ora_start, zi),
                                   reverse=True)
 
         # selectie
@@ -303,11 +367,8 @@ def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_gene
     # determin cea mai buna ruta
     cea_mai_buna_ruta = sorted_populatie[0]
 
-    _, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor, ora_start, colecteaza_orar=True)
+    _, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=True)
     return cea_mai_buna_ruta, orar_cea_mai_buna_ruta
-
-
-# return cea_mai_buna_ruta
 
 
 # locatii = data['places']
@@ -334,16 +395,27 @@ for rand in matrice_distantelor:
     rand_timp = [calculeaza_timp_mers(distanta) for distanta in rand]
     matrice_timp_mers.append(rand_timp)
 
+start_date = datetime.datetime(2024, 3, 19)
+start_day_of_trip = start_date.strftime("%a")  # Mon/Tue/Sun..
+start_day_of_trip = start_day_of_trip[:-1]
+
 
 def ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor):
     locatii_ramase = list(range(len(locatii)))
     rezultate_zilnice = []
 
+    days_of_week = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+    start_day_index = days_of_week.index(start_day_of_trip)
+    current_day_index = start_day_index
     for _ in range(nr_zile):
+
+        current_day = days_of_week[current_day_index]
         cea_mai_buna_ruta, orar_cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor,
                                                                      dimensiune_populatie=1000, nr_generatii=200,
-                                                                     ora_start='09:00')
+                                                                     ora_start='09:00', zi=current_day)
         rezultate_zilnice.append((cea_mai_buna_ruta, orar_cea_mai_buna_ruta))
+
+        current_day_index = (current_day_index + 1) % 7
 
         # pt urmatoarea zi rulez din nou algoritmul dar nu iau un calcul locatiile deja alese
         for idx in cea_mai_buna_ruta:
@@ -359,6 +431,8 @@ def afiseaza_itinerarii(itinerarii_zilnice, locatii):
         for locatie_idx, ora_sosire, ora_plecare, timp in orar:
             nume_locatie = locatii[locatie_idx]['name']
             if timp != -1:
+                if locatii[locatie_idx]['type'] == 'catering.restaurant':
+                    print('restaurant: ')
                 print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}. Mergi {timp} minute pana la:  ")
             else:
                 print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}")
@@ -366,5 +440,5 @@ def afiseaza_itinerarii(itinerarii_zilnice, locatii):
 
 
 nr_zile = 2
-# itinerarii_zilnice = ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor)
-# afiseaza_itinerarii(itinerarii_zilnice, locatii)
+itinerarii_zilnice = ruleaza_algoritm_pe_zile(locatii, nr_zile, matrice_distantelor)
+afiseaza_itinerarii(itinerarii_zilnice, locatii)

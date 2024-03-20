@@ -1,6 +1,8 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { ScheduleService } from '../services/generate-itinerary/schedule-itinerary.service';
 import { } from 'googlemaps';
+import { HeaderService } from '../services/header/header.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -9,7 +11,17 @@ import { } from 'googlemaps';
   styleUrl: './schedule-itinerary.component.css'
 })
 
-export class ScheduleItineraryComponent implements AfterViewInit  {
+export class ScheduleItineraryComponent implements AfterViewInit, OnInit  {
+  tripDays = [
+    { dayNumber: 1, expanded: false },
+    { dayNumber: 2, expanded: false },
+  ];
+
+  toggleDay(day: any) {
+    day.expanded = !day.expanded;
+    console.log(day.expanded)
+  }
+
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
   title = 'angular-gmap';
@@ -20,7 +32,7 @@ export class ScheduleItineraryComponent implements AfterViewInit  {
   mapOptions: google.maps.MapOptions = { center: this.coordinates, zoom: 10, };
   marker = new google.maps.Marker({ position: this.coordinates, map: this.map, });
 
-  constructor(private scheduleService: ScheduleService) { }
+  constructor(private router: Router, private scheduleService: ScheduleService, private headerService: HeaderService) { }
   ngAfterViewInit(): void {
     this.mapInitializer();
   }
@@ -40,5 +52,12 @@ export class ScheduleItineraryComponent implements AfterViewInit  {
     this.scheduleService.generateSchedule(preferences).subscribe(result => {
       this.itineraryResult = result;
     });
+  }
+
+  ngOnInit(): void {
+    this.headerService.setShowHeader(false);
+  }
+  goBack(): void {
+    this.router.navigate(['/home']);
   }
 }

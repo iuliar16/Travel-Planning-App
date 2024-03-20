@@ -8,5 +8,31 @@
   <ng-template #noData>
     <p>Nu există date de afișat.</p>
   </ng-template> -->
-  
-  <div #gmapContainer id="map"></div >
+
+<div class="trip">
+  <div class="trip-info">
+    <div class="sub-header">
+      <div class="back-icon">
+        <mat-icon (click)="goBack()">arrow_back</mat-icon>
+      </div>
+    </div>
+    <img class="photo" src="./assets/images/rome.jpg">
+    <div class="dropdown" *ngFor="let day of tripDays">
+      <div class="dropdown-header" (click)="toggleDay(day)">
+        <span>Day {{ day.dayNumber }}</span>
+        <mat-icon>{{ day.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </div>
+      <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
+        <div class="itinerary-item">
+          <div class="place-name">Place 1</div>
+          <img src="./assets/images/rome.jpg" alt="Place 1">
+          <div class="description">Walk to next destination...</div>
+        </div>
+        <!-- Add more itinerary items as needed -->
+      </div>
+    </div>
+  </div>
+  <div class="map-container">
+    <div #gmapContainer id="map"></div>
+  </div>
+</div>

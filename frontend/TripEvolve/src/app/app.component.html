@@ -1,2 +1,2 @@
-<app-header></app-header>
+<app-header  *ngIf="headerService.showHeader$ | async"></app-header>
 <router-outlet></router-outlet>

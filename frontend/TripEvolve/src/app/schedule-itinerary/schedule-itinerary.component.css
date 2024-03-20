@@ -1,5 +1,63 @@
 #map {
-    height: 610px;
-    width: 50%;
-    margin-left:50%;
+    height: 710px;
+    width: 100%;
 }
+.trip{
+    display:flex;
+    justify-content: center;
+}
+.photo{
+    width:50%;
+    height:70%;
+}
+.map-container{
+    margin-left:50%;
+    height: 700px;
+    width: 50%;
+    position:fixed;
+}
+.sub-header{
+    color:white;
+    background-color: white;
+    width:50%;
+    height:10%;
+}
+.back-icon{
+    color: #004AAD;
+}
+mat-icon{
+    margin-top:10px;
+    margin-left:50px;
+    cursor:pointer;
+}
+.dropdown {
+    margin-bottom: 10px;
+  }
+  
+  .dropdown-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+  
+  .dropdown-content {
+    display: none;
+  }
+  
+  .dropdown-content.show {
+    display: block;
+  }
+  
+  /* Add styles for itinerary items */
+  .itinerary-item {
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+  }
+  
+  .place-name {
+    font-weight: bold;
+  }
