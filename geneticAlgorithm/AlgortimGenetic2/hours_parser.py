@@ -1,6 +1,11 @@
+import datetime
 import json
 import re
 
+# 19:00
+def is_format0(input_str):
+    pattern = r'^\d{2}:\d{2}$'
+    return bool(re.match(pattern, input_str))
 # 7:30-20:00
 def is_format1(input_str):
     pattern = r'^\d{2}:\d{2}-\d{2}:\d{2}$'
@@ -99,3 +104,12 @@ def parse_hours(input_str):
                 hours_dict[off_day] = []
 
     return json.dumps(hours_dict)
+
+
+def find_first_day_of_week(day_of_week):
+    days_dict = {"Mo": 0, "Tu": 1, "We": 2, "Th": 3, "Fr": 4, "Sa": 5, "Su": 6}
+    current_date = datetime.datetime.now()
+    current_day_of_week = current_date.weekday()
+    days_difference = (days_dict[day_of_week] - current_day_of_week) % 7
+    first_day_of_week = current_date + datetime.timedelta(days=days_difference)
+    return first_day_of_week
