@@ -31,6 +31,7 @@ import { ManageSharingComponent } from './manage-sharing/manage-sharing.componen
 import { MatDialogModule } from '@angular/material/dialog';
 import { ShareTripPopupComponent } from './share-trip-popup/share-trip-popup.component';
 import { PublicShareComponent } from './public-share/public-share.component';
+import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itinerary-item.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { PublicShareComponent } from './public-share/public-share.component';
     ManageSharingComponent,
     ShareTripPopupComponent,
     PublicShareComponent,
+    ItineraryItemComponent,
   ],
   imports: [
     BrowserModule,

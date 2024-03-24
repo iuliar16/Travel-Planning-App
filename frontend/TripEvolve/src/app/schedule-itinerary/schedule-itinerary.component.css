@@ -1,63 +1,170 @@
 #map {
-    height: 710px;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
-.trip{
-    display:flex;
-    justify-content: center;
+
+.trip {
+  display: flex;
+  justify-content: center;
 }
-.photo{
-    width:50%;
-    height:70%;
+
+.photo {
+  width: 900px;
+  height: 500px;
 }
-.map-container{
-    margin-left:50%;
-    height: 700px;
-    width: 50%;
-    position:fixed;
+
+.map-container {
+  margin-left: 50%;
+  width: 50%;
+  height: 120%;
+  position: fixed;
 }
-.sub-header{
-    color:white;
-    background-color: white;
-    width:50%;
-    height:10%;
+
+.sub-header {
+  display: flex;
+  top: 0;
+  background-color: rgb(250 250 250);
+  height: 60px;
+  position: sticky;
+  border-bottom: 1px solid #ccc;
 }
-.back-icon{
-    color: #004AAD;
+.trip-evolve{
+  background-color: transparent;
+  border: none;
+  margin-left:-20px;
+  color:#004AAD;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top:4px;
 }
-mat-icon{
-    margin-top:10px;
-    margin-left:50px;
-    cursor:pointer;
+.trip-evolve:hover, .back-icon:hover{
+  color: #1778e0;
 }
+
+.back-icon {
+  width: 5%;
+  color: #004AAD;
+  margin-left: 5%;
+  padding: 20px;
+  margin-bottom: 5px;
+}
+
+.hours-icon {
+  margin-top: 5px;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+h4 {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.hours {
+  width: 80%;
+  height: 25px;
+  text-align: center;
+  display: flex;
+}
+
+mat-icon {
+  margin-left: 0px;
+  cursor: pointer;
+}
+
+#expand-id {
+  margin-right: 10px;
+  font-size: 30px;
+}
+
+.dropdown-name {
+  margin-left: 0px;
+}
+
+#loc-id {
+  font-size: 20px;
+  margin-top: 5px;
+  color: rgb(12, 78, 12);
+}
+
+.trip-info {
+  width: 100%;
+  margin-right: 50%;
+}
+
 .dropdown {
-    margin-bottom: 10px;
-  }
-  
-  .dropdown-header {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f0f0f0;
-    padding: 10px;
-  }
-  
-  .dropdown-content {
-    display: none;
-  }
-  
-  .dropdown-content.show {
-    display: block;
-  }
-  
-  /* Add styles for itinerary items */
-  .itinerary-item {
-    margin-top: 10px;
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
-  }
-  
-  .place-name {
-    font-weight: bold;
-  }
+  margin-bottom: 10px;
+}
+
+.dropdown-header {
+  margin-left: 10%;
+  margin-right: 10%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  color: rgb(69 90 100);
+  border-bottom: 1px solid rgb(69 90 100);
+}
+
+.dropdown-content {
+  display: none;
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+.itinerary-item {
+  width: 80%;
+  height: 150px;
+  background-color: rgb(250 250 250);
+  border-radius: 15px;
+  display: flex;
+  margin-left: 10%;
+  margin-top: 10px;
+  padding-top: 10px;
+  cursor: pointer;
+}
+
+.itinerary-item:hover {
+  background-color: rgb(245 245 245);
+}
+
+.place-name {
+  font-size: 23px;
+  margin-left: 20px;
+}
+
+.place-info {
+  padding: 5px;
+  margin-left: 10px;
+  width: 200%;
+  color: rgb(69 90 100);
+  border-radius: 15px;
+  font-size: 20px;
+}
+
+.place-photo {
+  margin-top: 0px;
+  border-radius: 15px;
+  float: right;
+  width: 35%;
+}
+
+.place-name {
+  font-weight: bold;
+}
+
+.hours {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-top: 10px;
+  margin-left: 10px;
+  padding: 5px 5px;
+  border-radius: 15px;
+  background-color: white;
+  border: 1px solid #ccc;
+  color: rgb(69 90 100);
+}

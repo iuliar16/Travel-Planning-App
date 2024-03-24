@@ -2,13 +2,21 @@
     width: 99%;
     height: 225px;
     border: 1px solid rgb(219, 214, 214);
-    border-radius: 1%;
+    border-radius: 15px;
     display: flex;
+    background-color: white;
 }
 
 h2,
 h3 {
     margin-left: 20px;
+}
+
+.photo {
+    border-radius: 0px 15px 15px 0px;
+    margin-left: 180%;
+    width: 300px;
+    height: 100%;
 }
 
 .title {

@@ -1,0 +1,99 @@
+.itinerary-item {
+    width: 80%;
+    height: 160px;
+    background-color: rgb(250 250 250);
+    border-radius: 15px;
+    display: flex;
+    margin-left: 10%;
+    margin-top: 10px;
+    padding-top: 10px;
+    cursor: pointer;
+}
+
+.itinerary-item:hover {
+    background-color: rgb(245 245 245);
+}
+
+.place-name {
+    font-size: 23px;
+    margin-left: 20px;
+}
+
+.place-info {
+    padding: 5px;
+    margin-left: 10px;
+    width: 200%;
+    color: rgb(69 90 100);
+    border-radius: 15px;
+    font-size: 20px;
+}
+
+.place-photo {
+    margin-top: 0px;
+    border-radius: 15px;
+    float: right;
+    width: 35%;
+}
+
+.place-name {
+    font-weight: bold;
+}
+
+.hours {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-top: 10px;
+    margin-left: 10px;
+    padding: 5px 5px;
+    border-radius: 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    color: rgb(69 90 100);
+}
+
+.hours-icon {
+    margin-top: 5px;
+    font-size: 20px;
+    pointer-events: none;
+}
+
+h4 {
+    text-align: center;
+    margin-top: 5px;
+}
+
+.hours {
+    width: 80%;
+    height: 25px;
+    text-align: center;
+    display: flex;
+}
+
+mat-icon {
+    margin-left: 0px;
+    cursor: pointer;
+}
+
+#expand-id {
+    margin-right: 10px;
+    font-size: 30px;
+}
+
+.next-dest {
+    display: flex;
+    color: rgb(69 90 100);
+    height: 40px;
+    padding: 10px;
+    margin-left: 15%;
+    font-size: 15px;
+    border-left: 1px solid #ccc;
+}
+
+.directions_bus {
+    margin-top: 10px;
+    margin-right: 5px;
+}
+.directions-time{
+    margin-top: 14px;
+}

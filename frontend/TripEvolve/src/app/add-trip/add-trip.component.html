@@ -1,4 +1,5 @@
-<form #registerForm="ngForm">
+<h3 class="plan">Plan your next adventure</h3>
+<form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm">
     <div class="form-group">
         <h3>Trip Name</h3>
         <input type="text" id="tripName" placeholder="Enter Trip name" name="tripName">
@@ -6,12 +7,42 @@
     <br>
     <div class="form-group">
         <h3>Where do you want to go?<span style="color: red;">*</span></h3>
-        <mat-form-field>
-            <mat-icon matPrefix>search</mat-icon>
-            <input matInput type="search" placeholder="Search by city or town" name="location" class="search-input" required>
-        </mat-form-field>
+        <input matInput type="text" placeholder="Search by city or town" name="location" class="search-input" required>
+
     </div>
     <br>
+    <h3>When do you want to go?<span style="color: red;">*</span></h3>
+    <p style="color:#757575">Choose a date range or length of stay, up to 7 days.</p>
+    <div class="trip-duration">
+        <div class="dates" [class.selected]="selectedOption === 'dates'" (click)="selectOption('dates')">Dates</div>
+        <div class="length" [class.selected]="selectedOption === 'length'" (click)="selectOption('length')">Trip Length
+        </div>
+    </div>
+    <div class="selected-content">
+        <ng-container *ngIf="selectedOption === 'dates'; else lengthTemplate">
+            <mat-form-field>
+                <input matInput [matDatepicker]="datepicker" placeholder="Select a date">
+                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                <mat-datepicker #datepicker></mat-datepicker>
+            </mat-form-field>
+        </ng-container>
+
+
+
+        <ng-template #lengthTemplate>
+            <div class="trip-length-picker">
+                <h3>Total days</h3>
+                <div class="counter">
+                    <mat-icon (click)="decrement()">remove_circle</mat-icon>
+                    <div>{{ value }}</div>
+                    <mat-icon (click)="increment()">add_circle</mat-icon>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+
+
+
     <div class="form-group">
         <h3>How do you want to spend your time?<span style="color: red;">*</span></h3>
         <p style="color:#757575">Select as many as you wish.</p>
@@ -24,7 +55,8 @@
 
 
     <div class="btns">
-        <button type="button" class="cancel">Cancel</button>
-        <button type="submit" class="save">Submit</button>
+        <button routerLink="/home" type="button" class="cancel">Cancel</button>
+        <button type="submit"  class="save">Submit</button>
     </div>
+    <br>
 </form>

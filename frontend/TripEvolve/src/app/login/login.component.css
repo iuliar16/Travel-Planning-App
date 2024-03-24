@@ -1,21 +1,41 @@
-
 .container {
-    background-color: white;
-    width: 20%;
+    box-shadow:8px 8px 8px rgb(148, 179, 211);
+    border:none;
+    background-color: rgb(213, 219, 225);
+    width: 90%;
+    height:630px;
     text-align: center;
     margin:0 auto;
-    /* margin-left: 70%; */
+    margin-top:3%;
+    display:flex;
 }
-/* .con{
-    background: url('../../assets/images/world2.jpg') no-repeat center center fixed;
-    background-size: contain;
-    background-position: left;
-    width: 100%; 
-    height: 100vh; 
+.photo-container{
+    width:60%;
+}
+/* .photo{
+    width:140%;
+    margin-top:-8%;
+    margin-left: -19%;
+    height:125%;
 } */
+.photo{
+    width:100%;
+    margin-top:-16.5%;
+    margin-left: -10%;
+    height:135%;
+}
+.form{
+    border-left: 1px double #004AAD;
+    background-color: rgb(213, 219, 225);
+    margin-left:0px;
+    width:40%;
+    text-align: center;
+}
 .form-group {
+    margin:0 auto;
     margin-bottom: 20px;
-    text-align: left;
+    text-align: center;
+    width:90%;
 }
 
 input[type="text"],
@@ -27,12 +47,28 @@ input[type="password"] {
 }
 
 .signin{
+    font-size: large;
     text-decoration: none;
     color: #004AAD;
 }
 .signin:hover{
     color:#1778e0;
 }
+mat-checkbox{
+    font-size: large;
+    margin-left: 10%;
+}
+.signin-a{
+    font-size: large;
+    margin-left: 30%;
+    text-decoration: none;
+    color: #004AAD;
+    
+}
+.signin-a:hover{
+    color:#1778e0;
+}
+
 .btn {
     background-color: #004AAD;
     color: #fff;
@@ -40,7 +76,7 @@ input[type="password"] {
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 7px;
-    width:100%;
+    width:80%;
 }
 
 .btn:hover{

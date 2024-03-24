@@ -1,36 +1,82 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    padding:0;
-}
-
-
 form {
     margin: 0 auto;
-    margin-top: 30px;
+    /* margin-top: 30px; */
     justify-content: center;
-    width: 800px;
+    width: 650px;
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* border: 1px solid #ccc; */
+    /* border-radius: 5px; */
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
 }
 
 .form-group {
+
     margin-bottom: 20px;
+}
+
+.plan {
+    text-align: center;
+    margin-top: 90px;
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.trip-duration {
+    margin: 0 auto;
+    background-color: rgb(240, 233, 233);
+    border-radius: 15px;
+    display: flex;
+    padding: 10px;
+    width: 70%;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+}
+
+mat-icon {
+    cursor: pointer;
+    color:black;
+    margin: 0 10px;
+}
+.trip-length-picker{
+    margin-top:20px;
+    font-size: 25px;
+    display: flex;
+    justify-content: space-between;
+}
+.dates,
+.length {
+    user-select: none;
+    width: 50%;
+    text-align: center;
+    background-color: rgb(240, 233, 233);
+    border-radius: 15px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dates:not(.selected):hover,
+.length:not(.selected):hover {
+    background-color: rgb(222, 214, 214);
+}
+
+.selected {
+    background-color: rgb(255, 255, 255);
 }
 
 h2,
 h3 {
+    font-weight: 500;
+    font-size: 20px;
     margin-bottom: 10px;
 }
 
 input[type="text"] {
     width: 97%;
+    height: 23px;
+    font-size: 18px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -64,20 +110,23 @@ button {
     cursor: pointer;
 }
 
-button.cancel:hover{
+button.cancel:hover {
     border: 1px solid #FBA834;
-    background-color:#e89803;
+    background-color: #e89803;
 }
+
 button.cancel {
     border: 1px solid #FBA834;
-    background-color:#FBA834;
+    background-color: #FBA834;
     margin-right: 10px;
 }
-.btns{
-    display:flex;
-    float:right;
-    margin-right:10px;
+
+.btns {
+    display: flex;
+    justify-content: center;
+    margin-right: 10px;
 }
+
 .option {
     display: inline-block;
     padding: 5px 10px;
@@ -105,4 +154,3 @@ button.save:hover {
     background-color: #1778e0;
     border: 1px solid #1778e0;
 }
-

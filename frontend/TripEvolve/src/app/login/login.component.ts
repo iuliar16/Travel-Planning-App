@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-login',
@@ -12,5 +12,10 @@ export class LoginComponent {
   };
   onSubmit() {
     console.log('Form submitted with data:', this.formData);
+  }
+  constructor(private elementRef: ElementRef) {}
+  ngAfterViewInit() {
+      this.elementRef.nativeElement.ownerDocument
+          .body.style.backgroundColor = 'rgb(200, 210, 220)';
   }
 }

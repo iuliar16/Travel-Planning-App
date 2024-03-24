@@ -1,8 +1,13 @@
-<div class="con">
-    <div class="container">
-        <br><br><br>
-        <h2 style="font-size: 40px;">Sign In</h2>
-        <br>
+<div class="container">
+    <br><br><br>
+    <br>
+    <div class="photo-container">
+        <img class="photo" src="./assets/images/travel-png-images-all.png">
+    </div>
+    <div class="form">
+        <br><br><br><br><br>
+        <h1>Sign In</h1>
+        <br><br>
         <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
             <div class="form-group">
                 <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"
@@ -13,15 +18,14 @@
                     [(ngModel)]="formData.password" required>
             </div>
             <br>
-            <div style="justify-content: space-between; display:flex; font-size: 15px;">
+            <div style=" display:flex; font-size: 15px;">
                 <mat-checkbox>&nbsp;&nbsp;&nbsp;Keep me signed in.</mat-checkbox>
-                <a class="signin" routerLink="/forgot-pass">Forgot password?</a>
+                <a class="signin-a" routerLink="/forgot-pass">Forgot password?</a>
             </div>
             <br><br>
             <button type="submit" class="btn btn-primary">Sign In</button>
         </form>
         <br>
         <p><a class="signin" routerLink="/sign-up">Don't have an account? Create one.</a></p>
-
     </div>
 </div>

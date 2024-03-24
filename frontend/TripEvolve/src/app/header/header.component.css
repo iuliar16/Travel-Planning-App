@@ -6,7 +6,8 @@
   color: lightgray;
   box-shadow: 0px 8px 8px lightgray;
   padding: 10px 24px 10px 34px;
-  position: relative;
+  position: sticky;
+  top:0;
   background-color: white;
 }
 
