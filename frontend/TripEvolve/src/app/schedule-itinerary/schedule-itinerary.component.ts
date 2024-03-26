@@ -30,6 +30,9 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   selectedLocations: string[] = [];
 
   tripSummary: any = {};
+  showSchedule: boolean = false;
+  loading: boolean = false; 
+
 
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
@@ -63,14 +66,21 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   }
 
   generateSchedule() {
-    console.log('here');
-    const preferences = {
-      preferredLocations: ["catering.restaurant", "commercial.shopping_mall", "tourism"],
-    };
-    // const preferences = ["catering.restaurant", "commercial.shopping_mall"];
-    this.scheduleService.generateSchedule(preferences).subscribe(result => {
-      this.itineraryResult = result;
-    });
+    this.loading = true; 
+    setTimeout(() => {
+      console.log('here');
+      const preferences = {
+        preferredLocations: this.tripSummary.selectedLocations,
+      };
+
+      this.showSchedule = true;
+      this.loading = false; 
+      this.scheduleService.generateSchedule(preferences).subscribe(result => {
+        this.itineraryResult = result;
+        console.log(result);
+      });
+    }, 6000);
+
   }
 
   ngOnInit(): void {

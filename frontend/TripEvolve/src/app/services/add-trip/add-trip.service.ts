@@ -8,6 +8,7 @@ export class AddTripService {
   city: string = '';
   selectedOption: string = '';
   selectedLocations: string[] = [];
+  tripLength: number=1;
 
   constructor() { }
 
@@ -16,6 +17,7 @@ export class AddTripService {
     this.city = data.location;
     this.selectedOption = data.selectedOption;
     this.selectedLocations = data.selectedLocations || [];
+    this.tripLength=data.tripLength;
   }
 
   getTripSummary(): any {
@@ -23,7 +25,8 @@ export class AddTripService {
       tripName: this.tripName,
       city: this.city,
       selectedOption: this.selectedOption,
-      selectedLocations: this.selectedLocations
+      selectedLocations: this.selectedLocations,
+      tripLength:this.tripLength
     };
   }
 }

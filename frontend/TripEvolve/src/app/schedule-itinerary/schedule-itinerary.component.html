@@ -6,11 +6,27 @@
       </div>
       <button class="trip-evolve" routerLink="/home">Trip Evolve</button>
     </div>
-    <h3>Quick Summary of your trip:</h3>
-    <p>Trip Name: {{ tripSummary.tripName }}</p>
-    <!-- <p>Location: {{ tripSummary.city }}</p> -->
 
-    <!-- <img class="photo" src="./assets/images/rome.jpg">
+    <div class="trip-summary" *ngIf="!showSchedule && !loading">
+      <h3>Quick Summary of your trip:</h3>
+      <p>Spend {{ tripSummary.tripLength }} days in {{tripSummary.city}}</p>
+      <p>Preferences: </p>
+      <div class="form-group">
+        <div class="options-container">
+          <div class="option" *ngFor="let location of tripSummary.selectedLocations">{{ location }}</div>
+        </div>
+      </div>
+      <button class="generate-btn" (click)="generateSchedule()">Generate Schedule</button>
+    </div>
+
+    <div class="loading-photo" *ngIf="loading">
+      <img class="gif" src="./assets/images/loading.gif" alt="Loading...">
+      <p class="loading-p">{{tripSummary.city}} is a great choice! We're gathering popular things to do, restaurants, and more...</p>
+    </div>
+
+
+    <div class="schedule-content" *ngIf="showSchedule">
+      <img class="photo" src="./assets/images/rome.jpg">
     <div class="dropdown" *ngFor="let day of tripDays">
       <div class="dropdown-header" (click)="toggleDay(day)">
         <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
@@ -20,7 +36,8 @@
       <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
         <app-itinerary-item></app-itinerary-item>
       </div>
-    </div> -->
+    </div>
+    </div>
   </div>
   <div class="map-container">
     <div #gmapContainer id="map"></div>

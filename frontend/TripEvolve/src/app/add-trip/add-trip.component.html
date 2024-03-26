@@ -1,14 +1,15 @@
 <h3 class="plan">Plan your next adventure</h3>
-<form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm">
+<form (ngSubmit)="onSubmit()" #registerForm="ngForm">
     <div class="form-group">
         <h3>Trip Name</h3>
-        <input type="text" id="tripName" placeholder="Enter Trip name" name="tripName">
+        <input type="text" placeholder="Enter Trip name" id="tripName" name="tripName" [(ngModel)]="formData.tripName"
+            required>
     </div>
     <br>
     <div class="form-group">
         <h3>Where do you want to go?<span style="color: red;">*</span></h3>
-        <input matInput type="text" placeholder="Search by city or town" name="location" class="search-input" required>
-
+        <input matInput type="text" placeholder="Search by city or town" #placesSearchInput  id="location" [(ngModel)]="formData.location"
+            name="location" class="search-input" required>
     </div>
     <br>
     <h3>When do you want to go?<span style="color: red;">*</span></h3>
@@ -27,8 +28,6 @@
             </mat-form-field>
         </ng-container>
 
-
-
         <ng-template #lengthTemplate>
             <div class="trip-length-picker">
                 <h3>Total days</h3>
@@ -41,8 +40,6 @@
         </ng-template>
     </div>
 
-
-
     <div class="form-group">
         <h3>How do you want to spend your time?<span style="color: red;">*</span></h3>
         <p style="color:#757575">Select as many as you wish.</p>
@@ -53,10 +50,13 @@
         </div>
     </div>
 
+    <div class="error-message">
+        {{ message }}
+      </div>
 
     <div class="btns">
         <button routerLink="/home" type="button" class="cancel">Cancel</button>
-        <button type="submit"  class="save">Submit</button>
+        <button type="submit" class="save">Submit</button>
     </div>
     <br>
 </form>

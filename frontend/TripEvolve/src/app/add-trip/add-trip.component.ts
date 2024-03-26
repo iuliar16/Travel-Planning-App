@@ -13,25 +13,45 @@ export class AddTripComponent {
     'Picnic', 'Swimming Pools', 'Cinema', 'Casino', 'Shopping Malls', 'Castles', 'Places of worship', 'Outdoor Adventures'];
   selectedLocations: string[] = [];
   selectedOption: 'dates' | 'length' = 'dates';
-  value: number = 1; 
+  value: number = 1;
+  message: string = '';
 
-  constructor(private addTripService: AddTripService, private router:Router) {}
+  formData = {
+    tripName: '',
+    location: '',
+    selectedLocations: [] as string[],
+    startDate: null,
+    tripLength: this.value
+  };
 
-  onSubmit(formData: any) {
-    console.log(formData);
-    this.addTripService.setFormData(formData);
+  constructor(private addTripService: AddTripService, private router: Router) { }
+
+  onSubmit() {
+    this.message = '';
+    this.formData.selectedLocations = this.selectedLocations;
+    if (!(this.formData.location && this.formData.selectedLocations && (this.formData.startDate || this.formData.tripLength))) {
+      this.message = 'Please complete all required fields.';
+      return;
+    }
+
+    console.log(this.formData);
+    this.addTripService.setFormData(this.formData);
     this.router.navigate(['/schedule-itinerary']);
+
   }
 
   increment() {
     if (this.value < 7) {
       this.value++;
+      this.formData.tripLength = this.value;
     }
+
   }
 
   decrement() {
     if (this.value > 1) {
       this.value--;
+      this.formData.tripLength = this.value;
     }
   }
 

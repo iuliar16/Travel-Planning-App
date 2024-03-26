@@ -126,7 +126,10 @@ button.cancel {
     justify-content: center;
     margin-right: 10px;
 }
-
+.disabled-button {
+    opacity: 0.5; 
+    cursor: not-allowed;
+  }
 .option {
     display: inline-block;
     padding: 5px 10px;
@@ -136,6 +139,11 @@ button.cancel {
     cursor: pointer;
     margin-bottom: 10px;
     user-select: none;
+}
+.error-message{
+    color:red;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .option.selected {
