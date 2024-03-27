@@ -13,7 +13,6 @@ export class HeaderComponent {
     this.ImagePath = '../../assets/images/logo.png';
   }
   onClickIcon(): void {
-    console.log('Ai apăsat pe iconiță');
     this.showLogout = !this.showLogout;
   }
 

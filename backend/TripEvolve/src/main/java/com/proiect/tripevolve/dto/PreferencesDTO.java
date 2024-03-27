@@ -30,4 +30,6 @@ import java.util.List;
 public class PreferencesDTO {
     @JsonProperty("preferredLocations")
     private List<String> preferredLocations;
+    private String location;
+    private Integer trip_length;
 }

@@ -14,9 +14,9 @@ import { AddTripService } from '../services/add-trip/add-trip.service';
 
 export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   tripDays = [
-    { dayNumber: 1, day: 'Wednesday', date: 'March 13th', expanded: true },
-    { dayNumber: 2, day: 'Thursday', date: 'March 14th', expanded: true },
-    { dayNumber: 3, day: 'Friday', date: 'March 15th', expanded: true },
+    { dayNumber: 1, day: 'Wednesday', date: 'March 13th', expanded: false },
+    { dayNumber: 2, day: 'Thursday', date: 'March 14th', expanded: false },
+    { dayNumber: 3, day: 'Friday', date: 'March 15th', expanded: false },
   ];
   places = [
     {
@@ -28,10 +28,11 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   selectedDate: Date | null = null;
   tripLength: number = 1;
   selectedLocations: string[] = [];
+  nr_days: string = 'days'
 
   tripSummary: any = {};
   showSchedule: boolean = false;
-  loading: boolean = false; 
+  loading: boolean = false;
 
 
   @ViewChild('gmapContainer', { static: false })
@@ -66,27 +67,38 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   }
 
   generateSchedule() {
-    this.loading = true; 
-    setTimeout(() => {
-      console.log('here');
-      const preferences = {
-        preferredLocations: this.tripSummary.selectedLocations,
-      };
+    // this.loading = true;
+    // setTimeout(() => {
+    //   console.log('here');
+    //   const preferences = {
+    //     preferredLocations: this.tripSummary.selectedLocations,
+    //   };
 
-      this.showSchedule = true;
-      this.loading = false; 
-      this.scheduleService.generateSchedule(preferences).subscribe(result => {
-        this.itineraryResult = result;
-        console.log(result);
-      });
-    }, 6000);
+    //   this.showSchedule = true;
+    //   this.loading = false;
+    //   this.scheduleService.generateSchedule(preferences).subscribe(result => {
+    //     this.itineraryResult = result;
+    //     console.log(result);
+    //   });
+    // }, 1000);
 
+    const preferences = {
+             preferredLocations:this.tripSummary.selectedLocations,
+             location:this.tripSummary.city,
+             trip_length:this.tripSummary.tripLength
+        };
+    this.scheduleService.generateSchedule(preferences).subscribe(result => {
+          this.itineraryResult = result;
+          console.log(result);
+        });
   }
 
   ngOnInit(): void {
     this.headerService.setShowHeader(false);
     this.tripSummary = this.addTripService.getTripSummary();
-    console.log(this.tripSummary); 
+    console.log(this.tripSummary);
+    if (this.tripSummary.tripLength == 1)
+      this.nr_days = 'day'
   }
   goBack(): void {
     this.router.navigate(['/home']);

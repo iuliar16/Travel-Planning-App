@@ -5,11 +5,19 @@
         <mat-icon (click)="goBack()">arrow_back</mat-icon>
       </div>
       <button class="trip-evolve" routerLink="/home">Trip Evolve</button>
+      <!-- <div class="share-btns">
+        <mat-icon class="icons">share</mat-icon>
+        <button class="share-btn">Public Share</button>
+
+        <mat-icon class="icons">person_add</mat-icon>
+        <button class="share-btn2">Invite Trip Mate</button>
+      </div> -->
+      <!-- <button class="regenerate-btn" *ngIf="showSchedule" (click)="generateSchedule()">Regenerate Schedule</button> -->
     </div>
 
     <div class="trip-summary" *ngIf="!showSchedule && !loading">
       <h3>Quick Summary of your trip:</h3>
-      <p>Spend {{ tripSummary.tripLength }} days in {{tripSummary.city}}</p>
+      <p>Spend {{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
       <p>Preferences: </p>
       <div class="form-group">
         <div class="options-container">
@@ -18,25 +26,27 @@
       </div>
       <button class="generate-btn" (click)="generateSchedule()">Generate Schedule</button>
     </div>
-
+    
     <div class="loading-photo" *ngIf="loading">
       <img class="gif" src="./assets/images/loading.gif" alt="Loading...">
-      <p class="loading-p">{{tripSummary.city}} is a great choice! We're gathering popular things to do, restaurants, and more...</p>
+      <p class="loading-p">{{tripSummary.city}} is a great choice! We're gathering popular things to do, restaurants,
+        and more...</p>
     </div>
 
 
     <div class="schedule-content" *ngIf="showSchedule">
       <img class="photo" src="./assets/images/rome.jpg">
-    <div class="dropdown" *ngFor="let day of tripDays">
-      <div class="dropdown-header" (click)="toggleDay(day)">
-        <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
-        <mat-icon id="loc-id"> location_on</mat-icon>
-        <h2 class="dropdown-name">{{ day.day }}, {{day.date}}</h2>
+      <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
+      <div class="dropdown" *ngFor="let day of tripDays">
+        <div class="dropdown-header" (click)="toggleDay(day)">
+          <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+          <mat-icon id="loc-id"> location_on</mat-icon>
+          <h2 class="dropdown-name">{{ day.day }}, {{day.date}}</h2>
+        </div>
+        <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
+          <app-itinerary-item></app-itinerary-item>
+        </div>
       </div>
-      <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
-        <app-itinerary-item></app-itinerary-item>
-      </div>
-    </div>
     </div>
   </div>
   <div class="map-container">

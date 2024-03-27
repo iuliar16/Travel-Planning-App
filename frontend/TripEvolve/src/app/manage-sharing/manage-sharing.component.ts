@@ -22,7 +22,7 @@ export class ManageSharingComponent {
       width: '700px', 
       height: '600px', 
       position: {
-        top: '-300px', 
+        top: '-200px', 
         left: '27%' 
       },
       backdropClass: 'bdrop'

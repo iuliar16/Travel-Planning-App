@@ -113,3 +113,4 @@ def find_first_day_of_week(day_of_week):
     days_difference = (days_dict[day_of_week] - current_day_of_week) % 7
     first_day_of_week = current_date + datetime.timedelta(days=days_difference)
     return first_day_of_week
+

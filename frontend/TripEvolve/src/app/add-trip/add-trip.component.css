@@ -1,12 +1,8 @@
 form {
     margin: 0 auto;
-    /* margin-top: 30px; */
     justify-content: center;
     width: 650px;
     padding: 20px;
-    /* border: 1px solid #ccc; */
-    /* border-radius: 5px; */
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
 }
 
 .form-group {
@@ -23,7 +19,7 @@ form {
 
 .trip-duration {
     margin: 0 auto;
-    background-color: rgb(240, 233, 233);
+    background-color: rgb(250 250 250);
     border-radius: 15px;
     display: flex;
     padding: 10px;

@@ -32,6 +32,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ShareTripPopupComponent } from './share-trip-popup/share-trip-popup.component';
 import { PublicShareComponent } from './public-share/public-share.component';
 import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itinerary-item.component';
+import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itin
     ShareTripPopupComponent,
     PublicShareComponent,
     ItineraryItemComponent,
+    DeleteTripPopupComponent,
   ],
   imports: [
     BrowserModule,

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,20 +33,25 @@ public class ItineraryServiceImpl implements ItineraryService {
             String preferencesJson = mapper.writeValueAsString(preferences);
             System.out.println(preferencesJson);
             String fetching = "python " + "C:\\Users\\Iulia\\Licenta-2024\\geneticAlgorithm\\AlgortimGenetic2\\main.py \"" + preferencesJson.replace("\"", "\\\"") + "\"";
-            System.out.println(fetching);
+
             String[] commandToExecute = new String[]{"cmd.exe", "/c", fetching};
-            System.out.println(preferencesJson.replace("\"", "\\\""));
             Process p=Runtime.getRuntime().exec(commandToExecute);
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-            int exitCode = p.waitFor();
             String line;
             StringBuilder output = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 output.append(line).append("\n");
             }
+
+            int exitVal = p.waitFor();
+            System.out.println("Exited with error code "+exitVal);
+
+            System.out.println("output!!");
             System.out.println(output);
 
+            System.out.println("gata");
             return output.toString();
 
         } catch (IOException | InterruptedException e) {

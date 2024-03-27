@@ -21,8 +21,9 @@
     </div>
     <div class="selected-content">
         <ng-container *ngIf="selectedOption === 'dates'; else lengthTemplate">
+            <br>
             <mat-form-field>
-                <input matInput [matDatepicker]="datepicker" placeholder="Select a date">
+                <input matInput [matDatepicker]="datepicker" style="width:20%" placeholder="Select a date">
                 <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
                 <mat-datepicker #datepicker></mat-datepicker>
             </mat-form-field>

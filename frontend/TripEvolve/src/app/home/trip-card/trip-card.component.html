@@ -8,8 +8,8 @@
         <br>
         <div class="options">
             <mat-icon>share</mat-icon><button routerLink="/manage-sharing" class="share-btn">Manage Sharing</button>
-            <mat-icon>edit</mat-icon><button class="share-btn">Edit Trip Info</button>
-            <mat-icon>delete</mat-icon><button class="share-btn">Delete Trip</button>
+            <mat-icon>edit</mat-icon><button routerLink="/schedule-itinerary" class="share-btn">Edit Trip Info</button>
+            <mat-icon>delete</mat-icon><button (click)="openDialog()" class="share-btn">Delete Trip</button>
         </div>
     </div>
     <div class="trip-photo">

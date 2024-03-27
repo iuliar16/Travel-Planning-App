@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { AddTripService } from '../services/add-trip/add-trip.service';
 import { Router } from '@angular/router';
@@ -9,12 +9,15 @@ import { Router } from '@angular/router';
   styleUrl: './add-trip.component.css'
 })
 export class AddTripComponent {
-  locations: string[] = ['Must-see Attractions', 'Museums', 'Parks', 'Zoo', 'Great Food', 'Wellness and Spas',
+  locations: string[] = ['Must-see Attractions', 'Museums', 'Parks', 'Zoo', 'Wellness and Spas',
     'Picnic', 'Swimming Pools', 'Cinema', 'Casino', 'Shopping Malls', 'Castles', 'Places of worship', 'Outdoor Adventures'];
   selectedLocations: string[] = [];
   selectedOption: 'dates' | 'length' = 'dates';
   value: number = 1;
   message: string = '';
+
+  @ViewChild('placesSearchInput', { static: false })
+  placesSearchInput!: ElementRef;
 
   formData = {
     tripName: '',
@@ -24,6 +27,18 @@ export class AddTripComponent {
     tripLength: this.value
   };
 
+  ngAfterViewInit(): void {
+    const placesSearchBox = new google.maps.places.SearchBox(this.placesSearchInput.nativeElement);
+    placesSearchBox.addListener('places_changed', () => {
+      const places = placesSearchBox.getPlaces();
+      if (places.length === 0) {
+        return;
+      }
+
+      console.log(places[0]);
+    });
+  }
+  
   constructor(private addTripService: AddTripService, private router: Router) { }
 
   onSubmit() {
