@@ -17,7 +17,12 @@
 
     <div class="trip-summary" *ngIf="!showSchedule && !loading">
       <h3>Quick Summary of your trip:</h3>
-      <p>Spend {{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
+      <div *ngIf="tripSummary.selectedOption=='length'">
+        <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
+      </div>
+      <div *ngIf="tripSummary.selectedOption=='dates'">
+        <p>{{tripSummary.city}} between {{ tripSummary.startDate }} - {{tripSummary.endDate}} </p>
+      </div>
       <p>Preferences: </p>
       <div class="form-group">
         <div class="options-container">
@@ -26,7 +31,7 @@
       </div>
       <button class="generate-btn" (click)="generateSchedule()">Generate Schedule</button>
     </div>
-    
+
     <div class="loading-photo" *ngIf="loading">
       <img class="gif" src="./assets/images/loading.gif" alt="Loading...">
       <p class="loading-p">{{tripSummary.city}} is a great choice! We're gathering popular things to do, restaurants,
@@ -44,7 +49,9 @@
           <h2 class="dropdown-name">{{ day.day }}, {{day.date}}</h2>
         </div>
         <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
-          <app-itinerary-item></app-itinerary-item>
+          <div *ngFor="let item of filterItineraryByDay(day.dayNumber)">
+            <app-itinerary-item [itineraryItem]="item"></app-itinerary-item>
+          </div>
         </div>
       </div>
     </div>

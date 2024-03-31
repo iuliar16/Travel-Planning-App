@@ -13,9 +13,5 @@ export class LoginComponent {
   onSubmit() {
     console.log('Form submitted with data:', this.formData);
   }
-  constructor(private elementRef: ElementRef) {}
-  ngAfterViewInit() {
-      this.elementRef.nativeElement.ownerDocument
-          .body.style.backgroundColor = 'rgb(200, 210, 220)';
-  }
+  
 }

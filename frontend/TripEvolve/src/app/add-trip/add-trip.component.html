@@ -1,4 +1,5 @@
 <h3 class="plan">Plan your next adventure</h3>
+<br>
 <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
     <div class="form-group">
         <h3>Trip Name</h3>
@@ -8,25 +9,32 @@
     <br>
     <div class="form-group">
         <h3>Where do you want to go?<span style="color: red;">*</span></h3>
-        <input matInput type="text" placeholder="Search by city or town" #placesSearchInput  id="location" [(ngModel)]="formData.location"
-            name="location" class="search-input" required>
+        <input matInput type="text" placeholder="Search by city or town" #placesSearchInput id="location"
+            [(ngModel)]="autocompleteInput" name="location" class="search-input" required>
     </div>
     <br>
     <h3>When do you want to go?<span style="color: red;">*</span></h3>
     <p style="color:#757575">Choose a date range or length of stay, up to 7 days.</p>
     <div class="trip-duration">
-        <div class="dates" [class.selected]="selectedOption === 'dates'" (click)="selectOption('dates')">Dates</div>
+        <div class="dates" [class.selected]="selectedOption === 'dates'" (click)=" selectOption('dates')">Dates</div>
         <div class="length" [class.selected]="selectedOption === 'length'" (click)="selectOption('length')">Trip Length
         </div>
     </div>
     <div class="selected-content">
         <ng-container *ngIf="selectedOption === 'dates'; else lengthTemplate">
             <br>
-            <mat-form-field>
-                <input matInput [matDatepicker]="datepicker" style="width:20%" placeholder="Select a date">
-                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-                <mat-datepicker #datepicker></mat-datepicker>
-            </mat-form-field>
+            <div class="date-picker">
+                <div class="start">
+                    <label>Start Date</label>
+                    <input name="start-date" id="start-date" type="date" (change)="startDateChanged($event)"
+                        [(ngModel)]="formData.startDate" />
+                </div>
+                <div class=" end">
+                    <label>End Date</label>
+                    <input name="end-date" id="end-date" type="date" [min]="minEndDate" [max]="maxEndDate"
+                        [(ngModel)]="formData.endDate" />
+                </div>
+            </div>
         </ng-container>
 
         <ng-template #lengthTemplate>
@@ -53,7 +61,7 @@
 
     <div class="error-message">
         {{ message }}
-      </div>
+    </div>
 
     <div class="btns">
         <button routerLink="/home" type="button" class="cancel">Cancel</button>
@@ -61,3 +69,4 @@
     </div>
     <br>
 </form>
+<br><br>

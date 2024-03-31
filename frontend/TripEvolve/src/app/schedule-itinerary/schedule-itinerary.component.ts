@@ -5,7 +5,9 @@ import { HeaderService } from '../services/header/header.service';
 import { Router } from '@angular/router';
 import { AddTripService } from '../services/add-trip/add-trip.service';
 
-
+interface DayAbbreviationMap {
+  [key: string]: number;
+}
 @Component({
   selector: 'app-schedule-itinerary',
   templateUrl: './schedule-itinerary.component.html',
@@ -13,11 +15,6 @@ import { AddTripService } from '../services/add-trip/add-trip.service';
 })
 
 export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
-  tripDays = [
-    { dayNumber: 1, day: 'Wednesday', date: 'March 13th', expanded: false },
-    { dayNumber: 2, day: 'Thursday', date: 'March 14th', expanded: false },
-    { dayNumber: 3, day: 'Friday', date: 'March 15th', expanded: false },
-  ];
   places = [
     {
       dayNumber: 1, name: 'Colloseum', description: "The Colloseum is an elliptical amphitheatre in the centre of the city of Rome, Italy, just east of the Roman Forum.", arrive_hour: "9:00", leave_hour: '11:00'
@@ -29,6 +26,12 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   tripLength: number = 1;
   selectedLocations: string[] = [];
   nr_days: string = 'days'
+  itineraryResults: any[] = [];
+  daysDifference: number = 1;
+  tripDays: any[] = [];
+  dayAbbreviationToIndex: DayAbbreviationMap = {
+    'Su': 0, 'Mo': 1, 'Tu': 2, 'We': 3, 'Th': 4, 'Fr': 5, 'Sa': 6
+  };
 
   tripSummary: any = {};
   showSchedule: boolean = false;
@@ -38,16 +41,17 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
   title = 'angular-gmap';
-  public itineraryResult: string = '';
   map!: google.maps.Map;
   lat = 12.9716; lng = 77.5946;
   coordinates = new google.maps.LatLng(this.lat, this.lng);
-  mapOptions: google.maps.MapOptions = { center: this.coordinates, zoom: 10, };
+  mapOptions: google.maps.MapOptions = { center: this.coordinates, zoom: 0, };
   marker = new google.maps.Marker({ position: this.coordinates, map: this.map, });
+  markers: google.maps.Marker[] = [];
 
 
   constructor(private router: Router, private scheduleService: ScheduleService,
-    private headerService: HeaderService, private addTripService: AddTripService) {
+    private headerService: HeaderService, private addTripService: AddTripService,
+  ) {
     this.tripSummary = this.addTripService.getTripSummary();
   }
 
@@ -61,46 +65,147 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   }
 
   mapInitializer() {
-    this.map = new google.maps.Map(this.gmap.nativeElement,
-      this.mapOptions);
-    this.marker.setMap(this.map);
+    if (this.gmap) {
+      this.map = new google.maps.Map(this.gmap.nativeElement);
+      this.map.setZoom(2);
+      this.map.setCenter({ lat: 0, lng: 0 });
+
+      if (this.itineraryResults && this.itineraryResults.length > 0) {
+        this.addMarkersToMap();
+      }
+    }
+  }
+  addMarkersToMap() {
+    this.marker.setMap(null);
+    this.marker = new google.maps.Marker({ map: this.map });
+
+    this.itineraryResults.forEach(item => {
+      const marker = new google.maps.Marker({
+        position: { lat: item.lat, lng: item.lng },
+        map: this.map,
+        title: item.name
+      });
+      const infoWindowContent = `
+      <div>
+        <h3>${item.name}</h3>
+        <h4>${item.address}</h4>
+      </div>
+    `;
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContent
+      });
+
+      marker.addListener('click', () => {
+        infoWindow.open(this.map, marker);
+      });
+
+      this.markers.push(marker);
+    });
+    this.fitMapToMarkers();
+  }
+
+  fitMapToMarkers() {
+    const bounds = new google.maps.LatLngBounds();
+    this.markers.forEach(marker => {
+      bounds.extend(marker.getPosition() || { lat: 0, lng: 0 });
+    });
+    this.map.fitBounds(bounds);
   }
 
   generateSchedule() {
-    // this.loading = true;
-    // setTimeout(() => {
-    //   console.log('here');
-    //   const preferences = {
-    //     preferredLocations: this.tripSummary.selectedLocations,
-    //   };
-
-    //   this.showSchedule = true;
-    //   this.loading = false;
-    //   this.scheduleService.generateSchedule(preferences).subscribe(result => {
-    //     this.itineraryResult = result;
-    //     console.log(result);
-    //   });
-    // }, 1000);
+    this.loading = true;
 
     const preferences = {
-             preferredLocations:this.tripSummary.selectedLocations,
-             location:this.tripSummary.city,
-             trip_length:this.tripSummary.tripLength
-        };
+      preferredLocations: this.tripSummary.selectedLocations,
+      location: this.tripSummary.city,
+      trip_length: this.tripSummary.tripLength,
+      startDate: this.tripSummary.startDate,
+      endDate: this.tripSummary.endDate,
+      selectedOption: this.tripSummary.selectedOption
+    };
+
+
     this.scheduleService.generateSchedule(preferences).subscribe(result => {
-          this.itineraryResult = result;
-          console.log(result);
-        });
+      this.itineraryResults = JSON.parse(result);
+      console.log(this.itineraryResults);
+
+      this.loading = false;
+      this.showSchedule = true
+      this.addMarkersToMap();
+      if (this.tripSummary.selectedOption == 'length') {
+        const bestDay = this.tripSummary.best_start
+        console.log(bestDay)
+        console.log(this.getFirstFutureDate(bestDay));
+        // console.log(date);
+      }
+    },
+      (error) => {
+        console.error('Error generating schedule:', error);
+        this.loading = false;
+      }
+    );
+
   }
 
   ngOnInit(): void {
     this.headerService.setShowHeader(false);
     this.tripSummary = this.addTripService.getTripSummary();
     console.log(this.tripSummary);
-    if (this.tripSummary.tripLength == 1)
-      this.nr_days = 'day'
+
+    if (this.tripSummary.selectedOption == 'dates') {
+      const startDate = new Date(this.tripSummary.startDate);
+      const endDate = new Date(this.tripSummary.endDate);
+      const timeDifference = endDate.getTime() - startDate.getTime();
+      this.daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+      console.log(this.daysDifference)
+      this.nr_days = this.daysDifference > 1 ? 'days' : 'day';
+
+      this.tripDays = [];
+      for (let i = 0; i < this.daysDifference; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
+        const dayName = this.getDayName(currentDate.getDay());
+        const formattedDate = this.formatDate(currentDate);
+        this.tripDays.push({ dayNumber: i + 1, day: dayName, date: formattedDate, expanded: false });
+      }
+      console.log(this.tripDays);
+    }
+    else {
+      //optiunea selectata = length
+      if (this.tripSummary.tripLength == 1)
+        this.nr_days = 'day'
+    }
   }
+  getFirstFutureDate(dayAbbreviation: string): Date {
+    const today = new Date();
+    let currentDayIndex = today.getDay();
+
+    const targetDayIndex = this.dayAbbreviationToIndex[dayAbbreviation];
+    let daysToAdd = targetDayIndex - currentDayIndex;
+    if (daysToAdd <= 0) {
+      daysToAdd += 7;
+    }
+
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + daysToAdd);
+
+    return futureDate;
+  }
+
   goBack(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/add-trip']);
+  }
+  getDayName(dayNumber: number): string {
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return daysOfWeek[dayNumber];
+  }
+
+  formatDate(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  }
+  filterItineraryByDay(dayNumber: number): any[] {
+    return this.itineraryResults.filter(item => item.day === dayNumber);
   }
 }

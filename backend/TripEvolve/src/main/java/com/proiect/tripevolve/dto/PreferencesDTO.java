@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 //@AllArgsConstructor
@@ -32,4 +33,8 @@ public class PreferencesDTO {
     private List<String> preferredLocations;
     private String location;
     private Integer trip_length;
+    private String startDate;
+    private String endDate;
+    private String selectedOption;
+
 }

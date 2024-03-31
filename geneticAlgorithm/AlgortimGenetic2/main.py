@@ -1,12 +1,14 @@
-
-import requests
-import json
 import math
-import os
 import random
 import sys
+import time
 
-from hours_parser import *
+from extract_hours import *
+from fetch_api_data import *
+
+sys.stdout.reconfigure(encoding="utf-8")
+
+start_time = time.time()
 
 default_opening_hours = {
     "Mo": [{"start": " 09:00", "end": "21:00"}],
@@ -18,138 +20,77 @@ default_opening_hours = {
     "Su": [{"start": "09:00", "end": "21:00"}],
 }
 
-categorii_locatii = ["catering.restaurant", "entertainment.museum", "entertainment.culture",
-                     "building.spa", "commercial.shopping_mall", "commercial.outdoor_and_sport", "entertainment.zoo",
-                     "entertainment.cinema", "leisure.picnic", "religion.place_of_worship", "tourism.sights.castle",
-                     "adult.nightclub", "adult.casino", "sport.swimming_pool", "leisure.park"]
+categorii_locatii = ["restaurant", "museum", "spa", "shopping_mall", "zoo", "place_of_worship",
+                     "night_club", "casino", "park","tourist_attraction"]
 
 tipuri_spendtime = {
-    "entertainment.culture": 120,
-    "building.spa": 120,
-    "entertaiment.museum": 120,
-    "commercial.outdoor_and_sport": 120,
-    "entertainment.cinema": 120,
-    "leisure.picnic": 120,
-    "entertainment.zoo": 180,
-    "leisure.park": 90,
-    "sport.swimming_pool": 190,
-    "adult.casino": 120,
-    "commercial.shopping_mall": 120,
-    "tourism.sights.castle": 90,
-    "religion.place_of_worship": 60,
-    "catering.restaurant": 120,
-    "tourism": 120,  # must-see
+    "spa": 120,
+    "museum": 120,
+    "zoo": 180,
+    "park": 90,
+    "casino": 120,
+    "shopping_mall": 120,
+    "place_of_worship": 60,
+    "restaurant": 120,
+    "tourist_attraction": 120,
 }
 mapare_destinatii = {
-    'Must-see Attractions': 'tourism',
-    'Museums': 'entertainment.museum',
-    'Parks': 'leisure.park',
-    'Zoo': 'entertainment.zoo',
-    'Wellness and Spas': 'building.spa',
-    'Picnic': 'leisure.picnic',
-    'Swimming Pools': 'sport.swimming_pool',
-    'Places of worship': 'religion.place_of_worship',
-    'Outdoor Adventures': 'commercial.outdoor_and_sport',
-    'Cinema': 'entertainment.cinema',
-    'Casino': 'adult.casino',
-    'Shopping Malls': 'commercial.shopping_mall',
-    'Castles': 'tourism.sights.castle'
+    'Must-see Attractions': 'tourist_attraction',
+    'Museums': 'museum',
+    'Parks': 'park',
+    'Zoo': 'zoo',
+    'Wellness and Spas': 'spa',
+    'Places of worship': 'place_of_worship',
+    'Casino': 'casino',
+    'Shopping Malls': 'shopping_mall',
 }
 if len(sys.argv) > 1:
     preferences_str = sys.argv[1]
     prefs = json.loads(preferences_str)
     preferinte = prefs['preferredLocations']
     location = prefs['location']
-    length = prefs['trip_length']
+
+    option = prefs['selectedOption']
+    if option == 'length':
+        trip_length = prefs['trip_length']
+    else:
+        startDate = prefs['startDate']
+        endDate = prefs['endDate']
+        a = datetime.strptime(startDate, '%Y-%m-%d')
+        b = datetime.strptime(endDate, '%Y-%m-%d')
+        delta = b - a
+        trip_length = delta.days
 
     preferences = [mapare_destinatii[pref] for pref in preferinte]
-    preferences.append('catering.restaurant')
+    preferences.append('restaurant')
 
-    user_preferences = {"preferredLocations": preferences,
-                        "location": location,
-                        "trip_length": length}
+    if option == 'length':
+        user_preferences = {"preferredLocations": preferences,
+                            "location": location,
+                            "trip_length": trip_length}
+    else:
+        user_preferences = {"preferredLocations": preferences,
+                            "location": location,
+                            "trip_length": trip_length,
+                            "start_date": startDate}
 
 else:
+    option = 'length'
     user_preferences = {
-        "preferredLocations": ["catering.restaurant", "commercial.shopping_mall", "building.spa", "leisure.park",
-                               "tourism"],
+        "preferredLocations": ["restaurant", "shopping_mall", "park"],
         "location": "Iasi",
-        "trip_length": 2
+        "trip_length": 1,
+        "start_date": "2024-03-03"
     }
+if option == "dates":
+    start_date = user_preferences['start_date']
+    start = datetime.strptime(start_date, '%Y-%m-%d')
 
-
-destinatie = user_preferences['location']
+destination = user_preferences['location']
 trip_length = user_preferences['trip_length']
 
-def fetch_location_data(destination, api_key):
-    geo_url = f"https://api.geoapify.com/v1/geocode/search?text={destination}&format=json&apiKey={api_key}"
-    response = requests.get(geo_url)
-    data = response.json()
 
-    if data["results"]:
-        place_id = data["results"][0]["place_id"]
-        url = f"https://api.geoapify.com/v2/places?categories={','.join(user_preferences['preferredLocations'])}&filter=place:{place_id}&lang=en&limit=200&apiKey={api_key}"
-        response = requests.get(url)
-        return response.json()["features"]
-    else:
-        return []
-
-
-def transform_api_data(api_data):
-    locations = []
-    for feature in api_data:
-        properties = feature["properties"]
-        tipuri_locatie = properties.get("categories", [])
-        ok = 1
-        tip_preferat = None
-
-        # pt locatii de tip Harry's Bar (Rome) care desi e bar/restaurant, e prezentat de api drept must-see
-        for loc in tipuri_locatie:
-            if loc in ['catering', 'catering.bar', 'catering.restaurant']:
-                for loc2 in tipuri_locatie:
-                    if loc2 == 'tourism':
-                        tip_preferat = 'catering.restaurant'
-                        ok = 0
-
-        if ok == 1:
-            for preferinta in categorii_locatii:
-                if preferinta in tipuri_locatie:
-                    tip_preferat = preferinta
-                    break
-
-        opening = properties.get("opening_hours", "Mo-Su 10:00-23:00")
-        try:
-            parsed_hours = parse_hours(opening)
-            parsed_hours_json = json.loads(parsed_hours)
-            # print(parsed_hours_json)
-            error = 0
-        except Exception as e:
-            # print(f"Error parsing opening hours: {e}")
-            # print("Skipping to the next location...")
-            error = 1
-            continue
-
-        location = {
-            "name": properties["name"],
-            "lat": properties["lat"],
-            "long": properties["lon"],
-            "type": tip_preferat if tip_preferat else "altceva",
-            "place_id": properties["place_id"],
-            "opening_hours": parsed_hours_json if error == 0 else default_opening_hours
-        }
-        locations.append(location)
-    return locations
-
-
-apiKey = "cbf45ace8f3144d7bb52ac6ebaf99926"
-api_data = fetch_location_data(destinatie, apiKey)
-
-if api_data:
-    locatii = transform_api_data(api_data)
-    # print("Datele transformate din API:", locatii)
-else:
-    locatii = []
-    print("Nu au fost gasite locatii pentru interogarea specificata.")
+locatii = fetch_api_data(destination, user_preferences)
 
 
 def timp_in_minute(ora):
@@ -159,7 +100,6 @@ def timp_in_minute(ora):
     return ore * 60 + minute
 
 
-#  nr locatii diferit de la zi la zi
 def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase):
     populatie = []
     for _ in range(dimensiune_populatie):
@@ -178,15 +118,16 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase)
                 break
 
         # verific daca s-au generat fix 2 restaurante in lista
-        restaurante = [loc for loc in individ if locatii[loc]['type'] == 'catering.restaurant']
+        restaurante = [loc for loc in individ if locatii[loc]['type'] == 'restaurant']
+
         if len(restaurante) != 2:
             # daca nu am fix 2 restaurante, le inlocuiesc
             for i in range(len(individ)):
-                if locatii[individ[i]]['type'] == 'catering.restaurant' and len(restaurante) != 2:
+                if locatii[individ[i]]['type'] == 'restaurant' and len(restaurante) != 2:
                     restaurante.remove(individ[i])
                     while True:
                         noua_locatie = random.choice(locatii_ramase)
-                        if noua_locatie not in individ and locatii[noua_locatie]['type'] != 'catering.restaurant':
+                        if noua_locatie not in individ and locatii[noua_locatie]['type'] != 'restaurant':
                             individ[i] = noua_locatie
                             break
         # caut ultimul restaurant si il pun pe ultimul loc
@@ -232,22 +173,22 @@ def normalizare_restaurante(ruta, timp_curent):
     penalizare_ore = 0
     for i in range(len(ruta) - 1):
         locatie = locatii[ruta[i]]
-        if locatie['type'] == 'catering.restaurant':
+        if locatie['type'] == 'restaurant':
             # restaurantul de seara e sigur pe ultima pozitie, penalizez doar primul restaurant gasit pentru a ma asigura ca e la pranz
             if not 12 * 60 <= timp_curent <= 15 * 60:
                 penalizare_ore = 1000
         break
 
     # prima locatie din zi nu ar trebui sa fie un restaurant
-    if locatii[ruta[0]]['type'] == 'catering.restaurant':
+    if locatii[ruta[0]]['type'] == 'restaurant':
         penalizare_ore += 200
 
     for i in range(len(ruta) - 2):
-        if locatii[ruta[i]]['type'] == 'catering.restaurant' and locatii[ruta[i + 1]]['type'] == 'catering.restaurant':
+        if locatii[ruta[i]]['type'] == 'restaurant' and locatii[ruta[i + 1]]['type'] == 'restaurant':
             penalizare_ore += 500
 
-    if locatii[ruta[len(ruta) - 2]]['type'] == 'catering.restaurant' and locatii[ruta[len(ruta) - 1]][
-        'type'] == 'catering.restaurant':
+    if locatii[ruta[len(ruta) - 2]]['type'] == 'restaurant' and locatii[ruta[len(ruta) - 1]][
+        'type'] == 'restaurant':
         penalizare_ore += 500
 
     return penalizare_ore
@@ -295,13 +236,10 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]] * 10
 
         locatie = locatii[ruta[i]]
-        # opentime = timp_in_minute(locatii[ruta[i]]['opentime'])
-        # closetime = timp_in_minute(locatii[ruta[i]]['closetime'])
         spendtime = tipuri_spendtime.get(locatie['type'], 60)
 
         g, opentime, closetime = get_opening_hours(zi, timp_curent, locatie['opening_hours'])
 
-        # de pastrat, cred ca o sa mearga dupa ce integrez si cu hours parser
         if g == 0:  # locatia este pusa in solutie astfel incat se afla in afara orelor de functionare
             penalizare_ore_functionare = 1000
 
@@ -323,14 +261,22 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         penalizare_restaurant = normalizare_restaurante(ruta, timp_curent)
 
         if colecteaza_orar:
+            lat= locatie['lat']
+            long= locatie['long']
+            address=locatie['address']
+            photo=locatie['photo']
+            nume_locatie = locatii[ruta[i]]['name']
+
             ora_sosire = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
             timp_curent += spendtime
             ora_plecare = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
-            orar.append((ruta[i], ora_sosire, ora_plecare, int(matrice_timp_mers[ruta[i]][ruta[i + 1]])))
+
+            orar.append((ruta[i], nume_locatie, ora_sosire, ora_plecare, int(matrice_timp_mers[ruta[i]][ruta[i + 1]]), lat, long, address, photo))
             timp_curent -= spendtime
 
         timp_deplasare = matrice_timp_mers[ruta[i]][ruta[i + 1]]
-        penalizare_mers += timp_deplasare * 10
+        if timp_deplasare > 20:
+            penalizare_mers += 1000
 
         timp_curent += timp_deplasare
 
@@ -338,11 +284,8 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
 
     # procesez ultima locatie separat
     locatie = locatii[ruta[len(ruta) - 1]]
-    # opentime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['opentime'])
-    # closetime = timp_in_minute(locatii[ruta[len(ruta) - 1]]['closetime'])
     spendtime = tipuri_spendtime.get(locatie['type'], 60)
 
-    #  odata integrat complet api-ul cu hours parser in get_opening_hours o sa am si indicele locatiei pt care extrag opening hours
     g, opentime, closetime = get_opening_hours(zi, timp_curent, locatie['opening_hours'])
     if g == 0:  # locatia este pusa in solutie astfel incat se afla in afara orelor de functionare
         penalizare_ore_functionare = 200
@@ -359,11 +302,18 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
 
     if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
         penalizare_inchidere += 25
+
     if colecteaza_orar:
+        lat = locatie['lat']
+        long = locatie['long']
+        address = locatie['address']
+        photo = locatie['photo']
+        nume_locatie = locatii[ruta[len(ruta) - 1]]['name']
+
         ora_sosire = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
         timp_curent += spendtime
         ora_plecare = f"{int(timp_curent) // 60:02d}:{int(timp_curent) % 60:02d}"
-        orar.append((ruta[len(ruta) - 1], ora_sosire, ora_plecare, -1))
+        orar.append((ruta[len(ruta) - 1], nume_locatie, ora_sosire, ora_plecare, -1, lat, long, address, photo))
         # print(orar)
 
     if timp_curent < timp_in_minute('20:00'):
@@ -476,48 +426,76 @@ def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date)
 
     return rezultate_zilnice
 
+def combine_json_strings(json_strings):
+    combined_json = []
+    for json_str in json_strings:
+        combined_json.extend(json.loads(json_str))
+    return combined_json
 
-def afiseaza_itinerarii(itinerarii_zilnice, locatii):
+def afiseaza_itinerarii(itinerarii_zilnice):
+    all_orar_json = []
     for zi, (fit, ruta, orar) in enumerate(itinerarii_zilnice, start=1):
-        print(f"Ziua {zi}:")
-        for locatie_idx, ora_sosire, ora_plecare, timp in orar:
-            nume_locatie = locatii[locatie_idx]['name']
-            if timp != -1:
-                print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}. Mergi {timp} minute pana la:  ")
-            else:
-                print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}")
-        print("\n")
+        orar_dicts = []
+        for item in orar:
+            orar_dicts.append({
+                'id': item[0],
+                'name': item[1],
+                'arrival_hour': item[2],
+                'leave_hour': item[3],
+                'duration': item[4],
+                'lat': item[5],
+                'lng': item[6],
+                'address': item[7],
+                'photo': item[8],
+                'day': zi
+            })
+        orar_json = json.dumps(orar_dicts, ensure_ascii=False, indent=2)
+        all_orar_json.append(orar_json)
+
+    combined_orar_json = combine_json_strings(all_orar_json)
+    combined_orar_json_str = json.dumps(combined_orar_json, ensure_ascii=False, indent=2)
+    print(combined_orar_json_str)
 
 
-def afiseaza_itinerariu_best_day(best_rez, locatii):
+def afiseaza_itinerariu_best_day(best_rez):
+    all_orar_json = []
     ziua, rezultate_zi = best_rez
-    start = find_first_day_of_week(ziua)
-    print(f"Best start day: {ziua} - {start} ")
 
     for zi, (fit, ruta, orar) in enumerate(rezultate_zi, start=1):
-        print(f"Ziua {zi}:")
-        for locatie_idx, ora_sosire, ora_plecare, timp in orar:
-            nume_locatie = locatii[locatie_idx]['name']
-            if timp != -1:
-                print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}.  Mergi {timp} minute pana la:")
-            else:
-                print(f"{nume_locatie} intre {ora_sosire} si {ora_plecare}")
+        orar_dicts = []
+        for item in orar:
+            orar_dicts.append({
+                'id': item[0],
+                'name': item[1],
+                'arrival_hour': item[2],
+                'leave_hour': item[3],
+                'duration': item[4],
+                'lat': item[5],
+                'lng': item[6],
+                'address': item[7],
+                'photo': item[8],
+                'day': zi,
+                'best_start': ziua,
+            })
+        orar_json = json.dumps(orar_dicts, ensure_ascii=False, indent=2)
+        all_orar_json.append(orar_json)
+
+    combined_orar_json = combine_json_strings(all_orar_json)
+    combined_orar_json_str = json.dumps(combined_orar_json, ensure_ascii=False, indent=2)
+    print(combined_orar_json_str)
 
 
-# x = input("1 pentru durata calatoriei si data de start, 2 doar pentru durata calatoriei")
-# if int(x) == 1:
-#     start = datetime.datetime(2024, 3, 19)
-#     itinerarii_zilnice = ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start)
-#     afiseaza_itinerarii(itinerarii_zilnice, locatii)
-# else:
-#     best_rez=ruleaza_algoritm_pe_zile_trip_length(locatii,matrice_distantelor)
-#     print(best_rez)
-#     afiseaza_itinerariu_best_day(best_rez, locatii)
+if option == 'dates':
+    itinerarii_zilnice = ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start)
+    afiseaza_itinerarii(itinerarii_zilnice)
+else:
+    best_rez = ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor)
+    # afiseaza_itinerarii(best_rez)
+    afiseaza_itinerariu_best_day(best_rez)
 
-start = datetime.datetime(2024, 3, 19)
-itinerarii_zilnice = ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start)
-afiseaza_itinerarii(itinerarii_zilnice, locatii)
+end_time = time.time()
+execution_time =end_time -  start_time
+# print("Execution time:",execution_time)
 
-# best_rez = ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor)
-# print(best_rez)
-# afiseaza_itinerariu_best_day(best_rez, locatii)
+
+

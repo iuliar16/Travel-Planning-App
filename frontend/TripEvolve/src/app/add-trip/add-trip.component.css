@@ -1,4 +1,6 @@
 form {
+    border:1px solid gray;
+    box-shadow: 10px 10px 5px  lightblue;
     margin: 0 auto;
     justify-content: center;
     width: 650px;
@@ -12,7 +14,7 @@ form {
 
 .plan {
     text-align: center;
-    margin-top: 90px;
+    margin-top: 60px;
     font-size: 40px;
     font-weight: 500;
 }
@@ -24,6 +26,24 @@ form {
     display: flex;
     padding: 10px;
     width: 70%;
+}
+#start-date, #end-date{
+    font-size:25px;
+    width:180px;
+    color:gray;
+}
+label{
+    color:#004AAD;
+    font-size: 25px;
+    margin-left:45px;
+    margin-bottom: 10px;
+}
+.start, .end{
+    display:grid;
+}
+.date-picker{
+    display:flex;
+    justify-content: space-between;
 }
 
 .counter {

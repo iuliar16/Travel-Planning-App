@@ -9,6 +9,8 @@ export class AddTripService {
   selectedOption: string = '';
   selectedLocations: string[] = [];
   tripLength: number=1;
+  startDate:Date | undefined;
+  endDate:Date | undefined;
 
   constructor() { }
 
@@ -18,6 +20,8 @@ export class AddTripService {
     this.selectedOption = data.selectedOption;
     this.selectedLocations = data.selectedLocations || [];
     this.tripLength=data.tripLength;
+    this.startDate=data.startDate;
+    this.endDate=data.endDate;
   }
 
   getTripSummary(): any {
@@ -26,7 +30,9 @@ export class AddTripService {
       city: this.city,
       selectedOption: this.selectedOption,
       selectedLocations: this.selectedLocations,
-      tripLength:this.tripLength
+      tripLength:this.tripLength,
+      startDate:this.startDate,
+      endDate:this.endDate
     };
   }
 }
