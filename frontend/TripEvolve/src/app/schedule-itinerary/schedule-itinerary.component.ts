@@ -208,4 +208,5 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   filterItineraryByDay(dayNumber: number): any[] {
     return this.itineraryResults.filter(item => item.day === dayNumber);
   }
+
 }

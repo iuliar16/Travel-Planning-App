@@ -5,13 +5,14 @@
         <mat-icon (click)="goBack()">arrow_back</mat-icon>
       </div>
       <button class="trip-evolve" routerLink="/home">Trip Evolve</button>
-      <!-- <div class="share-btns">
-        <mat-icon class="icons">share</mat-icon>
+       <div class="share-btns"> 
+        <button class="save-trip" *ngIf="showSchedule">Save Trip</button>
+        <!-- <mat-icon class="icons">share</mat-icon>
         <button class="share-btn">Public Share</button>
 
         <mat-icon class="icons">person_add</mat-icon>
-        <button class="share-btn2">Invite Trip Mate</button>
-      </div> -->
+        <button class="share-btn2">Invite Trip Mate</button> -->
+      </div> 
       <!-- <button class="regenerate-btn" *ngIf="showSchedule" (click)="generateSchedule()">Regenerate Schedule</button> -->
     </div>
 

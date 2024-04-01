@@ -2,20 +2,20 @@
     <br>
     <h2 style="font-size: 40px; text-align: center;">Edit Personal Info</h2>
     <br>
-    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+    <form #registerForm="ngForm">
         <div class="form-group">
             <p>First Name</p>
             <input type="text" class="form-control" id="firstname" name="firstname" value="First Name"
-                [(ngModel)]="formData.firstname" required>
+                [(ngModel)]="utilizator.firstname" required>
         </div>
         <div class="form-group">
             <p>Last Name</p>
             <input type="text" class="form-control" id="lastname" name="lastname" value="Last Name"
-                [(ngModel)]="formData.lastname" required>
+                [(ngModel)]="utilizator.lastname" required>
         </div>
         <div class="form-group">
             <label>Email Address</label>
-            <h3>{{ formData.email }}</h3>
+            <h3>{{ utilizator.email }}</h3>
         </div>
         
         <br><br>

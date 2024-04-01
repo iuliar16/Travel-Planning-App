@@ -2,7 +2,10 @@
     background-color: white;
     width: 40%;
     margin-left: 70%;
-    margin:0 auto;
+    margin: 0 auto;
+    box-shadow: 10px 10px 5px lightblue;
+    text-align: center;
+    margin-top: 5%;
 }
 
 /* .photo {
@@ -19,14 +22,59 @@
     margin-bottom: 0.5rem;
     height: 100%;
 }
-html, body {
-    margin:0px;
+
+html,
+body {
+    margin: 0px;
     width: 100%;
-    height:100%;
-  }
+    height: 100%;
+}
+
 .form-group {
     margin-bottom: 20px;
-    text-align: left;
+    text-align: center;
+}
+
+.btns {
+    display: flex;
+    justify-content: center;
+}
+
+
+.mess {
+    font-size: 25px;
+}
+
+.save,
+.cancel {
+    margin-left: 5px;
+    margin-right: 10px;
+    background-color: #004AAD;
+    color: #fff;
+    border: 1px solid #004AAD;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 7px;
+    width: 100%;
+}
+
+.save:hover {
+    background-color: #1778e0;
+    border: 1px solid #1778e0;
+}
+
+mat-error {
+    color: red;
+}
+
+.cancel {
+    border: 1px solid #FBA834;
+    background-color: #FBA834;
+}
+
+.cancel:hover {
+    border: 1px solid #FBA834;
+    background-color: #FAA300;
 }
 
 input[type="text"],
@@ -59,10 +107,11 @@ input[type="password"] {
 .btn:hover {
     background-color: #1778e0;
 }
-.back-icon{
+
+.back-icon {
     cursor: pointer;
     font-size: 30px;
-    margin-top:50px;
-    margin-left:50px;
+    margin-top: 50px;
+    margin-left: 50px;
     color: #004AAD;
 }

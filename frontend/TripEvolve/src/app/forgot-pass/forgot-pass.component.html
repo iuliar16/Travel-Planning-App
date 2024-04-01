@@ -6,14 +6,27 @@
     <br>
     <h2 style="font-size: 40px; text-align: center;">Reset Password</h2>
     <p style="font-size: 15px;">Please enter the email address you used when signing up for TripEvolve.</p>
-    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+    <form [formGroup]="formGroup" (ngSubmit)="submitForm_reset()">
 
         <div class="form-group">
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"
-                [(ngModel)]="formData.email" required>
+            <input type="email" class="form-control" id="email" formControlName="email" placeholder="Ex. name@gmail.com"
+                required>
         </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Continue</button>
+        <mat-error *ngIf="email.hasError('email') && !email.hasError('required')">
+            Please enter a valid email address.
+        </mat-error>
+        <mat-error *ngIf="email.hasError('required')">
+            Please enter a valid email address.
+        </mat-error>
+        <br><br>
+        <div class="btns">
+            <button type="submit" routerLink="/my-account" class="cancel">Cancel</button>
+            <button mat-raised-button class="save" type="submit" [disabled]="formGroup.invalid || isSent">
+                {{ isSent ? "Sent" : "Send" }}
+            </button>
+            
+        </div>
+        <p class="mess">{{message}}</p>
     </form>
     <br>
 

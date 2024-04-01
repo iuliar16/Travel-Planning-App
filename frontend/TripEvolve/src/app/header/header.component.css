@@ -7,7 +7,7 @@
   box-shadow: 0px 8px 8px lightgray;
   padding: 10px 24px 10px 34px;
   position: sticky;
-  top:0;
+  top: 0;
   background-color: white;
 }
 
@@ -16,9 +16,10 @@
   margin-left: auto;
 }
 
+#home,
 #sign-up,
 #sign-in {
-  padding:7px 7px;
+  padding: 7px 7px;
   border-radius: 5%;
   border: none;
   color: white;
@@ -29,6 +30,15 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+#home {
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  border: 2px solid #004AAD;
+  color: #004AAD;
+  height: 38px;
 }
 
 .user-icon {
@@ -43,45 +53,68 @@ mat-icon {
   background-color: transparent;
 }
 
-.user, .user-arrow {
+.user,
+.user-arrow {
   display: flex;
   justify-content: center;
   color: #004AAD;
 }
-.user-arrow{
+
+.user-arrow {
   margin-top: 3px;
-  font-size:large;
+  font-size: large;
 }
 
-.signout_icon, .edit_account {
+.signout_icon{
+  cursor: pointer;
   font-size: 20px;
-  margin-left:-50px;
-  margin-top:10px;
+  margin-left: -30px;
+  margin-top: 10px;
 }
-.my-acc, .my-acc1{
-  margin-bottom:10px;
-  
+.edit_account {
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: -40px;
+  margin-top: 10px;
 }
-.user-icons{
-  border:2px solid #004AAD;
-  padding:4px 7px;
-  display:flex;
+
+.my-acc,
+.my-acc1 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+
+}
+
+.profile, .sign {
+  cursor: pointer;
+  margin-top: 12px;
+  font-size: 15px;
+  margin-left: 20px;
+}
+
+.user-icons {
+  border: 2px solid #004AAD;
+  padding: 4px 7px;
+  display: flex;
   border-radius: 5%;
 }
+
 .logout-popup {
   margin-right: 50px;
-  border:1px solid #e2e7ed;
+  border: 1px solid #004AAD;
   display: inline-block;
   justify-content: center;
   position: absolute;
   top: 120%;
   padding: 10px;
-  z-index: 100; 
+  z-index: 100;
   background-color: white;
 }
 
 .logout-popup button {
-  border:none;
+  cursor: pointer;
+  border: none;
   background-color: transparent;
   margin-bottom: 5px;
   width: 120px;
@@ -95,6 +128,11 @@ mat-icon {
 
 .logout-popup button:focus {
   outline: none;
+}
+
+#home:hover {
+  background-color: #004AAD;
+  color: white;
 }
 
 #sign-up:hover,
@@ -143,7 +181,3 @@ mat-icon {
   position: relative;
   right: 5px;
 }
-
-
-
-

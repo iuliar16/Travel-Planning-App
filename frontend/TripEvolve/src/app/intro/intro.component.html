@@ -13,5 +13,6 @@
         today.
     </p>
     
-    <button class="started" routerLink="/sign-up">Get Started</button>
+    <button class="started" *ngIf="!isLoggedIn" routerLink="/sign-up">Get Started</button>
+    <button class="started" *ngIf="isLoggedIn" routerLink="/home">Get Started</button>
 </div>

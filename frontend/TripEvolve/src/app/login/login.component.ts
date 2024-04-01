@@ -1,4 +1,8 @@
 import { Component, ElementRef } from '@angular/core';
+import { AuthService } from '../services/auth/auth.service';
+import { StorageService } from '../services/storage/storage.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-login',
@@ -6,12 +10,32 @@ import { Component, ElementRef } from '@angular/core';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  formData = {
-    email: '',
-    password: ''
-  };
-  onSubmit() {
-    console.log('Form submitted with data:', this.formData);
+  message: string = '';
+  constructor(
+    private el: ElementRef,
+    private authService: AuthService,
+    private storageService: StorageService,
+    private router: Router
+  ) { }
+  login(formData: any) {
+    this.message = '';
+
+    if (!formData.email || !formData.password) {
+      this.message = 'Invalid username or password.';
+      return;
+    }
+
+    this.authService.login(formData).subscribe(
+      (response) => {
+        console.log('Login successful', response);
+        this.storageService.saveUser(response);
+        this.router.navigate(['/home']);
+      },
+      (error) => {
+        console.error('Login failed!', error);
+        this.message = 'Invalid username or password.';
+      }
+    );
   }
-  
+
 }

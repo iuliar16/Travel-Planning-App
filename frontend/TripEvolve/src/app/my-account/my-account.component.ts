@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { StorageService } from '../services/storage/storage.service';
 
 @Component({
   selector: 'app-my-account',
@@ -11,6 +12,10 @@ export class MyAccountComponent {
     firstname: 'Prenume',
     lastname: 'Nume',
     email: 'email@example.com',
-    rank: 'Rank Prestabilit',
   };
+  constructor(private storageService: StorageService) {}
+
+  ngOnInit(): void {
+    this.utilizator = this.storageService.getUser();
+  }
 }

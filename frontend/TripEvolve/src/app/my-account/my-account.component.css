@@ -32,7 +32,8 @@ li:hover {
     margin-top: 10%;
     width: 700px;
     height: 230px;
-    border: 0.5px solid grey;
+    border:1px solid gray;
+    box-shadow: 10px 10px 5px  lightblue;
 }
 
 .elements {

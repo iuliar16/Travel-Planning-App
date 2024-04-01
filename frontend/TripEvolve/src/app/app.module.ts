@@ -12,7 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HeaderComponent } from './header/header.component';
 import { IntroComponent } from './intro/intro.component';
 import { AuthComponent } from './auth/auth.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HomeComponent } from './home/home.component';
@@ -33,6 +33,7 @@ import { ShareTripPopupComponent } from './share-trip-popup/share-trip-popup.com
 import { PublicShareComponent } from './public-share/public-share.component';
 import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itinerary-item.component';
 import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.component';
+import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.
     PublicShareComponent,
     ItineraryItemComponent,
     DeleteTripPopupComponent,
+    SignOutPopupComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,6 +72,7 @@ import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.
     MatDatepickerModule,
     MatFormFieldModule,
     MatDialogModule,
+    ReactiveFormsModule
   ],
   providers: [
     provideClientHydration(),

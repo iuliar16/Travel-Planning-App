@@ -54,7 +54,7 @@
   color:#004AAD;
   display:flex;
   justify-content: center;
-  margin-left:130px;
+  margin-left:35%;
   width:40%;
 }
 .share-btn{
@@ -113,6 +113,21 @@
   position: sticky;
   border-bottom: 1px solid #ccc;
 }
+.save-trip{
+  background-color: #004AAD;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-left:60%;
+  width: 30%;
+  height: 70%;
+  border-radius: 20px;
+}
+.save-trip:hover{
+  background-color: #1778e0;
+}
 
 .trip-evolve {
   background-color: transparent;
@@ -154,7 +169,7 @@
   border: 1px solid #004AAD;
   padding: 10px 20px;
   cursor: pointer;
-  border-radius: 7px;
+  border-radius: 20px;
   width: 30%;
   margin-bottom: 10px;
 }

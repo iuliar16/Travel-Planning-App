@@ -3,13 +3,18 @@
         <img align="left" [src]="ImagePath" alt="nope" style="width: 200px; height: 60px" class="logo" />
     </a>
     <div class="buttons-container">
+        <button id="home" mat-raised-button routerLink="/home" routerLinkActive="active_route"
+            [routerLinkActiveOptions]="{ exact: true }" *ngIf="isLoggedIn">
+            <mat-icon>home</mat-icon>
+            Home
+        </button>
         <button id="sign-in" routerLink="/sign-in" routerLinkActive="active_route"
-            [routerLinkActiveOptions]="{ exact: true }">
+            [routerLinkActiveOptions]="{ exact: true }" *ngIf="!isLoggedIn">
             <mat-icon class="signin_icon">person_outline</mat-icon>
             Sign In
         </button>
         <button id="sign-up" routerLink="/sign-up" routerLinkActive="active_route"
-            [routerLinkActiveOptions]="{ exact: true }">
+            [routerLinkActiveOptions]="{ exact: true }" *ngIf="!isLoggedIn">
             <mat-icon class="signin_icon">person_outline</mat-icon>
             Sign Up
         </button>
@@ -19,11 +24,12 @@
                 <mat-icon class="user-arrow">keyboard_arrow_down</mat-icon>
             </div>
             <div class="logout-popup" *ngIf="showLogout">
-                <button  mat-button routerLink="/my-account" class="my-acc">
-                    <mat-icon class="edit_account">account_box</mat-icon>   Profile
+                <button mat-button routerLink="/my-account" class="my-acc">
+                    <mat-icon class="edit_account">account_box</mat-icon>  <div class="profile">Profile</div>
                 </button>
-                <button  mat-button class="my-acc1">
-                    <mat-icon class="signout_icon">exit_to_app</mat-icon>  Sign out
+                <button mat-button class="my-acc1" (click)="openSignOutDialog()">
+                    <mat-icon class="signout_icon">exit_to_app</mat-icon> 
+                    <div class="sign">Sign out</div>
                 </button>
             </div>
         </div>

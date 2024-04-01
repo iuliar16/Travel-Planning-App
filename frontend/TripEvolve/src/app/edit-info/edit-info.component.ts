@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { StorageService } from '../services/storage/storage.service';
 
 @Component({
   selector: 'app-edit-info',
@@ -6,12 +7,14 @@ import { Component } from '@angular/core';
   styleUrl: './edit-info.component.css'
 })
 export class EditInfoComponent {
-  formData = {
-    email: '',
-    firstname: '',
-    lastname:''
+  utilizator = {
+    firstname: 'Prenume',
+    lastname: 'Nume',
+    email: 'email@example.com',
   };
-  onSubmit() {
-    console.log('Form submitted with data:', this.formData);
+  constructor(private storageService: StorageService) {}
+
+  ngOnInit(): void {
+    this.utilizator = this.storageService.getUser();
   }
 }

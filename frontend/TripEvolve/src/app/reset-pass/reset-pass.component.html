@@ -1,19 +1,25 @@
 <div class="container">
     <br><br><br>
     <h2 style="font-size: 30px; text-align: center;">Change Password</h2><br>
-    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+    <form [formGroup]="formGroup" (ngSubmit)="submitForm_reset()">
         <p style="font-size: 18px;">Password</p>
         <div class="form-group">
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password"
-                [(ngModel)]="formData.pass" required >
+            <input type="password" class="form-control" id="password" formControlName="password" name="password"
+                placeholder="Enter Password" required>
         </div><br>
-        <p style="font-size: 18px;">Confirm Password</p>
+        <!-- <p style="font-size: 18px;">Confirm Password</p>
         <div class="form-group">
             <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm Password"
                 [(ngModel)]="formData.confirmpass" required>
-        </div>
+        </div> -->
+        <mat-error *ngIf="password.hasError('minLength') && !password.hasError('required')">
+            The password has to contain at least 8 letters.
+        </mat-error>
+        <mat-error *ngIf="password.hasError('required')">
+            Password field is mandatory.
+        </mat-error>
         <br>
-        <button type="submit" class="btn btn-primary">Change Password</button>
+        <button type="submit" class="btn btn-primary">{{ isSent ? "Sent" : "Send" }}</button>
     </form>
     <br>
 
