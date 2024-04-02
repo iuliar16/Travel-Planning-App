@@ -2,7 +2,10 @@
     background-color: white;
     width: 40%;
     margin-left: 70%;
-    margin:0 auto;
+    margin: 0 auto;
+    box-shadow: 8px 8px 8px rgb(148, 179, 211);
+    margin-top: 6%;
+    text-align: center;
 }
 
 /* .photo {
@@ -19,11 +22,53 @@
     margin-bottom: 0.5rem;
     height: 100%;
 }
-html, body {
-    margin:0px;
+p{
+    text-align: left;
+    margin-bottom:5px;
+}
+html,
+body {
+    margin: 0px;
     width: 100%;
-    height:100%;
-  }
+    height: 100%;
+}
+.btns {
+    display: flex;
+    justify-content: center;
+}
+
+
+.save,
+.cancel {
+    margin-left: 5px;
+    margin-right: 10px;
+    background-color: #004AAD;
+    color: #fff;
+    border: 1px solid #004AAD;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 7px;
+    width: 100%;
+}
+
+.save:hover {
+    background-color: #1778e0;
+    border: 1px solid #1778e0;
+}
+
+mat-error {
+    color: red;
+}
+
+.cancel {
+    border: 1px solid #FBA834;
+    background-color: #FBA834;
+}
+
+.cancel:hover {
+    border: 1px solid #FBA834;
+    background-color: #FAA300;
+}
 .form-group {
     margin-bottom: 20px;
     text-align: left;
@@ -35,6 +80,11 @@ input[type="password"] {
     width: 90%;
     padding: 10px;
     font-size: 16px;
+
+}
+
+input[type="text"] {
+    text-align: center;
 }
 
 .signin {

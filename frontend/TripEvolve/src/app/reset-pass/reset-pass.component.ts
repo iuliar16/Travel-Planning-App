@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
+import { StorageService } from '../services/storage/storage.service';
 
 @Component({
   selector: 'app-reset-pass',
@@ -18,7 +19,8 @@ export class ResetPassComponent {
   isSent: boolean = false;
   timer: any;
 
-  constructor(private router: Router, private auth: AuthService, private route: ActivatedRoute) {}
+  constructor(private router: Router,private storageService: StorageService,
+     private auth: AuthService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -27,17 +29,16 @@ export class ResetPassComponent {
     this.formGroup = new FormGroup({
       password: this.password,
     });
-    console.log(this.password)
   }
 
+
   submitForm_reset() {
-    console.log('here')
     if (this.formGroup.valid) {
-      console.log(this.formGroup.value);
 
       this.auth.resetPassword(this.formGroup.value.password, this.token).subscribe(
         (response) => {
           console.log('Password reset', response);
+          this.storageService.logout();
           this.router.navigateByUrl("login");
         },
         (error) => {

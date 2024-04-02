@@ -58,6 +58,16 @@ public class TokenProvider {
                 .setExpiration(validity)
                 .compact();
     }
+    public String createEmailConfirmationToken(String email) {
+        long expirationTime = 1000 * 60 * 60;
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
 
     public String createForgotPasswordToken(String email)
     {

@@ -20,4 +20,5 @@ public interface UserHandlingService {
     User updateUser(int id, User updatedUser);
 
     void resetPassword(String email, String password);
+    void enableUser(String email);
 }

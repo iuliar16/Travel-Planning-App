@@ -26,7 +26,8 @@
                     required>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary">Create an Account</button>
+            <p class="message">{{message}}</p>
+            <button type="submit"  *ngIf="showBtn"class="btn btn-primary">Create an Account</button>
         </form>
         <br>
         <p><a class="signin" routerLink="/sign-in">Already a TripEvolve user? Sign In.</a></p>

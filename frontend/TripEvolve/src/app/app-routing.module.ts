@@ -12,6 +12,7 @@ import { ForgotPassComponent } from './forgot-pass/forgot-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { PastTripsComponent } from './past-trips/past-trips.component';
 import { ManageSharingComponent } from './manage-sharing/manage-sharing.component';
+import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
 
 const routes: Routes = [
   {
@@ -61,6 +62,10 @@ const routes: Routes = [
   {
     path: 'manage-sharing',
     component: ManageSharingComponent,
+  },
+  {
+    path: 'confirm-email',
+    component: ConfirmAccountComponent,
   },
   {
     path: '**',

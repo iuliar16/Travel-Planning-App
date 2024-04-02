@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -45,6 +46,18 @@ public class AuthController {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.userHandlingService = userHandlingService;
         this.emailService = emailService;
+    }
+
+    @PostMapping("/confirm-email")
+    public ResponseEntity<String> confirmEmail(@RequestBody UserEmailConfirmationDTO us) {
+       if(!tokenProvider.validateToken(us.getToken()))
+        {
+
+            return new ResponseEntity<>("{\"msg\":\"Token expired\"}", HttpStatus.CONFLICT);
+        }
+
+        userHandlingService.enableUser(us.getEmail());
+        return new ResponseEntity<>("{\"msg\":\"User account activated\"}", HttpStatus.OK);
     }
 
     @GetMapping("/forgot-password")
@@ -70,11 +83,11 @@ public class AuthController {
         }
         String email = tokenProvider.extractEmail(pw.getToken());
         userHandlingService.resetPassword(email, pw.getPassword());
-        return new ResponseEntity<>("{\"msg\":\"Password reseted\"}", HttpStatus.OK);
+        return new ResponseEntity<>("{\"msg\":\"Password reset\"}", HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody UserLoginDTO authDTO, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO authDTO, HttpServletResponse response) {
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 authDTO.getEmail(),
@@ -84,18 +97,24 @@ public class AuthController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final String jwt = tokenProvider.createToken(authentication, authDTO.isRememberMe());
+        Optional<User> optionalUser = userHandlingService.findUserByEmail(authDTO.getEmail());
+        if (optionalUser.isPresent()) {
+            User u = optionalUser.get();
+            if (!u.isEnabled()) {
+                return new ResponseEntity<>("Account is disabled",
+                        HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
+        }
 
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add("Authorization", "Bearer " + jwt);
+        final String jwt = tokenProvider.createToken(authentication, authDTO.isRememberMe());
 
         ResponseCookie cookie = ResponseCookie.from("token", jwt) // key & value
                 .httpOnly(true)
                 .secure(false)
-                //    .domain("localhost")  // host
-                //    .path("/")      // path
                 .maxAge(Duration.ofHours(1))
-                .sameSite("strict")  // sameSite
+                .sameSite("strict")
                 .build()
                 ;
 
@@ -114,16 +133,24 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody UserRegisterDTO userDTO)
     {
-        System.out.println("register backend");
         try{
             User u = userHandlingService.registerUser(userDTO);
-            return new ResponseEntity<>(new RegisterResponseDTO("User " + u.getEmail() + " created"), HttpStatus.OK);
+
+            String token = tokenProvider.createEmailConfirmationToken(u.getEmail());
+            EmailDTO e = new EmailDTO();
+            e.setRecipient(u.getEmail());
+            emailService.sendEmailConfirmationMail(e, token);
+
+            return new ResponseEntity<>(new RegisterResponseDTO("User " + u.getEmail() + " created. Confirmation email sent."), HttpStatus.OK);
         } catch (DataIntegrityViolationException e)
         {
             return new ResponseEntity<>(new RegisterResponseDTO("User already exists"), HttpStatus.I_AM_A_TEAPOT);
         } catch (PersistenceException e)
         {
             return new ResponseEntity<>(new RegisterResponseDTO("DB ERROR"), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (MessageSentException e) {
+            return new ResponseEntity<>(new RegisterResponseDTO("Eroare la trimiterea email-ului de confirmare."), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 

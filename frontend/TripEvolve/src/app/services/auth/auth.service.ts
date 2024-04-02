@@ -25,10 +25,16 @@ export class AuthService {
     const url = `${this.backendUrl}/reset-password`;
     return this.http.post(url, pw, httpOptions);
   }
+  confirmEmail(email: string, token: string): Observable<any> {
+    const us = {"email":email, token:token}
+    const url = `${this.backendUrl}/confirm-email`;
+    return this.http.post(url, us, httpOptions);
+  }
 
   signup(user: any): Observable<any> {
+    const newUser = { ...user, isEnabled: false };
     const url = `${this.backendUrl}/register`;
-    return this.http.post(url, user, httpOptions);
+    return this.http.post(url, newUser, httpOptions);
   }
 
   login(user: any): Observable<any> {

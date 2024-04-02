@@ -1,25 +1,33 @@
 <div class="container">
     <br><br><br>
-    <h2 style="font-size: 30px; text-align: center;">Change Password</h2><br>
+    <h2 style="font-size: 40px; text-align: center;">Reset Password</h2>
     <form [formGroup]="formGroup" (ngSubmit)="submitForm_reset()">
         <p style="font-size: 18px;">Password</p>
         <div class="form-group">
             <input type="password" class="form-control" id="password" formControlName="password" name="password"
                 placeholder="Enter Password" required>
-        </div><br>
+        </div>
         <!-- <p style="font-size: 18px;">Confirm Password</p>
         <div class="form-group">
-            <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm Password"
-                [(ngModel)]="formData.confirmpass" required>
+            <input type="password" class="form-control" id="confirm_pass" name="confirm_pass"
+                placeholder="Confirm Password" formControlName="confirm_pass" required>
         </div> -->
-        <mat-error *ngIf="password.hasError('minLength') && !password.hasError('required')">
+        <mat-error *ngIf="password.hasError('minLength') && password.touched">
             The password has to contain at least 8 letters.
         </mat-error>
-        <mat-error *ngIf="password.hasError('required')">
+        <mat-error *ngIf="password.hasError('required') && password.touched">
             Password field is mandatory.
         </mat-error>
         <br>
-        <button type="submit" class="btn btn-primary">{{ isSent ? "Sent" : "Send" }}</button>
+
+        <br>
+        <div class="btns">
+            <button routerLink="/my-account" class="cancel">Cancel</button>
+            <button mat-raised-button class="save" type="submit">
+                {{ isSent ? "Sent" : "Send" }}
+            </button>
+
+        </div>
     </form>
     <br>
 

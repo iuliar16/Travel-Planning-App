@@ -10,17 +10,15 @@ import { EmailService } from '../services/email/email.service';
 })
 export class AuthComponent {
   message: string = '';
+  showBtn: boolean = true;
   constructor(
-    private el: ElementRef,
     private authService: AuthService,
     private storageService: StorageService,
-    private readonly emailService: EmailService
-  ) {}
+  ) { }
   register(formData: any) {
     console.log('submit');
     this.message = '';
-    if (!formData.firstname || !formData.lastname || !formData.email || !formData.password)
-     {
+    if (!formData.firstname || !formData.lastname || !formData.email || !formData.password) {
       this.message = 'Toate câmpurile sunt obligatorii!';
       console.log('here1');
       console.log(this.message)
@@ -40,15 +38,8 @@ export class AuthComponent {
         (response) => {
           console.log('Register successful', response);
           console.log(emailDetails);
-          this.emailService.sendRegistrationEmail(emailDetails).subscribe(
-            (emailResponse) => {
-              console.log('E-mail trimis cu succes!', emailResponse);
-              this.message = 'Un email de confirmare a fost trimis la ' + formData.email;
-            },
-            (emailError) => {
-              console.error('Eroare la trimiterea e-mailului', emailError);
-            }
-          );
+          this.showBtn=false;
+          this.message = 'In order to complete the subscription process, simply check your inbox and click on the link in the email we have just sent you.'
         },
         (error) => {
           console.error('Register failed!', error);

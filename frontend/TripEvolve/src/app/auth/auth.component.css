@@ -20,6 +20,14 @@
     margin-left: -10%;
     height: 135%;
 }
+.message{
+    color: green;
+    width: 80%;
+    font-size: 20px;
+    margin-left: 10%;
+    margin-top: 0;
+    text-align: center;
+}
 
 .form {
     border-left: 1px double #004AAD;

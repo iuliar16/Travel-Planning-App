@@ -34,6 +34,7 @@ import { PublicShareComponent } from './public-share/public-share.component';
 import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itinerary-item.component';
 import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.component';
 import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component';
+import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component
     ItineraryItemComponent,
     DeleteTripPopupComponent,
     SignOutPopupComponent,
+    ConfirmAccountComponent,
   ],
   imports: [
     BrowserModule,

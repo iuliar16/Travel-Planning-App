@@ -97,4 +97,13 @@ public class UserHandlingServiceImpl implements UserHandlingService {
             userRepository.save(u.get());
         }
     }
+    @Override
+    public void enableUser(String email) {
+        Optional<User> u = userRepository.findUserByEmail(email);
+        if(u.isPresent())
+        {
+            u.get().set_enabled(true);
+            userRepository.save(u.get());
+        }
+    }
 }

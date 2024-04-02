@@ -16,23 +16,16 @@
   margin-left: auto;
 }
 
+
 #home,
 #sign-up,
 #sign-in {
-  padding: 7px 7px;
-  border-radius: 5%;
-  border: none;
-  color: white;
-  background-color: #004AAD;
   margin-bottom: 4px;
   font-size: 14px;
   margin-right: 20px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-#home {
+  padding: 7px 7px;
+  border-radius: 5%;
   display: flex;
   justify-content: space-between;
   background-color: white;
@@ -65,12 +58,13 @@ mat-icon {
   font-size: large;
 }
 
-.signout_icon{
+.signout_icon {
   cursor: pointer;
   font-size: 20px;
   margin-left: -30px;
   margin-top: 10px;
 }
+
 .edit_account {
   cursor: pointer;
   font-size: 20px;
@@ -86,7 +80,8 @@ mat-icon {
 
 }
 
-.profile, .sign {
+.profile,
+.sign {
   cursor: pointer;
   margin-top: 12px;
   font-size: 15px;
@@ -130,15 +125,13 @@ mat-icon {
   outline: none;
 }
 
-#home:hover {
+#home:hover,
+#sign-up:hover,
+#sign-in:hover {
   background-color: #004AAD;
   color: white;
 }
 
-#sign-up:hover,
-#sign-in:hover {
-  background-color: #1778e0;
-}
 
 .logo {
   height: 40px;
