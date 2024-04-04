@@ -5,14 +5,14 @@
         <mat-icon (click)="goBack()">arrow_back</mat-icon>
       </div>
       <button class="trip-evolve" routerLink="/home">Trip Evolve</button>
-       <div class="share-btns"> 
+      <div class="share-btns">
         <button class="save-trip" *ngIf="showSchedule">Save Trip</button>
         <!-- <mat-icon class="icons">share</mat-icon>
         <button class="share-btn">Public Share</button>
 
         <mat-icon class="icons">person_add</mat-icon>
         <button class="share-btn2">Invite Trip Mate</button> -->
-      </div> 
+      </div>
       <!-- <button class="regenerate-btn" *ngIf="showSchedule" (click)="generateSchedule()">Regenerate Schedule</button> -->
     </div>
 
@@ -40,6 +40,7 @@
     </div>
 
 
+
     <div class="schedule-content" *ngIf="showSchedule">
       <img class="photo" src="./assets/images/rome.jpg">
       <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
@@ -58,6 +59,9 @@
     </div>
   </div>
   <div class="map-container">
+    <div class="day-btns">
+      <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber" (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
+    </div>
     <div #gmapContainer id="map"></div>
   </div>
 </div>

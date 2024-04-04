@@ -11,6 +11,45 @@ redis_host = 'localhost'
 redis_port = 6379
 redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
+# def calculate_probability(loc_list):
+#     ratings_totals = [loc['user_ratings_total'] for loc in loc_list]
+#
+#     max_reviews = max(ratings_totals)
+#
+#     probabilities = [total / max_reviews for total in ratings_totals]
+#
+#     total_prob = sum(probabilities)
+#     normalized_probs = [prob / total_prob for prob in probabilities]
+#
+#     for loc, prob in zip(loc_list, normalized_probs):
+#         loc['score'] = prob
+#
+#     return loc_list
+
+
+def calculate_probability(loc_list):
+    # grupare locatii dupa tip
+    type_groups = {}
+    for loc in loc_list:
+        loc_type = loc['type']
+        if loc_type not in type_groups:
+            type_groups[loc_type] = []
+        type_groups[loc_type].append(loc)
+
+    # calculare probabilitati pentru fiecare locatie relativ la tipul acesteia
+    for loc_type, locations in type_groups.items():
+        ratings_totals = [loc['user_ratings_total'] for loc in locations]
+        max_reviews = max(ratings_totals) if ratings_totals else 1
+        probabilities = [total / max_reviews for total in ratings_totals]
+        total_prob = sum(probabilities)
+        normalized_probs = [prob / total_prob for prob in probabilities]
+
+        for loc, prob in zip(locations, normalized_probs):
+            loc['score'] = prob
+
+    return loc_list
+
+
 def search_places(city, type):
     url = f'https://maps.googleapis.com/maps/api/place/textsearch/json?query={city}&types={type}&key={API_KEY}'
     response = requests.get(url)
@@ -29,6 +68,7 @@ def get_place_id(place_name):
         place_data = response.json()
         if place_data['status'] == 'OK' and place_data['candidates']:
             place_info = place_data['candidates'][0]
+            # print(place_data['candidates'][0])
             return place_info
         else:
             print(f'No results found for place: {place_name}')
@@ -56,12 +96,9 @@ def get_place_details(place_id):
 def fetch_api_data(destination, user_preferences):
     results = []
     locations = []
+    unique_names = set()
 
-    cached_data = redis_client.get(destination)
-    if cached_data:
-        return json.loads(cached_data)
-
-    # scot pentru orasul Iasi toate locatiile de care am nevoie
+    # scot pentru orasul X toate locatiile de care am nevoie
     for preference in user_preferences['preferredLocations']:
         preference_key = f"{destination}_{preference}"
         preference_data = redis_client.get(preference_key)
@@ -76,7 +113,8 @@ def fetch_api_data(destination, user_preferences):
 
     for location in results:
         name = location.get('name')
-        if name:
+        if name and name not in unique_names: #asigur ca nu am locatii duplicate de la api
+            unique_names.add(name)
             placeId_key = f"{destination}_placeId"
             placeId_data = redis_client.get(placeId_key)
             if placeId_data:
@@ -98,8 +136,16 @@ def fetch_api_data(destination, user_preferences):
 
                 if place_details:
                     type = location.get('types')[0] if location.get('types') else None
+                    food = ["food", "meal", "takeaway","meal","bar"]
+                    for word in food:
+                        if word in type:
+                            type = 'restaurant'
+
+                    if type == 'locality' or type == 'cafe':
+                        continue
                     try:
                         hours = extract_hours(place_details['opening_hours']['weekday_text'])
+
                     except Exception as e:
                         print(e)
                         break
@@ -116,16 +162,20 @@ def fetch_api_data(destination, user_preferences):
                         'opening_hours': hours,
                         "type": type
                     }
+                    # if type == 'tourist_attraction':
+                    #     print(loc)
                     locations.append(loc)
 
             else:
                 print("Failed to fetch place details.")
 
-    redis_client.set(destination, json.dumps(locations))
-    redis_client.expire(destination, 6 * 30 * 24 * 3600)
+    calculate_probability(locations)
     # print(locations)
     return locations
 
 
-# locs = fetch_api_data('Iasi')
-# print(locs)
+def bayesian_average(R, m, C=4, v=10):
+    if R == 0 or m == 0 or R == 'N/A' or m == 'N/A':
+        return 0
+    bayesian_score = ((C * int(m)) + (int(R) * v)) / (C + v)
+    return bayesian_score

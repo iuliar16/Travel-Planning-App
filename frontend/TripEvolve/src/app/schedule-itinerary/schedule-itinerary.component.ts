@@ -29,14 +29,15 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   itineraryResults: any[] = [];
   daysDifference: number = 1;
   tripDays: any[] = [];
-  dayAbbreviationToIndex: DayAbbreviationMap = {
-    'Su': 0, 'Mo': 1, 'Tu': 2, 'We': 3, 'Th': 4, 'Fr': 5, 'Sa': 6
-  };
-
   tripSummary: any = {};
   showSchedule: boolean = false;
   loading: boolean = false;
+  selectedDay: number | null = null;
+  cityName: string = '';
 
+  dayAbbreviationToIndex: DayAbbreviationMap = {
+    'Su': 0, 'Mo': 1, 'Tu': 2, 'We': 3, 'Th': 4, 'Fr': 5, 'Sa': 6
+  };
 
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
@@ -47,6 +48,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   mapOptions: google.maps.MapOptions = { center: this.coordinates, zoom: 0, };
   marker = new google.maps.Marker({ position: this.coordinates, map: this.map, });
   markers: google.maps.Marker[] = [];
+  pathPoints: google.maps.LatLngLiteral[] = [];
 
 
   constructor(private router: Router, private scheduleService: ScheduleService,
@@ -69,28 +71,73 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
       this.map = new google.maps.Map(this.gmap.nativeElement);
       this.map.setZoom(2);
       this.map.setCenter({ lat: 0, lng: 0 });
-
-      if (this.itineraryResults && this.itineraryResults.length > 0) {
-        this.addMarkersToMap();
-      }
     }
   }
-  addMarkersToMap() {
-    this.marker.setMap(null);
-    this.marker = new google.maps.Marker({ map: this.map });
 
-    this.itineraryResults.forEach(item => {
+  clearMarkers(): void {
+    this.markers.forEach(marker => {
+      marker.setMap(null);
+    });
+
+    this.markers = [];
+
+  }
+
+  showDayMarkers(dayNumber: number): void {
+    this.clearMarkers();
+
+
+    this.pathPoints = [];
+
+    console.log(this.pathPoints);
+    const dayItinerary = this.itineraryResults.filter(item => item.day === dayNumber);
+
+    // const polylineOptions = {
+    //   path: [] as google.maps.LatLngLiteral[],
+    //   strokeColor: 'blue',
+    //   strokeOpacity: 1,
+    //   strokeWeight: 1,
+    //   map: this.map,
+    //   icons: [{
+    //     icon: {
+    //       path: google.maps.SymbolPath.CIRCLE,
+    //       strokeColor: 'blue',
+    //       strokeOpacity: 1,
+    //       scale: 3,
+    //     },
+    //     offset: '0',
+    //     repeat: '20px'
+    //   }]
+    // };
+
+    dayItinerary.forEach(item => {
       const marker = new google.maps.Marker({
         position: { lat: item.lat, lng: item.lng },
         map: this.map,
-        title: item.name
+        title: item.name,
+        label: {
+          text: `${item.order}`,
+          color: 'white',
+          fontSize: '12px',
+          fontWeight: 'bold'
+        }
       });
+
+      // const markerPosition = marker.getPosition();
+      // if (markerPosition) {
+      //   const latLngLiteral: google.maps.LatLngLiteral = {
+      //     lat: markerPosition.lat(),
+      //     lng: markerPosition.lng()
+      //   };
+      //   this.pathPoints.push(latLngLiteral);
+      // }
+
       const infoWindowContent = `
-      <div>
-        <h3>${item.name}</h3>
-        <h4>${item.address}</h4>
-      </div>
-    `;
+        <div>
+          <h3>${item.name}</h3>
+          <h4>${item.address}</h4>
+        </div>
+      `;
 
       const infoWindow = new google.maps.InfoWindow({
         content: infoWindowContent
@@ -102,8 +149,18 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
 
       this.markers.push(marker);
     });
+
+    // console.log(this.pathPoints);
+    // polylineOptions.path = this.pathPoints;
+
+    // const polyline = new google.maps.Polyline(polylineOptions);
+
+    this.selectedDay = dayNumber;
     this.fitMapToMarkers();
   }
+
+
+
 
   fitMapToMarkers() {
     const bounds = new google.maps.LatLngBounds();
@@ -132,12 +189,11 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
 
       this.loading = false;
       this.showSchedule = true
-      this.addMarkersToMap();
+      this.showDayMarkers(1);
       if (this.tripSummary.selectedOption == 'length') {
         const bestDay = this.tripSummary.best_start
         console.log(bestDay)
         console.log(this.getFirstFutureDate(bestDay));
-        // console.log(date);
       }
     },
       (error) => {
@@ -176,6 +232,10 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
       if (this.tripSummary.tripLength == 1)
         this.nr_days = 'day'
     }
+
+    const initialDayNumber = this.tripDays[0]?.dayNumber || 1;
+    this.showDayMarkers(initialDayNumber);
+
   }
   getFirstFutureDate(dayAbbreviation: string): Date {
     const today = new Date();
@@ -196,6 +256,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   goBack(): void {
     this.router.navigate(['/add-trip']);
   }
+
   getDayName(dayNumber: number): string {
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     return daysOfWeek[dayNumber];
@@ -205,6 +266,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   }
+
   filterItineraryByDay(dayNumber: number): any[] {
     return this.itineraryResults.filter(item => item.day === dayNumber);
   }

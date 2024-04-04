@@ -29,7 +29,7 @@ li:hover {
 .info-cont {
     background-color: white;
     margin:0 auto;
-    margin-top: 10%;
+    margin-top: 7%;
     width: 700px;
     height: 230px;
     border:1px solid gray;
@@ -65,14 +65,20 @@ li:hover {
     color: #ba9797;
     margin-left: 65%;
 }
+.back-icon {
+    cursor: pointer;
+    font-size: 30px;
+    margin-top: 50px;
+    margin-left: 50px;
+    color: #004AAD;
+}
 .edit-btn{
-    color: white;
+    width:165px;
+    color: #004AAD;
     border: 1px solid #004AAD;
     padding:5px 5px;
-    background-color: #004AAD;
-    /* margin-bottom: 4px; */
+    background-color: white;
     margin-top:5px;
-    /* margin-left:70%; */
     margin-right:10px;
     font-size: 16px;
     cursor: pointer;
@@ -80,14 +86,17 @@ li:hover {
     justify-content: space-between;
     text-align: center;
 }
+.text-btn{
+    margin-top:4px;
+}
 .edit_account{
+
     font-size: 24px;
 }
-.edit_account:hover{
-    background-color: #90a0b5;
-}
+
 .edit-btn:hover{
-    background-color: #1778e0;
+    background-color: #004AAD;
+    color: white;
 }
 .btn{
     float:right;

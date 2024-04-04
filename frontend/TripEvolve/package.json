@@ -23,6 +23,7 @@
     "@angular/router": "^17.0.0",
     "@angular/ssr": "^17.0.0",
     "@types/googlemaps": "^3.43.3",
+    "angular-draggable-droppable": "^8.0.0",
     "bootstrap": "^5.3.3",
     "express": "^4.18.2",
     "rxjs": "~7.8.0",

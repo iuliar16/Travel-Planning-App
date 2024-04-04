@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { StorageService } from '../services/storage/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-info',
@@ -12,9 +13,12 @@ export class EditInfoComponent {
     lastname: 'Nume',
     email: 'email@example.com',
   };
-  constructor(private storageService: StorageService) {}
+  constructor(private router: Router,private storageService: StorageService) {}
 
   ngOnInit(): void {
     this.utilizator = this.storageService.getUser();
+  }
+  goBack(): void {
+    this.router.navigate(['/my-account']);
   }
 }

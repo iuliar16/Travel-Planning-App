@@ -114,9 +114,9 @@
   border-bottom: 1px solid #ccc;
 }
 .save-trip{
-  background-color: #004AAD;
-  border: none;
-  color: white;
+  background-color: white;
+  border: 2px solid #004AAD;
+  color: #004AAD;
   font-size: 18px;
   cursor: pointer;
   margin-top: 10px;
@@ -126,7 +126,8 @@
   border-radius: 20px;
 }
 .save-trip:hover{
-  background-color: #1778e0;
+  background-color: #004AAD;
+  color: white;
 }
 
 .trip-evolve {
@@ -154,7 +155,22 @@
   margin-bottom: 10px;
   user-select: none;
 }
-
+.day-btns button{
+  border:1px solid #004AAD;
+  color:#004AAD;
+  background-color: white;
+  height:20px;
+  cursor:pointer;
+  width:60px;
+  height:30px;
+  border-top: none;
+  border-bottom: none;
+  border-left:none;
+}
+.day-btns button:hover, .day-btns button.selected{
+  color:white;
+  background-color: #004AAD;
+}
 .back-icon {
   width: 5%;
   color: #004AAD;

@@ -13,4 +13,15 @@ export class ItineraryItemComponent {
     const maxWidth = 400;
     return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxWidth}&photoreference=${photoReference}&key=${apiKey}`;
   }
+  onDragStart(event: DragEvent, place: any) {
+    // Store initial position or any other necessary data
+  }
+
+  onDrag(event: DragEvent) {
+    // Update position or perform other actions while dragging
+  }
+
+  onDragEnd(event: DragEvent) {
+    // Perform cleanup or final actions after dragging ends
+  }
 }

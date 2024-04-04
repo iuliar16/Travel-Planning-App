@@ -32,6 +32,7 @@ export class AddTripComponent {
     endDate: '',
     tripLength: this.value,
     selectedOption: ''
+    // city:''
   };
 
 
@@ -97,8 +98,11 @@ export class AddTripComponent {
       return;
     }
 
+    // this.cityName = this.formData.location.split(',')[0].trim();
+    // console.log(this.cityName);
     console.log(this.formData);
     this.addTripService.setFormData(this.formData);
+
     this.router.navigate(['/schedule-itinerary']);
 
   }
