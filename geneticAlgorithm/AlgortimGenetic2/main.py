@@ -49,6 +49,8 @@ if len(sys.argv) > 1:
     prefs = json.loads(preferences_str)
     preferinte = prefs['preferredLocations']
     location = prefs['location']
+    placeName = prefs['placeName']
+    percentages = prefs['locationPreferences']
 
     option = prefs['selectedOption']
     if option == 'length':
@@ -67,20 +69,28 @@ if len(sys.argv) > 1:
     if option == 'length':
         user_preferences = {"preferredLocations": preferences,
                             "location": location,
-                            "trip_length": trip_length}
+                            "trip_length": trip_length,
+                            "place_name": placeName,
+                            "percentages": percentages}
     else:
         user_preferences = {"preferredLocations": preferences,
                             "location": location,
                             "trip_length": trip_length,
-                            "start_date": startDate}
+                            "start_date": startDate,
+                            "place_name": placeName,
+                            "percentages": percentages
+                            }
 
 else:
     option = 'dates'
     user_preferences = {
-        "preferredLocations": ["restaurant", "shopping_mall", "park", "museum", "tourist_attraction"],
+        "preferredLocations": ["restaurant", "park", "museum", "tourist_attraction"],
         "location": "Paris",
         "trip_length": 2,
-        "start_date": "2024-03-03"
+        "start_date": "2024-03-03",
+        "place_name": "",
+        "percentages": {'Must-see Attractions': 38, 'Museums': 81, 'Parks': 79,
+                       'Casino': 0, 'Shopping Malls': 0, 'Places of worship': 0}
     }
 if option == "dates":
     start_date = user_preferences['start_date']
@@ -90,6 +100,14 @@ destination = user_preferences['location']
 trip_length = user_preferences['trip_length']
 
 locatii = fetch_api_data(destination, user_preferences)
+percentages = user_preferences['percentages']
+
+procente_preferinte = {}
+
+for key, value in percentages.items():
+    if key in mapare_destinatii:
+        transformed_key = mapare_destinatii[key]
+        procente_preferinte[transformed_key] = value
 
 
 def timp_in_minute(ora):
@@ -99,7 +117,7 @@ def timp_in_minute(ora):
     return ore * 60 + minute
 
 
-def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase):
+def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase, day_number):
     populatie = []
     for _ in range(dimensiune_populatie):
         restaurant_list = []
@@ -118,6 +136,7 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase)
                 non_restaurant_list.append(loc_id)
                 locatii[loc_id]['visited'] = 0
 
+        # locatiile cu mai multe recenzii vor aparea mai des in populatia initiala
         scores = []
         for loc_id in non_restaurant_list:
             scores.append(locatii[loc_id]['score'])
@@ -130,12 +149,6 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase)
             if choice not in individ:
                 individ.append(choice)
 
-        # individ = random.choices(non_restaurant_list, weights=scores, k=nr_max_locatii)
-        # for i in individ:
-        #     print(locatii[i]['name'])
-        # print("!!!")
-
-        # individ = random.sample(non_restaurant_list, nr_max_locatii)
         total = timp_in_minute('9:00')
 
         for i, locatie_idx in enumerate(individ):
@@ -145,9 +158,22 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase)
             total += timp_petrecut + timp_deplasare
 
             #  pastrez doar primele locatii
-            if total > timp_in_minute('14:00') and len(individ[:i]) > 3:
+            if total > timp_in_minute('12:00') and len(individ[:i]) > 2:
                 individ = individ[:i]
                 break
+
+        # cautam locatiile pe care user-ul o vrea in solutie obligatoriu si incercam sa le adaugam uniform in fiecare zi
+        # inca nu merge
+        desired_places = [loc for loc in locatii_ramase if locatii[loc]['desired'] == 'true']
+        pozitie = -100
+        for desired_place in desired_places:
+            if desired_place not in individ and locatii[desired_place]['visited'] == 0:
+                poz = random.randint(0, len(individ) - 1)
+                while poz != pozitie:
+                    pozitie = poz
+                    individ[poz] = desired_place
+                    locatii[desired_place]['visited'] = 1
+                    poz = random.randint(0, len(individ) - 1)
 
         pos = len(individ) // 2
         pos2 = len(individ) // 2 + 1
@@ -273,14 +299,16 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
     penalizare_ora_final = 0
     penalizare_mers = 0
     penalizare_ore_functionare = 0
-    penalizare_rating = 0
-    penalizare_mustSee = 0
-
+    penalizare_percentage = 0
     for i in range(len(ruta) - 1):
         distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]] * 10
 
         locatie = locatii[ruta[i]]
         spendtime = tipuri_spendtime.get(locatie['type'], 60)
+
+        if locatie['type'] in procente_preferinte:
+            value = procente_preferinte[locatie['type']]
+            penalizare_percentage += 100 - value
 
         g, opentime, closetime = get_opening_hours(zi, timp_curent, locatie['opening_hours'])
 
@@ -297,12 +325,6 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
             penalizare_inchidere += 50
 
-        nr_reviews = locatie['user_ratings_total']
-        if nr_reviews == 0 or nr_reviews == 'N/A':
-            penalizare_rating += 1000
-        else:
-            penalizare_rating -= nr_reviews
-
         # penalizare preferinte
         if locatie['type'] not in user_preferences['preferredLocations']:
             penalizare_preferinte += 100
@@ -310,8 +332,6 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         # penalizare restaurant
         penalizare_restaurant = normalizare_restaurante(ruta, timp_curent)
 
-        # if locatie['type'] != 'tourist_attraction':
-        #     penalizare_mustSee += 200
         if colecteaza_orar:
             lat = locatie['lat']
             long = locatie['long']
@@ -339,7 +359,8 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
 
         timp_curent += spendtime
 
-    # procesez ultima locatie separat
+    ####### procesez ultima locatie separat
+
     locatie = locatii[ruta[len(ruta) - 1]]
     spendtime = tipuri_spendtime.get(locatie['type'], 60)
 
@@ -350,6 +371,10 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
     if locatie['type'] not in user_preferences['preferredLocations']:
         penalizare_preferinte += 200
 
+    if locatie['type'] in procente_preferinte:
+        value = procente_preferinte[locatie['type']]
+        penalizare_percentage += 100 - value
+
     if timp_curent < opentime:  # daca sosim inainte de deschidere
         penalizare_asteptare += opentime - timp_curent
         timp_curent = opentime  # actualizam timpul curent la ora de deschidere
@@ -359,10 +384,6 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
 
     if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
         penalizare_inchidere += 25
-
-    rating = locatie['rating']
-    nr_reviews = locatie['user_ratings_total']
-    penalizare_rating -= bayesian_average(rating, nr_reviews)
 
     if colecteaza_orar:
         lat = locatie['lat']
@@ -385,16 +406,16 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         penalizare_ora_final = 500
     fitness_total = distanta_totala + penalizare_preferinte + penalizare_asteptare + \
                     penalizare_inchidere + penalizare_restaurant + penalizare_nr_locatii + penalizare_ora_final \
-                    + penalizare_mers + penalizare_ore_functionare + penalizare_mustSee
+                    + penalizare_mers + penalizare_ore_functionare + penalizare_percentage
     if colecteaza_orar:
         return 1 / (1 + fitness_total), orar
     else:
         return 1 / (1 + fitness_total)
 
 
-def algoritm_genetic(locatii, matrice_distantelor, dimensiune_populatie, nr_generatii, ora_start, zi):
+def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_populatie, nr_generatii, ora_start, zi):
     lungime_locatii = len(locatii)
-    populatie = initializare_populatie(dimensiune_populatie, min(6, lungime_locatii), locatii)
+    populatie = initializare_populatie(dimensiune_populatie, min(6, lungime_locatii), locatii, day_number)
 
     for generatie in range(nr_generatii):
         # sortare populatie dupa fitness
@@ -474,9 +495,10 @@ def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date)
     days_of_week = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
     start_day_index = days_of_week.index(start_day_of_trip)
     current_day_index = start_day_index
-    for _ in range(trip_length):
+    for day_number in range(trip_length):
         current_day = days_of_week[current_day_index]
         best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor,
+                                                                                   day_number,
                                                                                    dimensiune_populatie=1000,
                                                                                    nr_generatii=200,
                                                                                    ora_start='09:00', zi=current_day)

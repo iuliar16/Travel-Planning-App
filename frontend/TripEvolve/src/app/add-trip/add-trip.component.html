@@ -54,8 +54,30 @@
         <p style="color:#757575">Select as many as you wish.</p>
         <br>
         <div class="options-container">
-            <div class="option" *ngFor="let location of locations" [class.selected]="isLocationSelected(location)"
-                (click)="toggleLocation(location)">{{ location }}</div>
+            <table>
+                <tbody>
+                    <tr class="preference" *ngFor="let location of locations">
+                        <td>{{ location }}</td>
+                        <td>
+                            <input type="range" min="0" max="100" value="0"[value]="locationPreferences.get(location)" 
+                            (input)="onRangeInputDebounced(location, $event)">
+                                
+                            <output>{{ locationPreferences.get(location) }}%</output> 
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h3>Are there any places that you don't want to miss?</h3>
+        <p style="color:#757575">Enter places separated by a comma.</p>
+        <br>
+        <div class="place-container">
+            <input type="text" placeholder="Place 1, Place 2..." id="placeName" name="placeName"
+                [(ngModel)]="formData.placeName" required>
         </div>
     </div>
 

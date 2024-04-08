@@ -11,21 +11,6 @@ redis_host = 'localhost'
 redis_port = 6379
 redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
-# def calculate_probability(loc_list):
-#     ratings_totals = [loc['user_ratings_total'] for loc in loc_list]
-#
-#     max_reviews = max(ratings_totals)
-#
-#     probabilities = [total / max_reviews for total in ratings_totals]
-#
-#     total_prob = sum(probabilities)
-#     normalized_probs = [prob / total_prob for prob in probabilities]
-#
-#     for loc, prob in zip(loc_list, normalized_probs):
-#         loc['score'] = prob
-#
-#     return loc_list
-
 
 def calculate_probability(loc_list):
     # grupare locatii dupa tip
@@ -93,6 +78,38 @@ def get_place_details(place_id):
         return None
 
 
+def getDesiredPlace_details(place_id):
+    url = f'https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&fields=name,photos' \
+          f',opening_hours,formatted_address,rating,user_ratings_total,type,geometry,place_id&key={API_KEY} '
+    response = requests.get(url)
+    # lat, lng, formatted_address, rating, user_ratings_total, type
+    if response.status_code == 200:
+        place_details = response.json()
+        if place_details['status'] == 'OK':
+            return place_details['result']
+        else:
+            print(f'Error retrieving place details. Status: {place_details["status"]}')
+            return None
+    else:
+        print(f'Error retrieving place details. Status code: {response.status_code}')
+        return None
+
+
+def isInCity(address, city):
+    address_lower = address.lower()
+    city_lower = city.lower()
+
+    if city_lower in address_lower:
+        return True
+
+    return False
+
+
+def extract_places(text):
+    places = text.split(',')
+    places = [place.strip() for place in places]
+    return places
+
 def fetch_api_data(destination, user_preferences):
     results = []
     locations = []
@@ -113,7 +130,7 @@ def fetch_api_data(destination, user_preferences):
 
     for location in results:
         name = location.get('name')
-        if name and name not in unique_names: #asigur ca nu am locatii duplicate de la api
+        if name and name not in unique_names:  # asigur ca nu am locatii duplicate de la api
             unique_names.add(name)
             placeId_key = f"{destination}_placeId"
             placeId_data = redis_client.get(placeId_key)
@@ -135,14 +152,12 @@ def fetch_api_data(destination, user_preferences):
                     redis_client.expire(details_key, 6 * 30 * 24 * 3600)
 
                 if place_details:
-                    type = location.get('types')[0] if location.get('types') else None
-                    food = ["food", "meal", "takeaway","meal","bar"]
-                    for word in food:
-                        if word in type:
-                            type = 'restaurant'
+                    types = location.get('types') if location.get('types') else None
+                    for tip in types:
+                        if tip in user_preferences['preferredLocations']:
+                            type = tip
+                            break
 
-                    if type == 'locality' or type == 'cafe':
-                        continue
                     try:
                         hours = extract_hours(place_details['opening_hours']['weekday_text'])
 
@@ -156,26 +171,56 @@ def fetch_api_data(destination, user_preferences):
                         'long': location['geometry']['location']['lng'],
                         'address': location['formatted_address'],
                         'rating': location.get('rating', 'N/A'),
-                        'user_ratings_total': location.get('user_ratings_total', '0'),
+                        'user_ratings_total': location.get('user_ratings_total', 0),
                         'photo': location.get('photos', [{}]),
                         # 'photo': location.get('photos', [{}])[0].get('photo_reference', 'N/A'),
                         'opening_hours': hours,
-                        "type": type
+                        "type": type,
+                        "desired": "false"
                     }
-                    # if type == 'tourist_attraction':
-                    #     print(loc)
+
                     locations.append(loc)
 
             else:
                 print("Failed to fetch place details.")
 
+    if user_preferences['place_name']:
+        desired_loc = extract_places(user_preferences['place_name'])
+        for i in desired_loc:
+            id = get_place_id(i)
+            # cautam daca locatia aleasa de user exista deja in locatiile alese
+            place = [loc for loc in locations if loc['place_id'] == id['place_id']]
+
+            if place:
+                place[0]['desired'] = 'true'
+            else:
+                location = getDesiredPlace_details(id['place_id'])
+
+                # verific daca locul dat de user e in orasul destinatie:
+                if isInCity(location['formatted_address'], destination):
+                    types = location.get('types') if location.get('types') else None
+                    for t in types:
+                        if t in user_preferences['preferredLocations']:
+                            tip = t
+                            break
+                    try:
+                        hours = extract_hours(location['opening_hours']['weekday_text'])
+                    except Exception as e:
+                        print('')
+                    loc = {
+                        'name': location['name'],
+                        'place_id': location['place_id'],
+                        'lat': location['geometry']['location']['lat'],
+                        'long': location['geometry']['location']['lng'],
+                        'address': location['formatted_address'],
+                        'rating': location.get('rating', 'N/A'),
+                        'user_ratings_total': location.get('user_ratings_total', 0),
+                        'photo': location.get('photos', [{}]),
+                        'opening_hours': hours,
+                        "type": tip,
+                        'desired': 'true'
+                    }
+                    locations.append(loc)
+
     calculate_probability(locations)
-    # print(locations)
     return locations
-
-
-def bayesian_average(R, m, C=4, v=10):
-    if R == 0 or m == 0 or R == 'N/A' or m == 'N/A':
-        return 0
-    bayesian_score = ((C * int(m)) + (int(R) * v)) / (C + v)
-    return bayesian_score

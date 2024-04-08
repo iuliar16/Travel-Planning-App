@@ -5,6 +5,11 @@
         <mat-icon (click)="goBack()">arrow_back</mat-icon>
       </div>
       <button class="trip-evolve" routerLink="/home">Trip Evolve</button>
+      <select class="location-preferences-dropdown">
+        <option *ngFor="let preference of tripSummary.locationPreferences | keyvalue" [value]="preference.key">
+          {{ preference.key }} ({{ preference.value }}%)
+        </option>
+      </select>
       <div class="share-btns">
         <button class="save-trip" *ngIf="showSchedule">Save Trip</button>
         <!-- <mat-icon class="icons">share</mat-icon>
@@ -27,7 +32,10 @@
       <p>Preferences: </p>
       <div class="form-group">
         <div class="options-container">
-          <div class="option" *ngFor="let location of tripSummary.selectedLocations">{{ location }}</div>
+          <!-- <div class="option" *ngFor="let location of tripSummary.selectedLocations">{{ location }}</div>  -->
+          <div class="option" *ngFor="let preference of tripSummary.locationPreferences | keyvalue">
+            {{ preference.key }}: {{ preference.value }}%
+          </div>
         </div>
       </div>
       <button class="generate-btn" (click)="generateSchedule()">Generate Schedule</button>
@@ -52,7 +60,7 @@
         </div>
         <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
           <div *ngFor="let item of filterItineraryByDay(day.dayNumber)">
-            <app-itinerary-item [itineraryItem]="item"></app-itinerary-item>
+            <app-itinerary-item  [itineraryItem]="item"></app-itinerary-item>
           </div>
         </div>
       </div>
@@ -60,7 +68,8 @@
   </div>
   <div class="map-container">
     <div class="day-btns">
-      <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber" (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
+      <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber"
+        (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
     </div>
     <div #gmapContainer id="map"></div>
   </div>

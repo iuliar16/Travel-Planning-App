@@ -33,7 +33,6 @@ public class ItineraryServiceImpl implements ItineraryService {
     public String generateItinerary(PreferencesDTO preferences) {
         logger.info("Generating schedule...");
         try {
-            logger.info(String.valueOf(preferences));
 
             ObjectMapper mapper = new ObjectMapper();
             String preferencesJson = mapper.writeValueAsString(preferences);

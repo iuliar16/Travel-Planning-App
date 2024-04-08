@@ -3,6 +3,8 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { AddTripService } from '../services/add-trip/add-trip.service';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
+import { debounce } from 'lodash';
+
 
 @Component({
   selector: 'app-add-trip',
@@ -12,6 +14,7 @@ import { FormControl } from '@angular/forms';
 export class AddTripComponent {
   locations: string[] = ['Must-see Attractions', 'Museums', 'Parks', 'Zoo', 'Wellness and Spas',
     'Casino', 'Shopping Malls', 'Places of worship'];
+  locationPreferences: Map<string, number> = new Map<string, number>();
   selectedLocations: string[] = [];
   selectedOption: 'dates' | 'length' = 'dates';
   value: number = 1;
@@ -31,7 +34,9 @@ export class AddTripComponent {
     startDate: '',
     endDate: '',
     tripLength: this.value,
-    selectedOption: ''
+    selectedOption: '',
+    placeName: '',
+    locationPreferences: new Map<string, number>()
     // city:''
   };
 
@@ -73,7 +78,7 @@ export class AddTripComponent {
 
   initAutocomplete(): void {
     const autocomplete = new google.maps.places.Autocomplete(this.placesSearchInput.nativeElement, {
-      types: ['(cities)'] 
+      types: ['(cities)']
     });
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
@@ -86,8 +91,15 @@ export class AddTripComponent {
     });
   }
 
-  constructor(private addTripService: AddTripService, private router: Router) { }
+  constructor(private addTripService: AddTripService, private router: Router) {
+    this.initializeLocationPreferences();
+  }
 
+  initializeLocationPreferences() {
+    for (const location of this.locations) {
+      this.locationPreferences.set(location, 0); // Use set() method for Map
+    }
+  }
   onSubmit() {
     this.message = '';
     this.formData.selectedLocations = this.selectedLocations;
@@ -98,8 +110,7 @@ export class AddTripComponent {
       return;
     }
 
-    // this.cityName = this.formData.location.split(',')[0].trim();
-    // console.log(this.cityName);
+    this.formData.locationPreferences = this.locationPreferences;
     console.log(this.formData);
     this.addTripService.setFormData(this.formData);
 
@@ -127,14 +138,26 @@ export class AddTripComponent {
     return this.selectedLocations.includes(location);
   }
 
-  toggleLocation(location: string): void {
+  onRangeInputDebounced = debounce((location: string, event: Event) => {
+    const inputElement = event.target as HTMLInputElement;
+    const percentage = parseInt(inputElement.value, 10);
+    this.locationPreferences.set(location, percentage); // Use set() method for Map
+    this.toggleLocation(location, percentage);
+    console.log(percentage);
+  }, 100);
+
+
+  toggleLocation(location: string, percentage: number): void {
     const index = this.selectedLocations.indexOf(location);
     if (index !== -1) {
       this.selectedLocations.splice(index, 1);
+      this.locationPreferences.delete(location); // Use delete() method for Map
     } else {
       this.selectedLocations.push(location);
+      this.locationPreferences.set(location, percentage); // Use set() method for Map
     }
   }
+
   selectOption(option: 'dates' | 'length') {
     this.selectedOption = option;
   }

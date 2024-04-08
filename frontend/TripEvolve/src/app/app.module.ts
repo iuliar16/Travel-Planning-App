@@ -35,7 +35,7 @@ import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itin
 import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.component';
 import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component';
 import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
-
+import { MatSliderModule } from '@angular/material/slider';
 @NgModule({
   declarations: [
     AppComponent,
@@ -74,7 +74,8 @@ import { ConfirmAccountComponent } from './confirm-account/confirm-account.compo
     MatDatepickerModule,
     MatFormFieldModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatSliderModule
   ],
   providers: [
     provideClientHydration(),

@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 //@AllArgsConstructor
 //@NoArgsConstructor
@@ -36,5 +37,7 @@ public class PreferencesDTO {
     private String startDate;
     private String endDate;
     private String selectedOption;
+    private String placeName;
+    private Map<String, Integer> locationPreferences;
 
 }

@@ -1,6 +1,6 @@
 form {
-    border:1px solid gray;
-    box-shadow: 10px 10px 5px  lightblue;
+    border: 1px solid gray;
+    box-shadow: 10px 10px 5px lightblue;
     margin: 0 auto;
     justify-content: center;
     width: 650px;
@@ -10,6 +10,122 @@ form {
 .form-group {
 
     margin-bottom: 20px;
+}
+
+.preference {
+    display: flex;
+    justify-content: center;
+}
+
+table,
+th,
+td {
+    width: 80%;
+    margin-top:20%;
+    margin: 0 auto;
+    text-align: center;
+    margin-bottom:10px;
+    font-size:20px;
+    /* border: 1px solid; */
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+  }
+  input[type=range]:focus {
+    outline: none;
+  }
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 11px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 1px 1px 1px #000000;
+    background: #74A9D8;
+    border-radius: 1px;
+    border: 0px solid #010101;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    box-shadow: 1px 1px 1px #000031;
+    border: 1px solid #00001E;
+    height: 26px;
+    width: 26px;
+    border-radius: 15px;
+    background: #FFFFFF;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -8px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #74A9D8;
+}
+
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 11px;
+    cursor: pointer;
+    animate: 0.2s;
+    box-shadow: 1px 1px 1px #000000;
+    background: #74A9D8;
+    border-radius: 1px;
+    border: 0px solid #010101;
+}
+
+input[type=range]::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #000031;
+    border: 1px solid #00001E;
+    height: 26px;
+    width: 26px;
+    border-radius: 15px;
+    background: #FFFFFF;
+    cursor: pointer;
+}
+
+input[type=range]::-ms-track {
+    width: 100%;
+    height: 11px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+    background: #74A9D8;
+    border: 0px solid #010101;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #000000;
+}
+
+input[type=range]::-ms-fill-upper {
+    background: #74A9D8;
+    border: 0px solid #010101;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #000000;
+}
+
+input[type=range]::-ms-thumb {
+    /* margin-top: 1px; */
+    box-shadow: 1px 1px 1px #000031;
+    border: 1px solid #00001E;
+    height: 26px;
+    width: 26px;
+    border-radius: 15px;
+    background: #FFFFFF;
+    cursor: pointer;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+    background: #74A9D8;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+    background: #74A9D8;
 }
 
 .plan {
@@ -27,22 +143,28 @@ form {
     padding: 10px;
     width: 70%;
 }
-#start-date, #end-date{
-    font-size:25px;
-    width:180px;
-    color:gray;
-}
-label{
-    color:#004AAD;
+
+#start-date,
+#end-date {
     font-size: 25px;
-    margin-left:45px;
+    width: 180px;
+    color: gray;
+}
+
+label {
+    color: #004AAD;
+    font-size: 25px;
+    margin-left: 45px;
     margin-bottom: 10px;
 }
-.start, .end{
-    display:grid;
+
+.start,
+.end {
+    display: grid;
 }
-.date-picker{
-    display:flex;
+
+.date-picker {
+    display: flex;
     justify-content: space-between;
 }
 
@@ -53,15 +175,17 @@ label{
 
 mat-icon {
     cursor: pointer;
-    color:black;
+    color: black;
     margin: 0 10px;
 }
-.trip-length-picker{
-    margin-top:20px;
+
+.trip-length-picker {
+    margin-top: 20px;
     font-size: 25px;
     display: flex;
     justify-content: space-between;
 }
+
 .dates,
 .length {
     user-select: none;
@@ -142,10 +266,12 @@ button.cancel {
     justify-content: center;
     margin-right: 10px;
 }
+
 .disabled-button {
-    opacity: 0.5; 
+    opacity: 0.5;
     cursor: not-allowed;
-  }
+}
+
 .option {
     display: inline-block;
     padding: 5px 10px;
@@ -156,8 +282,9 @@ button.cancel {
     margin-bottom: 10px;
     user-select: none;
 }
-.error-message{
-    color:red;
+
+.error-message {
+    color: red;
     text-align: center;
     margin-bottom: 20px;
 }

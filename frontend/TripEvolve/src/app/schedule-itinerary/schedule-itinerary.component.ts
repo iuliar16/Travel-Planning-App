@@ -25,6 +25,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   selectedDate: Date | null = null;
   tripLength: number = 1;
   selectedLocations: string[] = [];
+  locationPreferences: Map<string, number> = new Map<string, number>();
   nr_days: string = 'days'
   itineraryResults: any[] = [];
   daysDifference: number = 1;
@@ -173,13 +174,19 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   generateSchedule() {
     this.loading = true;
 
+    const convMap: { [key: string]: number } = {};
+    this.tripSummary.locationPreferences.forEach((val: number, key: string) => {
+      convMap[key] = val;
+    });
     const preferences = {
       preferredLocations: this.tripSummary.selectedLocations,
       location: this.tripSummary.city,
       trip_length: this.tripSummary.tripLength,
       startDate: this.tripSummary.startDate,
       endDate: this.tripSummary.endDate,
-      selectedOption: this.tripSummary.selectedOption
+      selectedOption: this.tripSummary.selectedOption,
+      placeName: this.tripSummary.placeName,
+      locationPreferences: convMap
     };
 
 

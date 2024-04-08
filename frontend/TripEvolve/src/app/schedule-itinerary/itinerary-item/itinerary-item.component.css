@@ -29,9 +29,20 @@
     font-size: 20px;
 }
 .photo-container{
-    margin-left:50%;
+    margin-left:30%;
 }
-
+.place{
+    display:flex;
+}
+.type{
+    margin-top: 12px;
+    margin-left: 15px;
+    color: rgb(69 90 100);
+    border-radius: 15px;
+    border: 1px solid black;
+    padding: 5px 5px;
+    background: peachpuff;
+}
 .place-photo {
     margin-top: 0px;
     border-radius: 15px;

@@ -1,24 +1,26 @@
-<div class="itinerary-item" cdkDrag>
+<div class="itinerary-item">
     <div class="description">
         <div class="place-name">{{itineraryItem.name}}</div>
         <br>
         <div class="place-info">{{ itineraryItem.address }}</div>
-        <div class="hours">
-            <h4>{{ itineraryItem.arrival_hour }}</h4>
-            <mat-icon class="hours-icon">arrow_forward</mat-icon>
-            <h4>{{ itineraryItem.leave_hour }}</h4>
+        <div class="place">
+            <div class="hours">
+                <h4>{{ itineraryItem.arrival_hour }}</h4>
+                <mat-icon class="hours-icon">arrow_forward</mat-icon>
+                <h4>{{ itineraryItem.leave_hour }}</h4>
+            </div>
+            <h4 class="type">{{ itineraryItem.type }}</h4>
         </div>
     </div>
     <div class="photo-container">
         <img *ngIf="itineraryItem.photo && itineraryItem.photo.length > 0" class="place-photo"
             [src]="getPhotoUrl(itineraryItem.photo[0].photo_reference)" alt="{{ itineraryItem.name }} Photo">
-      
+
         <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0" class="place-photo"
             src="./assets/images/rome.jpg" alt="Default Placeholder">
-        <!-- <img class="place-photo" src="./assets/images/rome.jpg" alt="Place 1"> -->
     </div>
 </div>
 <div *ngIf="itineraryItem.duration != -1" class="next-dest">
     <mat-icon class="directions_bus">directions_bus</mat-icon>
-    <h4 class="directions-time">Walk {{itineraryItem.duration}} min ~ Directions</h4>
+    <button (click)="openDirections(itineraryItem)" class="directions-time">Walk {{itineraryItem.duration}} min ~ Directions</button>
 </div>
