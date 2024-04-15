@@ -31,7 +31,6 @@ import { ManageSharingComponent } from './manage-sharing/manage-sharing.componen
 import { MatDialogModule } from '@angular/material/dialog';
 import { ShareTripPopupComponent } from './share-trip-popup/share-trip-popup.component';
 import { PublicShareComponent } from './public-share/public-share.component';
-import { ItineraryItemComponent } from './schedule-itinerary/itinerary-item/itinerary-item.component';
 import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.component';
 import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component';
 import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
@@ -56,7 +55,6 @@ import { MatSliderModule } from '@angular/material/slider';
     ManageSharingComponent,
     ShareTripPopupComponent,
     PublicShareComponent,
-    ItineraryItemComponent,
     DeleteTripPopupComponent,
     SignOutPopupComponent,
     ConfirmAccountComponent,

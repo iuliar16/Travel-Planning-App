@@ -6,6 +6,8 @@
     </button>
 
     <ul>
-        <li><app-trip-card></app-trip-card></li>
+        <li *ngFor="let trip of savedTrips">
+            <app-trip-card [trip]="trip"></app-trip-card>
+        </li>
     </ul>
 </div>

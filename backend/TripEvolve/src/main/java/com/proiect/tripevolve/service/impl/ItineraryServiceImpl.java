@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +21,7 @@ import java.util.Optional;
 public class ItineraryServiceImpl implements ItineraryService {
     @Value("${file.path}")
     private String filePath;
+
     private final ItineraryRepository itineraryRepository;
     private static final Logger logger = LoggerFactory.getLogger(ItineraryServiceImpl.class);
 
@@ -97,8 +97,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public ItineraryDTO add(ItineraryDTO locationDTO) {
-        return itineraryRepository.save(locationDTO);
+    public ItineraryDTO add(ItineraryDTO itineraryDTO) {return itineraryRepository.save(itineraryDTO);
     }
 
     @Override

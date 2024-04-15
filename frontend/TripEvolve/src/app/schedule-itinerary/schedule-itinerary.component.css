@@ -31,57 +31,82 @@
   transform: translate(-50%, -50%);
   text-align: center;
   font-size: 20px;
-  width:30%;
+  width: 30%;
   padding: 5px 5px;
   border-radius: 15px;
-  background-color: rgb(255, 255, 255,0.4);
+  background-color: rgb(255, 255, 255, 0.4);
   border: 1px solid rgb(255, 255, 255)fff;
   color: rgb(255, 255, 255);
 }
-.regenerate-btn{
+
+.regenerate-btn {
   background-color: #004AAD;
   color: #fff;
   cursor: pointer;
   border-radius: 7px;
-  width:15%;
-  height:70%;
-  margin-top:10px;
-  border:none;
+  width: 15%;
+  height: 70%;
+  margin-top: 10px;
+  border: none;
   font-size: 17px;
-  margin-left:55%;
+  margin-left: 55%;
 }
-.share-btns{
-  color:#004AAD;
-  display:flex;
+
+.share-btns {
+  color: #004AAD;
+  display: flex;
   justify-content: center;
-  margin-left:35%;
-  width:40%;
+  margin-left: 35%;
+  width: 40%;
 }
-.share-btn{
+
+.share-btn {
   margin-right: 10px;
   font-size: 15px;
   background-color: transparent;
-  border:none;
-  margin-top:25px;
-  color:#004AAD;
+  border: none;
+  margin-top: 25px;
+  color: #004AAD;
   cursor: pointer;
 }
-.icons{
-  width:30px;
-  margin-top:25px;
-  margin-left:5px;
+
+.icons {
+  width: 30px;
+  margin-top: 25px;
+  margin-left: 5px;
   cursor: pointer;
 }
-.share-btn2{
+
+.share-btn2 {
   font-size: 15px;
-  margin-top:25px;
-  border:none;
-  color:#004AAD;
+  margin-top: 25px;
+  border: none;
+  color: #004AAD;
   background-color: transparent;
   cursor: pointer;
 }
+
 .loading-photo {
   position: relative;
+}
+
+.more-options-wrapper {
+  position: relative;
+}
+
+.dots {
+  margin-top: 15px;
+  margin-left: 190px;
+}
+
+.more-options {
+  display: block;
+  background-color: rgb(250 250 250);
+  position: relative;
+  border-radius: 10px;
+  width: 110%;
+  border: 1px solid #ccc;
+  text-align: center;
 }
 
 .loading-photo p {
@@ -104,8 +129,8 @@
 }
 
 .sub-header {
-  width:100%;
-  z-index:1;
+  width: 100%;
+  z-index: 1;
   display: flex;
   top: 0;
   background-color: rgb(250 250 250);
@@ -113,19 +138,17 @@
   position: sticky;
   border-bottom: 1px solid #ccc;
 }
-.save-trip{
-  background-color: white;
-  border: 2px solid #004AAD;
-  color: #004AAD;
-  font-size: 18px;
+
+.save-trip,
+.share-trip,
+.pdf {
   cursor: pointer;
-  margin-top: 10px;
-  margin-left:60%;
-  width: 30%;
-  height: 70%;
-  border-radius: 20px;
+  font-size: 20px;
 }
-.save-trip:hover{
+
+.save-trip:hover,
+.share-trip:hover,
+.pdf:hover {
   background-color: #004AAD;
   color: white;
 }
@@ -138,7 +161,7 @@
   font-size: 18px;
   cursor: pointer;
   margin-top: 4px;
-  width:20%;
+  width: 20%;
 }
 
 .trip-evolve:hover,
@@ -156,27 +179,32 @@
   margin-bottom: 10px;
   user-select: none;
 }
-.day-btns button{
-  border:1px solid #004AAD;
-  color:#004AAD;
+
+.day-btns button {
+  border: 1px solid #004AAD;
+  color: #004AAD;
   background-color: white;
-  height:20px;
-  cursor:pointer;
-  width:60px;
-  height:30px;
+  height: 20px;
+  cursor: pointer;
+  width: 60px;
+  height: 30px;
   border-top: none;
   border-bottom: none;
-  border-left:none;
+  border-left: none;
 }
-.day-btns button:hover, .day-btns button.selected{
-  color:white;
+
+.day-btns button:hover,
+.day-btns button.selected {
+  color: white;
   background-color: #004AAD;
 }
-.location-preferences-dropdown{
-  border:none;
+
+.location-preferences-dropdown {
+  border: none;
   background-color: transparent;
   width: 2%;
 }
+
 .back-icon {
   width: 5%;
   color: #004AAD;
@@ -196,7 +224,8 @@
   margin-bottom: 10px;
 }
 
-.generate-btn:hover, .regenerate-btn:hover {
+.generate-btn:hover,
+.regenerate-btn:hover {
   background-color: #1778e0;
   border: 1px solid #1778e0;
 }
@@ -214,33 +243,6 @@ h3 {
   text-align: center;
 }
 
-.hours-icon {
-  margin-top: 5px;
-  font-size: 20px;
-  pointer-events: none;
-}
-
-h4 {
-  text-align: center;
-  margin-top: 5px;
-}
-
-.hours {
-  width: 80%;
-  height: 25px;
-  text-align: center;
-  display: flex;
-}
-
-mat-icon {
-  margin-left: 0px;
-  cursor: pointer;
-}
-
-#expand-id {
-  margin-right: 10px;
-  font-size: 30px;
-}
 
 .dropdown-name {
   margin-left: 0px;
@@ -282,10 +284,11 @@ mat-icon {
 
 .itinerary-item {
   width: 80%;
-  height: 150px;
+  height: 160px;
   background-color: rgb(250 250 250);
   border-radius: 15px;
   display: flex;
+  justify-content: space-between;
   margin-left: 10%;
   margin-top: 10px;
   padding-top: 10px;
@@ -299,6 +302,7 @@ mat-icon {
 .place-name {
   font-size: 23px;
   margin-left: 20px;
+  width: 300%;
 }
 
 .place-info {
@@ -310,11 +314,30 @@ mat-icon {
   font-size: 20px;
 }
 
+.photo-container {
+  margin-left: 30%;
+}
+
+.place {
+  display: flex;
+}
+
+.type {
+  margin-top: 12px;
+  margin-left: 15px;
+  color: rgb(69 90 100);
+  border-radius: 15px;
+  border: 1px solid black;
+  padding: 5px 5px;
+  background: peachpuff;
+}
+
 .place-photo {
   margin-top: 0px;
   border-radius: 15px;
   float: right;
-  width: 35%;
+  width: 170px;
+  height: 100%;
 }
 
 .place-name {
@@ -332,4 +355,60 @@ mat-icon {
   background-color: white;
   border: 1px solid #ccc;
   color: rgb(69 90 100);
+}
+
+.hours-icon {
+  margin-top: 5px;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+h4 {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.hours {
+  height: 25px;
+  text-align: center;
+  display: flex;
+}
+
+mat-icon {
+  margin-left: 0px;
+  cursor: pointer;
+}
+
+#expand-id {
+  margin-right: 10px;
+  font-size: 30px;
+}
+
+.next-dest {
+  display: flex;
+  color: rgb(69 90 100);
+  height: 40px;
+  padding: 10px;
+  margin-left: 15%;
+  font-size: 15px;
+  border-left: 1px solid #ccc;
+}
+
+.directions_bus {
+  margin-top: 10px;
+  margin-right: 5px;
+}
+
+.directions-time {
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  cursor: pointer;
+  background: rgb(250 250 250);
+  width: 120px;
+  height: 30px;
+  margin-top: 6px;
+}
+
+.directions-time:hover {
+  background: rgb(245 245 245);
 }

@@ -11,7 +11,17 @@
         </option>
       </select>
       <div class="share-btns">
-        <button class="save-trip" *ngIf="showSchedule">Save Trip</button>
+        <div *ngIf="showSchedule" class="more-options-wrapper">
+          <mat-icon class="dots" (click)="toggleMoreOptions()">more_vert</mat-icon>
+          <div class="more-options" *ngIf="showMoreOptions">
+            <div class="save-trip"  (click)="saveTrip()">Save Trip</div>
+            <div class="share-trip">Share Trip</div>
+            <div class="pdf" (click)="generatePdf()">Download as PDF</div>
+          </div>
+        </div>
+        <!-- <button (click)="generatePdf()">Download as PDF</button>
+
+        <button class="save-trip" *ngIf="showSchedule">Save Trip</button> -->
         <!-- <mat-icon class="icons">share</mat-icon>
         <button class="share-btn">Public Share</button>
 
@@ -50,7 +60,7 @@
 
 
     <div class="schedule-content" *ngIf="showSchedule">
-      <img class="photo" src="./assets/images/rome.jpg">
+      <img class="photo" [src]="getItineraryPhotoUrl()" alt="">
       <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
       <div class="dropdown" *ngFor="let day of tripDays">
         <div class="dropdown-header" (click)="toggleDay(day)">
@@ -59,8 +69,36 @@
           <h2 class="dropdown-name">{{ day.day }}, {{day.date}}</h2>
         </div>
         <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
-          <div *ngFor="let item of filterItineraryByDay(day.dayNumber)">
-            <app-itinerary-item  [itineraryItem]="item"></app-itinerary-item>
+          <div *ngFor="let itineraryItem of filterItineraryByDay(day.dayNumber)">
+            <!-- <app-itinerary-item  [itineraryItem]="item"></app-itinerary-item> -->
+            <div class="itinerary-item">
+              <div class="description">
+                <div class="place-name">{{itineraryItem.order}}. {{itineraryItem.name}}</div>
+                <br>
+                <div class="place-info">{{ itineraryItem.address }}</div>
+                <div class="place">
+                  <div class="hours">
+                    <h4>{{ itineraryItem.arrival_hour }}</h4>
+                    <mat-icon class="hours-icon">arrow_forward</mat-icon>
+                    <h4>{{ itineraryItem.leave_hour }}</h4>
+                  </div>
+                  <h4 class="type">{{ itineraryItem.type === 'tourism_attraction' ? 'must-see' : itineraryItem.type }}
+                  </h4>
+                </div>
+              </div>
+              <div class="photo-container">
+                <img *ngIf="itineraryItem.photo && itineraryItem.photo.length > 0" class="place-photo"
+                  [src]="getPhotoUrl(itineraryItem.photo[0].photo_reference)" alt="{{ itineraryItem.name }} Photo">
+
+                <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0" class="place-photo"
+                  src="./assets/images/rome.jpg" alt="Default Placeholder">
+              </div>
+            </div>
+            <div *ngIf="itineraryItem.duration != -1" class="next-dest">
+              <mat-icon class="directions_bus">directions_bus</mat-icon>
+              <button (click)="openDirections(itineraryItem, getNextItineraryItem(itineraryItem))"
+                class="directions-time">Get directions</button>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteTripPopupComponent } from '../../delete-trip-popup/delete-trip-popup.component';
 
@@ -8,6 +8,7 @@ import { DeleteTripPopupComponent } from '../../delete-trip-popup/delete-trip-po
   styleUrl: './trip-card.component.css'
 })
 export class TripCardComponent {
+  @Input() trip: any; 
   constructor(public dialog: MatDialog) {}
 
   openDialog(): void {
@@ -24,5 +25,11 @@ export class TripCardComponent {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+  }
+  getPhotoUrl(photoReference: string): string {
+    const apiKey = 'AIzaSyCbqdF-F4bLlH8giQESqHFfi0tIyTtEuPw';
+    const maxWidth = 400;
+    return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxWidth}&photoreference=${photoReference}&key=${apiKey}`;
+
   }
 }

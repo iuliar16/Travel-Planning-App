@@ -26,6 +26,7 @@
     "angular-draggable-droppable": "^8.0.0",
     "bootstrap": "^5.3.3",
     "express": "^4.18.2",
+    "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "rxjs": "~7.8.0",
     "save": "^2.9.0",

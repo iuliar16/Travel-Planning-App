@@ -37,9 +37,10 @@ public class LocationController {
 
     }
 
-    @GetMapping("/placeId")
-    ResponseEntity<Optional<LocationDTO>> getLocationByPlaceId(@RequestParam String placeId) {
-        Optional<LocationDTO> locationDTO = this.locationService.findByPlaceId(placeId);
+    @GetMapping("/name")
+    ResponseEntity<Optional<LocationDTO>> getLocationByName(@RequestParam String name) {
+        System.out.println(name);
+        Optional<LocationDTO> locationDTO = this.locationService.findByName(name);
         return new ResponseEntity<>(locationDTO, HttpStatus.OK);
 
     }

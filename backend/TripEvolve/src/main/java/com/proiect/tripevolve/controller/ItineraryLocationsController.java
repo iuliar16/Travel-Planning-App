@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ public class ItineraryLocationsController {
 
     @PostMapping
     ResponseEntity<?> createItineraryLocations(@RequestBody ItineraryLocationsDTO itineraryLocationsDTO) {
+
         return new ResponseEntity<>(this.itineraryLocationsService.add(itineraryLocationsDTO), HttpStatus.CREATED);
     }
 

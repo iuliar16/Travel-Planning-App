@@ -9,4 +9,5 @@ import java.util.List;
 public interface ItineraryLocationsRepository extends JpaRepository<ItineraryLocationsDTO, Integer> {
     @Query("SELECT l FROM itinerary_locations l WHERE l.itinerary_id=:itinerary_id")
     List<ItineraryLocationsDTO> findByItineraryId(@Param("itinerary_id")Integer itinerary_id);
+
 }

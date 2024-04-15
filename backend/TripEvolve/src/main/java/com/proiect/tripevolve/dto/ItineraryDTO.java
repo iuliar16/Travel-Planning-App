@@ -23,5 +23,6 @@ public class ItineraryDTO {
     private Date startDate;
     private Date endDate;
     private String city;
-    private Integer duration;
+    private Integer tripLength;
+    private String photo;
 }

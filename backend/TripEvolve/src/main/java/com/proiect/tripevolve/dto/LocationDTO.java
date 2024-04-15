@@ -14,12 +14,10 @@ public class LocationDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer location_id;
     private String name;
-    private String place_id;
-    private double latitude;
-    private double longitude;
+    private double lat;
+    private double lng;
     private String type;
     private String city;
     private String address;
-    private Integer spendtime;
-    private String description;
+    private String photo;
 }

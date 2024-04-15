@@ -97,7 +97,7 @@ export class AddTripComponent {
 
   initializeLocationPreferences() {
     for (const location of this.locations) {
-      this.locationPreferences.set(location, 0); // Use set() method for Map
+      this.locationPreferences.set(location, 0);
     }
   }
   onSubmit() {
@@ -141,7 +141,7 @@ export class AddTripComponent {
   onRangeInputDebounced = debounce((location: string, event: Event) => {
     const inputElement = event.target as HTMLInputElement;
     const percentage = parseInt(inputElement.value, 10);
-    this.locationPreferences.set(location, percentage); // Use set() method for Map
+    this.locationPreferences.set(location, percentage);
     this.toggleLocation(location, percentage);
     console.log(percentage);
   }, 100);

@@ -23,7 +23,4 @@ public class ItineraryLocationsDTO {
     private Integer visit_day;
     private LocalTime arrival_hour;
     private LocalTime leave_hour;
-    private Integer driving_time;
-    private Integer walking_time;
-    private Integer transit_time;
 }
