@@ -2,7 +2,6 @@ import math
 import random
 import sys
 import time
-
 from extract_hours import *
 from fetch_api_data import *
 
@@ -27,7 +26,7 @@ tipuri_spendtime = {
     "spa": 120,
     "museum": 120,
     "zoo": 180,
-    "park": 90,
+    "park": 60,
     "casino": 120,
     "shopping_mall": 120,
     "place_of_worship": 60,
@@ -61,7 +60,7 @@ if len(sys.argv) > 1:
         a = datetime.strptime(startDate, '%Y-%m-%d')
         b = datetime.strptime(endDate, '%Y-%m-%d')
         delta = b - a
-        trip_length = delta.days
+        trip_length = delta.days + 1
 
     preferences = [mapare_destinatii[pref] for pref in preferinte]
     preferences.append('restaurant')
@@ -85,12 +84,12 @@ else:
     option = 'dates'
     user_preferences = {
         "preferredLocations": ["restaurant", "park", "museum", "tourist_attraction"],
-        "location": "Paris",
+        "location": "Iași, Romania",
         "trip_length": 2,
         "start_date": "2024-03-03",
-        "place_name": "Louvre, Tour Eiffel",
-        "percentages": {'Must-see Attractions': 38, 'Museums': 81, 'Parks': 79,
-                        'Casino': 0, 'Shopping Malls': 0, 'Places of worship': 0}
+        "place_name": "",
+        "percentages": {'Must-see Attractions': 10, 'Museums': 81, 'Parks': 79,
+                        'Casino': 30, 'Shopping Malls': 50, 'Places of worship': 30,'Zoo':55,'Wellness and Spas':35}
     }
 if option == "dates":
     start_date = user_preferences['start_date']
@@ -121,7 +120,6 @@ def get_locationsPerDay(nr_days, nr_locs):
     if nr_days <= nr_locs:
         return nr_locs // nr_days
     return 1
-
 
 
 def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase, day_number):
@@ -166,7 +164,7 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase,
             total += timp_petrecut + timp_deplasare
 
             #  pastrez doar primele locatii
-            if total > timp_in_minute('12:00') and len(individ[:i]) > 2:
+            if total > timp_in_minute('17:00') and len(individ[:i]) > 2:
                 individ = individ[:i]
                 break
 
@@ -191,6 +189,7 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase,
 
         mini = float('inf')
         mini3 = float('inf')
+
 
         lunch = restaurant_list[0]
         dinner = restaurant_list[0]
@@ -219,15 +218,20 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase,
     return populatie
 
 
-def crossover(parinte1, parinte2):
-    punct_crossover = random.randint(0, len(parinte1) - 1)
-    copil1 = parinte1[:punct_crossover] + [locatie for locatie in parinte2 if locatie not in parinte1[:punct_crossover]]
-    copil2 = parinte2[:punct_crossover] + [locatie for locatie in parinte1 if locatie not in parinte2[:punct_crossover]]
-    return copil1, copil2
+def crossover(parent1, parent2,prob_crossover):
+    crossover_point = random.randint(0, min(len(parent1) - 1, len(parent2)-1))
+
+    if random.random() < prob_crossover:
+        child1 = parent1[:crossover_point] + [loc for loc in parent2[crossover_point:] if loc not in parent1[:crossover_point]]
+        child2 = parent2[:crossover_point] + [loc for loc in parent1[crossover_point:] if loc not in parent2[:crossover_point]]
+
+        return child1, child2
+    else:
+        return parent1, parent2
 
 
 def mutatie(ruta, probabilitate_mutatie):
-    if random.random() < probabilitate_mutatie:
+    if random.random() < probabilitate_mutatie and len(ruta)>=2:
         idx1, idx2 = random.sample(range(len(ruta)), 2)
         ruta[idx1], ruta[idx2] = ruta[idx2], ruta[idx1]
 
@@ -253,7 +257,7 @@ def normalizare_restaurante(ruta, timp_curent):
     for i in range(len(ruta) - 1):
         locatie = locatii[ruta[i]]
         if locatie['type'] == 'restaurant':
-            # restaurantul de seara e sigur pe ultima pozitie, penalizez doar primul restaurant gasit pentru a ma asigura ca e la pranz
+            # penalizez primul restaurant gasit pentru a ma asigura ca e la pranz
             if not 12 * 60 <= timp_curent <= 15 * 60:
                 penalizare_ore = 1000
         break
@@ -294,8 +298,23 @@ def get_opening_hours(zi, timp_curent, hours):
                 break
     return g, opentime, closetime
 
+# desired_locs = extract_places(user_preferences['place_name'])
+# def getDesiredPlacesInChromosome(ruta):
+#     mustSee_count = 0  # contor in care vom retine cate locatii must-see contine cromozomul - alfa
+#     for i in range(len(ruta)):
+#         locatie = locatii[ruta[i]]
+#         if locatie['desired'] == 'true':
+#             mustSee_count += 1
+#
+#     return mustSee_count
 
-def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
+def fitness(ruta, matrice_distantelor, day_number, ora_start, zi, colecteaza_orar=False):
+    # if day_number == 0:
+    #     unvisited_locations = len(desired_locs)
+    # else:
+
+    # newUnvisited_locations = unvisited_locations - mustSee_count
+
     timp_curent = timp_in_minute(ora_start)
     orar = []
 
@@ -310,6 +329,9 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
     penalizare_ore_functionare = 0
     penalizare_percentage = 0
     penalizare_ratings = 0
+
+    if len(ruta)<5:
+        penalizare_nr_locatii += 10000
     for i in range(len(ruta) - 1):
         distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]] * 10
 
@@ -318,24 +340,24 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
 
         if locatie['type'] in procente_preferinte:
             value = procente_preferinte[locatie['type']]
-            penalizare_percentage += 100 - value
+            penalizare_percentage += (100 - value) * 10
 
         penalizare_ratings -= locatie['user_ratings_total']
 
         g, opentime, closetime = get_opening_hours(zi, timp_curent, locatie['opening_hours'])
 
         if g == 0:  # locatia este pusa in solutie astfel incat se afla in afara orelor de functionare
-            penalizare_ore_functionare = 1000
+            penalizare_ore_functionare = 200
 
         if timp_curent < opentime:  # daca sosim inainte de deschidere
             penalizare_asteptare += opentime - timp_curent
             timp_curent = opentime  # actualizam timpul curent la ora de deschidere
 
         if timp_curent > closetime:
-            penalizare_inchidere += 50
+            penalizare_inchidere += 200
 
         if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
-            penalizare_inchidere += 50
+            penalizare_inchidere += 200
 
         # penalizare restaurant
         penalizare_restaurant = normalizare_restaurante(ruta, timp_curent)
@@ -361,7 +383,7 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
 
         timp_deplasare = matrice_timp_mers[ruta[i]][ruta[i + 1]]
         if timp_deplasare > 20:
-            penalizare_mers += 1000
+            penalizare_mers += 200
 
         timp_curent += timp_deplasare
 
@@ -387,10 +409,10 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         timp_curent = opentime  # actualizam timpul curent la ora de deschidere
 
     if timp_curent > closetime:
-        penalizare_inchidere += 50
+        penalizare_inchidere += 200
 
     if timp_curent + spendtime > closetime:  # daca spendtime depaseste ora de inchidere
-        penalizare_inchidere += 25
+        penalizare_inchidere += 200
 
     if colecteaza_orar:
         lat = locatie['lat']
@@ -409,7 +431,17 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
                      rating, nr_reviews))
         # print(orar)
 
-    if timp_curent < timp_in_minute('20:00'):
+    # penalizare pentru locatii cerute de user
+        # penalizare_desiredPlaces = 0
+        # days_left = trip_length - day_number
+        # beta = unvisited_locations//days_left
+        # if beta > mustSee_count:
+        #     penalizare_desiredPlaces += (beta-mustSee_count)*1000
+
+
+        # unvisited_locations = unvisited_locations - maxi
+
+    if timp_curent < timp_in_minute('21:00'):
         penalizare_ora_final = 500
     fitness_total = distanta_totala + penalizare_asteptare + \
                     penalizare_inchidere + penalizare_restaurant + penalizare_nr_locatii + penalizare_ora_final \
@@ -420,14 +452,22 @@ def fitness(ruta, matrice_distantelor, ora_start, zi, colecteaza_orar=False):
         return 1 / (1 + fitness_total)
 
 
+evolutie_finala = []
+evolutie_finala2 = []
 def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_populatie, nr_generatii, ora_start, zi):
     lungime_locatii = len(locatii)
     populatie = initializare_populatie(dimensiune_populatie, min(6, lungime_locatii), locatii, day_number)
+    fitness_evolution1 = []
+    fitness_evolution2 = []
+    max_must_see_counts = {}
 
     for generatie in range(nr_generatii):
         # sortare populatie dupa fitness
-        sorted_populatie = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, ora_start, zi),
+        sorted_populatie = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, day_number, ora_start, zi),
                                   reverse=True)
+
+        elitism_count = int(0.1 * dimensiune_populatie)
+        elitism = sorted_populatie[:elitism_count]
 
         # selectie
         parinti = sorted_populatie[:dimensiune_populatie // 2]
@@ -435,19 +475,39 @@ def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_popula
         urmasi = []
         while len(urmasi) < dimensiune_populatie - len(parinti):
             parinte1, parinte2 = random.sample(parinti, 2)
-            copil1, copil2 = crossover(parinte1, parinte2)
+            copil1, copil2 = crossover(parinte1, parinte2,0.7)
+
             mutatie(copil1, 0.2)
             mutatie(copil2, 0.2)
             urmasi.extend([copil1, copil2])
 
-        sorted_populatie = parinti + urmasi
+        populatie = elitism + urmasi
+        sorted_populatie2 = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, day_number,ora_start, zi),
+                                  reverse=True)
 
+        best_fitness_in_generation = fitness(sorted_populatie2[0], matrice_distantelor,day_number, ora_start, zi)
+
+        average_fitness1 = sum(
+            fitness(ruta, matrice_distantelor,day_number, ora_start, zi) for ruta in populatie) / dimensiune_populatie
+
+        fitness_evolution1.append(average_fitness1)
+        fitness_evolution2.append(best_fitness_in_generation)
+
+        evolutie_finala.append(fitness_evolution1)
+        evolutie_finala2.append(fitness_evolution2)
+
+        # maxiCounts = sorted(populatie, key=lambda ruta: getDesiredPlacesInChromosome(ruta),reverse=True)
+        # for i in maxiCounts:
+        #     print(getDesiredPlacesInChromosome(i))
+
+    # print(getDesiredPlacesInChromosome(maxiCounts[0]))
     # determin cea mai buna ruta
     cea_mai_buna_ruta = sorted_populatie[0]
 
-    best_fitness, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor, ora_start, zi,
+    best_fitness, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor,day_number, ora_start, zi,
                                                    colecteaza_orar=True)
-    return best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta
+
+    return best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta,fitness_evolution1,fitness_evolution2
 
 
 # locatii = data['places']
@@ -483,7 +543,7 @@ def ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor):
     all_results = []
     for start_day in days_of_week:
         start_date = find_first_day_of_week(start_day)
-        rezultate_zilnice = ruleaza_algoritm_pe_zile_start_day(locatii_ramase, matrice_distantelor, start_date)
+        rezultate_zilnice, fitness_evolution = ruleaza_algoritm_pe_zile_start_day(locatii_ramase, matrice_distantelor, start_date)
         all_results.append((start_day, rezultate_zilnice))
 
     best_result = min(all_results, key=lambda x: sum(fit[0] for fit in x[1]))
@@ -495,6 +555,7 @@ def ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor):
 def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date):
     locatii_ramase = list(range(len(locatii)))
     rezultate_zilnice = []
+    fitness_evolution_data1 = []
 
     start_day_of_trip = start_date.strftime("%a")  # Mon/Tue/Sun..
     start_day_of_trip = start_day_of_trip[:-1]
@@ -504,12 +565,14 @@ def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date)
     current_day_index = start_day_index
     for day_number in range(trip_length):
         current_day = days_of_week[current_day_index]
-        best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta = algoritm_genetic(locatii_ramase, matrice_distantelor,
+        best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta, fitness_evolution1, fitness_evolution2 = algoritm_genetic(locatii_ramase, matrice_distantelor,
                                                                                    day_number,
-                                                                                   dimensiune_populatie=1000,
-                                                                                   nr_generatii=200,
+                                                                                   dimensiune_populatie=500,
+                                                                                   nr_generatii=70,
                                                                                    ora_start='09:00', zi=current_day)
         rezultate_zilnice.append((best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta))
+        fitness_evolution_data1.append(fitness_evolution1)
+        # print(fitness_evolution2)
 
         current_day_index = (current_day_index + 1) % 7
 
@@ -518,7 +581,12 @@ def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date)
             if idx in locatii_ramase:
                 locatii_ramase.remove(idx)
 
-    return rezultate_zilnice
+    best_fitness_evolution = []
+    for i in range(50):
+        best_fitness_generation = sum(evolutie_finala2[j][i] for j in range(trip_length))
+        best_fitness_evolution.append(best_fitness_generation)
+
+    return rezultate_zilnice, best_fitness_evolution
 
 
 def combine_json_strings(json_strings):
@@ -596,13 +664,11 @@ def afiseaza_itinerariu_best_day(best_rez):
 
 
 if option == 'dates':
-    itinerarii_zilnice = ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start)
+    itinerarii_zilnice, best_fitness_evolution = ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start)
     afiseaza_itinerarii(itinerarii_zilnice)
+    # print(best_fitness_evolution)
 else:
     best_rez = ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor)
     # afiseaza_itinerarii(best_rez)
     afiseaza_itinerariu_best_day(best_rez)
 
-end_time = time.time()
-execution_time = end_time - start_time
-# print("Execution time:",execution_time)

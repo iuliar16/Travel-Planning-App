@@ -13,6 +13,7 @@ redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
 
 def calculate_probability(loc_list):
+    # print(loc_list)
     # grupare locatii dupa tip
     type_groups = {}
     for loc in loc_list:
@@ -21,16 +22,16 @@ def calculate_probability(loc_list):
             type_groups[loc_type] = []
         type_groups[loc_type].append(loc)
 
+
     # calculare probabilitati pentru fiecare locatie relativ la tipul acesteia
     for loc_type, locations in type_groups.items():
         ratings_totals = [loc['user_ratings_total'] for loc in locations]
         max_reviews = max(ratings_totals) if ratings_totals else 1
         probabilities = [total / max_reviews for total in ratings_totals]
-        total_prob = sum(probabilities)
-        normalized_probs = [prob / total_prob for prob in probabilities]
 
-        for loc, prob in zip(locations, normalized_probs):
+        for loc, prob in zip(locations, probabilities):
             loc['score'] = prob
+
 
     return loc_list
 
@@ -120,12 +121,12 @@ def fetch_api_data(destination, user_preferences):
         preference_key = f"{destination}_{preference}"
         preference_data = redis_client.get(preference_key)
         if preference_data:
-            results.extend(json.loads(preference_data))
+            results.extend(json.loads(preference_data.decode('utf-8')))
         else:
             places = search_places(destination, preference)
             results.extend(places)
 
-            redis_client.set(preference_key, json.dumps(places))
+            redis_client.set(preference_key, json.dumps(places, ensure_ascii=False))
             redis_client.expire(preference_key, 6 * 30 * 24 * 3600)
 
     for location in results:
@@ -135,20 +136,20 @@ def fetch_api_data(destination, user_preferences):
             placeId_key = f"{destination}_placeId"
             placeId_data = redis_client.get(placeId_key)
             if placeId_data:
-                place_id = json.loads(placeId_data)
+                place_id = json.loads(placeId_data.decode('utf-8'))
             else:
                 place_id = get_place_id(name)
-                redis_client.set(placeId_key, json.dumps(place_id))
+                redis_client.set(placeId_key, json.dumps(place_id, ensure_ascii=False))
                 redis_client.expire(placeId_key, 6 * 30 * 24 * 3600)
 
             if place_id:
                 details_key = f"{place_id}_detailsKey"
                 details_data = redis_client.get(details_key)
                 if details_data:
-                    place_details = json.loads(details_data)
+                    place_details = json.loads(details_data.decode('utf-8'))
                 else:
                     place_details = get_place_details(place_id['place_id'])
-                    redis_client.set(details_key, json.dumps(place_details))
+                    redis_client.set(details_key, json.dumps(place_details,ensure_ascii=False))
                     redis_client.expire(details_key, 6 * 30 * 24 * 3600)
 
                 if place_details:
@@ -178,7 +179,6 @@ def fetch_api_data(destination, user_preferences):
                         "type": type,
                         "desired": "false"
                     }
-
                     locations.append(loc)
 
             else:

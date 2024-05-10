@@ -1,4 +1,10 @@
-<app-sub-header></app-sub-header>
+<div class="nav-container">
+    <ul class="nav-ul">
+        <li (click)="toggleOption('upcoming')"><a class="active">Upcoming Trips</a></li>
+        <li (click)="toggleOption('past')"><a>Past Trips</a></li>
+        <li><a>Community Trips</a></li>
+    </ul>
+</div>
 <div class="container">
     <button class="add-trip-container" routerLink="/add-trip">
         <mat-icon>add_circle_outline</mat-icon>
@@ -7,7 +13,7 @@
 
     <ul>
         <li *ngFor="let trip of savedTrips">
-            <app-trip-card [trip]="trip"></app-trip-card>
+            <app-trip-card [trip]="trip" (itineraryDeleted)="onTripDeleted($event)"></app-trip-card>
         </li>
     </ul>
 </div>

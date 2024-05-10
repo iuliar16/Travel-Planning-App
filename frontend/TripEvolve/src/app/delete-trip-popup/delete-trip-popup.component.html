@@ -6,5 +6,5 @@
 <div class="line-div"></div>
 <mat-dialog-actions align="end">
     <button mat-button class="cancel" mat-dialog-close>Cancel</button>
-    <button mat-button class="save" [mat-dialog-close]="true" cdkFocusInitial>Confirm</button>
+    <button mat-button class="save" (click)="onConfirmClick()" [mat-dialog-close]="true" cdkFocusInitial>Confirm</button>
 </mat-dialog-actions>

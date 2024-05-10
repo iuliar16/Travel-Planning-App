@@ -4,6 +4,8 @@ import { AddTripService } from '../services/add-trip/add-trip.service';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { debounce } from 'lodash';
+import { HeaderService } from '../services/header/header.service';
+import { TripInfoService } from '../services/trip-info/trip-info.service';
 
 
 @Component({
@@ -40,6 +42,16 @@ export class AddTripComponent {
     // city:''
   };
 
+  constructor(private headerService: HeaderService,
+    private tripInfoService:TripInfoService,
+    private addTripService: AddTripService,
+     private router: Router) {
+    this.initializeLocationPreferences();
+  }
+
+  ngOnInit(): void {
+    this.headerService.setShowHeader(true);
+  }
 
   startDateChanged(event: any) {
     const selectedStartDate = event.target.value;
@@ -91,9 +103,6 @@ export class AddTripComponent {
     });
   }
 
-  constructor(private addTripService: AddTripService, private router: Router) {
-    this.initializeLocationPreferences();
-  }
 
   initializeLocationPreferences() {
     for (const location of this.locations) {
@@ -105,14 +114,29 @@ export class AddTripComponent {
     this.formData.selectedLocations = this.selectedLocations;
     this.formData.selectedOption = this.selectedOption;
 
-    if (!(this.formData.location && this.formData.selectedLocations && (this.formData.startDate || this.formData.tripLength))) {
+    console.log(this.formData.selectedOption);
+    if (this.formData.selectedOption == 'dates') {
+      console.log(this.formData.startDate);
+      console.log(this.formData.endDate)
+
+      if (this.formData.startDate == '' || this.formData.endDate == '' || this.formData.startDate == null || this.formData.endDate == null) {
+        this.message = 'Please complete all required fields.';
+        return;
+      }
+    }
+
+    if (!(this.formData.location && this.formData.selectedLocations.length)) {
       this.message = 'Please complete all required fields.';
       return;
     }
 
+
     this.formData.locationPreferences = this.locationPreferences;
     console.log(this.formData);
     this.addTripService.setFormData(this.formData);
+
+    this.tripInfoService.submitTrip();
+
 
     this.router.navigate(['/schedule-itinerary']);
 
@@ -151,10 +175,10 @@ export class AddTripComponent {
     const index = this.selectedLocations.indexOf(location);
     if (index !== -1) {
       this.selectedLocations.splice(index, 1);
-      this.locationPreferences.delete(location); // Use delete() method for Map
+      this.locationPreferences.delete(location);
     } else {
       this.selectedLocations.push(location);
-      this.locationPreferences.set(location, percentage); // Use set() method for Map
+      this.locationPreferences.set(location, percentage);
     }
   }
 

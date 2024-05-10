@@ -58,15 +58,18 @@ export class HeaderComponent {
       width: '700px',
       height: '175px',
       position: {
-        top: '-10%',
-        left: '29.5%'
+        top: '-480px',
+        left: '31%'
       },
       backdropClass: 'bdrop',
       autoFocus: false,
     });
 
+    this.showLogoutPopup = true;
+
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
+      this.showLogoutPopup = false;
     });
   }
 

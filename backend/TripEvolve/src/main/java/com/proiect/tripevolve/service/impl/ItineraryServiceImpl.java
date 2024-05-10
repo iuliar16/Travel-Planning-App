@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,5 +104,16 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public void deleteById(Integer itinerary_id) {
         itineraryRepository.deleteById(itinerary_id);
+    }
+
+    public List<ItineraryDTO> findFutureItinerariesByUserId(Integer userId) {
+        Date currentDate = new Date(); // Get current date
+        return itineraryRepository.findFutureItinerariesByUserId(userId, currentDate);
+    }
+
+    @Override
+    public List<ItineraryDTO> findPastItinerariesByUserId(Integer userId) {
+        Date currentDate = new Date(); // Get current date
+        return itineraryRepository.findPastItinerariesByUserId(userId, currentDate);
     }
 }

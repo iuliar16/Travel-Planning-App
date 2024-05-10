@@ -35,6 +35,7 @@ import { DeleteTripPopupComponent } from './delete-trip-popup/delete-trip-popup.
 import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component';
 import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
 import { MatSliderModule } from '@angular/material/slider';
+import { ViewTripComponent } from './view-trip/view-trip.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -58,6 +59,7 @@ import { MatSliderModule } from '@angular/material/slider';
     DeleteTripPopupComponent,
     SignOutPopupComponent,
     ConfirmAccountComponent,
+    ViewTripComponent,
   ],
   imports: [
     BrowserModule,

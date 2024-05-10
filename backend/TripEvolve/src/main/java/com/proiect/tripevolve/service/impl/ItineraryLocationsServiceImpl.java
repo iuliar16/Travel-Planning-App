@@ -3,6 +3,7 @@ package com.proiect.tripevolve.service.impl;
 import com.proiect.tripevolve.dto.ItineraryLocationsDTO;
 import com.proiect.tripevolve.repository.ItineraryLocationsRepository;
 import com.proiect.tripevolve.service.interfaces.ItineraryLocationsService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,14 @@ public class ItineraryLocationsServiceImpl implements ItineraryLocationsService 
     }
 
     @Override
-    public void deleteById(Integer locationHours_id) {
-        itineraryLocationsRepository.deleteById(locationHours_id);
+    public void deleteById(Integer id) {
+        itineraryLocationsRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public void deleteByItineraryId(Integer itineraryId) {
+        itineraryLocationsRepository.deleteByItineraryId(itineraryId);
+    }
+
 }

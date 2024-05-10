@@ -7,6 +7,7 @@ import { AddTripService } from '../services/add-trip/add-trip.service';
 import { jsPDF } from 'jspdf';
 import { SaveItineraryService } from '../services/save-itinerary/save-itinerary.service';
 import { StorageService } from '../services/storage/storage.service';
+import { TripInfoService } from '../services/trip-info/trip-info.service';
 
 interface DayAbbreviationMap {
   [key: string]: number;
@@ -40,6 +41,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   cityName: string = '';
   showMoreOptions: boolean = false;
   tripPhoto: string = ''
+  duration:number = 1
 
   toggleMoreOptions() {
     this.showMoreOptions = !this.showMoreOptions;
@@ -62,6 +64,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   directionsService: any;
   directionsRenderer: any;
   paths: google.maps.Polyline[] = [];
+  isLoggedIn: boolean;
   utilizator = {
     id_user: 'id_user',
     username: 'username',
@@ -73,19 +76,32 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
 
   constructor(private router: Router, private scheduleService: ScheduleService,
     private headerService: HeaderService, private addTripService: AddTripService,
-    private saveItineraryService: SaveItineraryService, private storageService: StorageService
+    private saveItineraryService: SaveItineraryService, private storageService: StorageService,
+    private tripInfoService: TripInfoService,
   ) {
+    this.isLoggedIn = this.storageService.isLoggedIn();
     this.tripSummary = this.addTripService.getTripSummary();
   }
   saveTrip() {
     this.utilizator = this.storageService.getUser()
+    if (this.tripSummary.selectedOption == 'dates')
+      {
+        const startDate = new Date(this.tripSummary.startDate);
+        const endDate = new Date(this.tripSummary.endDate);
+        const timeDifference = endDate.getTime() - startDate.getTime();
+        this.duration = Math.ceil(timeDifference / (1000 * 3600 * 24)) +1;
+      }
+      else
+      {
+        this.duration = this.tripSummary.tripLength
+      }
     const itineraryData = {
       user_id: this.utilizator.id_user,
       title: this.tripSummary.tripName,
       startDate: this.tripSummary.startDate,
       endDate: this.tripSummary.endDate,
       city: this.tripSummary.city,
-      tripLength: this.tripSummary.tripLength,
+      tripLength: this.duration,
       photo: this.tripPhoto
     };
 
@@ -96,7 +112,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
         response => {
           const itinerary_id = response.itinerary_id
           console.log('Itinerary saved successfully:', response);
-
+           
           this.itineraryResults.forEach(location => {
             const locationData = {
               name: location.name,
@@ -105,7 +121,8 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
               type: location.type,
               city: this.tripSummary.city,
               address: location.address,
-              photo: location.photo[0].photo_reference
+              photo: location.photo[0].photo_reference,
+              tripDays:this.tripDays
 
             }
             console.log(locationData);
@@ -121,7 +138,8 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
                     visit_order: location.order,
                     visit_day: location.day,
                     arrival_hour: location.arrival_hour,
-                    leave_hour: location.leave_hour
+                    leave_hour: location.leave_hour,
+                    tripDays:this.tripDays
                   };
                   this.saveItineraryService.saveItineraryLocations(itineraryLocationData).subscribe(
                     itineraryLocationResponse => {
@@ -261,6 +279,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
       fillOpacity: 1,
       scale: 3
     };
+    
     this.directionsService.route(
       {
         origin: { lat: origin.lat, lng: origin.lng },
@@ -316,7 +335,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     const preferences = {
       preferredLocations: this.tripSummary.selectedLocations,
       location: this.tripSummary.city,
-      trip_length: this.tripSummary.tripLength,
+      trip_length: this.tripSummary.tripLength + 1,
       startDate: this.tripSummary.startDate,
       endDate: this.tripSummary.endDate,
       selectedOption: this.tripSummary.selectedOption,
@@ -367,7 +386,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
       const startDate = new Date(this.tripSummary.startDate);
       const endDate = new Date(this.tripSummary.endDate);
       const timeDifference = endDate.getTime() - startDate.getTime();
-      this.daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+      this.daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
       console.log(this.daysDifference)
       this.nr_days = this.daysDifference > 1 ? 'days' : 'day';
 

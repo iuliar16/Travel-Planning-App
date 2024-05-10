@@ -38,8 +38,8 @@ public class ItineraryLocationsController {
     }
 
     @GetMapping("/itineraryId")
-    ResponseEntity<List<ItineraryLocationsDTO>> getByItineraryId(@RequestParam Integer id) {
-        List<ItineraryLocationsDTO> itineraryLocationsDTO = this.itineraryLocationsService.findByItineraryId(id);
+    ResponseEntity<List<ItineraryLocationsDTO>> getByItineraryId(@RequestParam Integer itineraryId) {
+        List<ItineraryLocationsDTO> itineraryLocationsDTO = this.itineraryLocationsService.findByItineraryId(itineraryId);
         return new ResponseEntity<>(itineraryLocationsDTO, HttpStatus.OK);
 
     }
@@ -55,6 +55,12 @@ public class ItineraryLocationsController {
         this.itineraryLocationsService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
+    }
+
+    @DeleteMapping("/itinerary/{id}")
+    ResponseEntity<?> deleteByItineraryId(@PathVariable Integer id) {
+        this.itineraryLocationsService.deleteByItineraryId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

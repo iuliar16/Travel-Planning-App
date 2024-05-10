@@ -16,4 +16,7 @@ public interface ItineraryService{
 
     ItineraryDTO add(ItineraryDTO itineraryDTO);
     void deleteById(Integer location_id);
+    List<ItineraryDTO> findFutureItinerariesByUserId(Integer userId);
+
+    List<ItineraryDTO> findPastItinerariesByUserId(Integer userId);
 }

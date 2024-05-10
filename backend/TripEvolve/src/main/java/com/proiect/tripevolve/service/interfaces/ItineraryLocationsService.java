@@ -13,4 +13,6 @@ public interface ItineraryLocationsService {
 
     ItineraryLocationsDTO add(ItineraryLocationsDTO locationHoursDTO);
     void deleteById(Integer locationHours_id);
+
+    void deleteByItineraryId(Integer itineraryId);
 }

@@ -12,7 +12,11 @@
         preferences. With Trip Evolve, the world becomes your playground, waiting to be explored. Start your journey
         today.
     </p>
-    
-    <button class="started" *ngIf="!isLoggedIn" routerLink="/sign-up">Get Started</button>
-    <button class="started" *ngIf="isLoggedIn" routerLink="/home">Get Started</button>
+
+    <div class="intro-btns">
+        <button class="started" *ngIf="!isLoggedIn" routerLink="/sign-up">Sign Up</button>
+        <button class="started" *ngIf="isLoggedIn" routerLink="/home">Home</button>
+        <div class="or"> OR </div>
+        <button class="started" routerLink="/add-trip">Start Trip</button>
+    </div>
 </div>

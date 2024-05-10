@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DialogData } from '../manage-sharing/manage-sharing.component';
 import { StorageService } from '../services/storage/storage.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-sign-out-popup',
@@ -14,7 +15,8 @@ export class SignOutPopupComponent {
     public dialogRef: MatDialogRef<SignOutPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
      private storageService: StorageService,
-     private router: Router
+     private router: Router,
+     private authService:AuthService
   ) { }
 
   onNoClick(): void {
@@ -24,7 +26,10 @@ export class SignOutPopupComponent {
     this.dialogRef.close();
 
     if (response === true) {
+
       this.storageService.logout();
+      this.authService.signout();
+      
       this.router.navigate(['/intro']);
     }
   }

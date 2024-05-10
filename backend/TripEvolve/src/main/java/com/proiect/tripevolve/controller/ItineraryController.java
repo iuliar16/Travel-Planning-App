@@ -60,4 +60,14 @@ public class ItineraryController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
+    @GetMapping("/userId/{id}/future")
+    public ResponseEntity<List<ItineraryDTO>> getFutureItinerariesForUser(@PathVariable Integer id) {
+        List<ItineraryDTO> futureItineraries = itineraryService.findFutureItinerariesByUserId(id);
+        return new ResponseEntity<>(futureItineraries, HttpStatus.OK);
+    }
+    @GetMapping("/userId/{id}/past")
+    public ResponseEntity<List<ItineraryDTO>> getPastItinerariesForUser(@PathVariable Integer id) {
+        List<ItineraryDTO> pastItineraries = itineraryService.findPastItinerariesByUserId(id);
+        return new ResponseEntity<>(pastItineraries, HttpStatus.OK);
+    }
 }

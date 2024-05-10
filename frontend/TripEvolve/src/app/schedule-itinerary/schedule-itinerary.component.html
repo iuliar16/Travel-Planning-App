@@ -11,7 +11,7 @@
         </option>
       </select>
       <div class="share-btns">
-        <div *ngIf="showSchedule" class="more-options-wrapper">
+        <div *ngIf="showSchedule && isLoggedIn" class="more-options-wrapper">
           <mat-icon class="dots" (click)="toggleMoreOptions()">more_vert</mat-icon>
           <div class="more-options" *ngIf="showMoreOptions">
             <div class="save-trip"  (click)="saveTrip()">Save Trip</div>

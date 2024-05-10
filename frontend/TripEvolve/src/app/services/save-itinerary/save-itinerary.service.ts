@@ -60,4 +60,17 @@ export class SaveItineraryService {
   getSavedTrips(userId:any): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/itinerary/userId?userId=${userId}`);
   }
+  getUpcomingSavedTrips(userId:any): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/itinerary/userId/${userId}/future`);
+  }
+  getPastSavedTrips(userId:any): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/itinerary/userId/${userId}/past`);
+  }
+
+  getTripInfo(itineraryId:any): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/itineraryLocations/itineraryId?itineraryId=${itineraryId}`);
+  }
+  getLocationInfo(locationId:any): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/location/${locationId}`);
+  }
 }
