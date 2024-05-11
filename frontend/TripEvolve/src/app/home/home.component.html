@@ -1,7 +1,9 @@
+<div class="header-overlay" *ngIf="isPopupOpen"></div>
 <div class="nav-container">
     <ul class="nav-ul">
-        <li (click)="toggleOption('upcoming')"><a class="active">Upcoming Trips</a></li>
-        <li (click)="toggleOption('past')"><a>Past Trips</a></li>
+        <li (click)="toggleOption('upcoming')" [class.selected]="option === 'upcoming'"><a class="active">Upcoming
+                Trips</a></li>
+        <li (click)="toggleOption('past')" [class.selected]="option === 'past'"><a>Past Trips</a></li>
         <li><a>Community Trips</a></li>
     </ul>
 </div>
@@ -13,7 +15,13 @@
 
     <ul>
         <li *ngFor="let trip of savedTrips">
-            <app-trip-card [trip]="trip" (itineraryDeleted)="onTripDeleted($event)"></app-trip-card>
+            <app-trip-card [isPopupOpen]="isPopupOpen" (popupStateChanged)="onPopupStateChanged($event)" [trip]="trip"
+                [totalTripCards]="savedTrips.length" (itineraryDeleted)="onTripDeleted($event)"></app-trip-card>
         </li>
     </ul>
+    <div class="emptyMes" *ngIf="emptyMessage">
+        {{emptyMessage}}
+       
+    </div>
+    <button class="start"  *ngIf="emptyMessage && option=='upcoming'" routerLink="/add-trip">Start your Trip</button>
 </div>

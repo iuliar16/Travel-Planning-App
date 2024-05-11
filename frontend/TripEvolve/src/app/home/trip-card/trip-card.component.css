@@ -39,6 +39,7 @@ h3 {
 }
 
 .options {
+    margin-bottom: 20px;
     color: #004AAD;
     display: flex;
     margin-left: 20px;

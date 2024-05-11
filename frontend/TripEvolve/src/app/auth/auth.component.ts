@@ -2,6 +2,7 @@ import { Component, ElementRef } from '@angular/core';
 import { AuthService } from '../services/auth/auth.service';
 import { StorageService } from '../services/storage/storage.service';
 import { EmailService } from '../services/email/email.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -14,7 +15,14 @@ export class AuthComponent {
   constructor(
     private authService: AuthService,
     private storageService: StorageService,
+    private router: Router
   ) { }
+
+  ngOnInit(){
+    if (this.authService.isLogin()) {
+      this.router.navigate(['/home']);
+    }
+  }
   register(formData: any) {
     console.log('submit');
     this.message = '';

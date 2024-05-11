@@ -9,7 +9,7 @@
 }
 
 .photo {
-  width: 900px;
+  width: 960px;
   height: 500px;
 }
 
@@ -107,6 +107,21 @@
   width: 110%;
   border: 1px solid #ccc;
   text-align: center;
+}
+
+.errorMes {
+  color: #004AAD;
+  margin: auto;
+  width: 600px;
+  margin-top: 50%;
+  font-size: 40px;
+  margin-left: 20%;
+  align-items: center;
+}
+
+.error {
+  display: inline-flex;
+  margin-left: 20%;
 }
 
 .loading-photo p {
@@ -308,7 +323,7 @@ h3 {
 .place-info {
   padding: 5px;
   margin-left: 10px;
-  width: 200%;
+  width: 150%;
   color: rgb(69 90 100);
   border-radius: 15px;
   font-size: 20px;
@@ -338,6 +353,24 @@ h3 {
   float: right;
   width: 170px;
   height: 100%;
+}
+
+.add-trip {
+  padding: 5px 10px;
+  background-color: white;
+  margin-left: 45%;
+  border: 2px solid #004AAD;
+  color: #004AAD;
+  cursor: pointer;
+  font-size: 25px;
+  border-radius: 4px;
+  margin-top: 20px;
+
+}
+
+.add-trip :hover {
+  background-color: #004AAD;
+  color: white;
 }
 
 .place-name {

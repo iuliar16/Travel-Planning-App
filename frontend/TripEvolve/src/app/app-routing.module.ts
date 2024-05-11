@@ -33,7 +33,7 @@ const routes: Routes = [
   },
   {
     path: 'sign-in',
-    component: LoginComponent,
+    component: LoginComponent, 
   },
   {
     path: 'add-trip',

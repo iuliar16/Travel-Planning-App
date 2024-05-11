@@ -29,14 +29,14 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Optional<LocationDTO> findByName(String name) {
+    public Optional<LocationDTO> findByNameAndAddress(String name, String address) {
         System.out.println(name);
-        return locationRepository.findByName(name);
+        return locationRepository.findByNameAndAddress(name,address);
     }
 
     @Override
     public LocationDTO add(LocationDTO locationDTO) {
-        Optional<LocationDTO> existingLocation = locationRepository.findByName(locationDTO.getName());
+        Optional<LocationDTO> existingLocation = locationRepository.findByNameAndAddress(locationDTO.getName(),locationDTO.getAddress());
         return existingLocation.orElseGet(() -> locationRepository.save(locationDTO));
     }
 

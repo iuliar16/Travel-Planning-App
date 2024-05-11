@@ -6,7 +6,9 @@ import { AddTripService } from '../services/add-trip/add-trip.service';
 import { StorageService } from '../services/storage/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TripInfoService } from '../services/trip-info/trip-info.service';
-import { } from 'googlemaps';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+
 
 
 @Component({
@@ -22,6 +24,7 @@ export class ViewTripComponent {
   tripDays: any[] = [];
   tripPhoto: string = ''
   showMoreOptions: boolean = false;
+  nr_days: string = 'days'
 
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
@@ -36,6 +39,10 @@ export class ViewTripComponent {
   directionsService: any;
   directionsRenderer: any;
   paths: google.maps.Polyline[] = [];
+  dataLoaded: boolean = false;
+  tripExists: boolean = true;
+  gasit: boolean = false;
+  itinerary: any = '';
 
   constructor(private saveItineraryService: SaveItineraryService,
     private storageService: StorageService, private route: ActivatedRoute,
@@ -73,17 +80,78 @@ export class ViewTripComponent {
     const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   }
+  fetchSavedTrips(): void {
+    this.saveItineraryService.getSavedTrips(this.storageService.getUser().id_user)
+      .subscribe(
+        (response: any[]) => {
+          this.tripInfoService.setTripInfo(response);
+          console.log(response);
+          this.dataLoaded = true;
 
+          this.initAfterDataLoaded();
+        },
+        error => {
+          console.error('Error fetching saved trips:', error);
+        }
+      );
+  }
+  formatTime(timeString: string): string {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  }
 
   ngOnInit(): void {
     this.headerService.setShowHeader(false);
     this.id = this.route.snapshot.queryParams['id'];
+
+    if (!this.tripInfoService.getTripInfo()) //s-a dat refresh sau s-a cautat id-ul
+    {
+      this.fetchSavedTrips();
+    }
+    else {
+      this.initAfterDataLoaded(); //am ajuns in view-trip din home
+    }
+  }
+
+  generatePdf(): void {
+    this.tripDays.forEach(day => {
+      day.expanded = true;
+    });
+
+    setTimeout(() => {
+      const elem: any = document.getElementById('allDaysContent');
+      const tripInfoElem: string = this.tripInfo[0].city
+
+      html2canvas(elem, { scale: 2 }).then((canvas) => {
+        const pdf = new jsPDF();
+        const name = `Trip to `+tripInfoElem;
+
+        pdf.addImage(canvas.toDataURL('/image/png'), 'PNG', 0, -40, 101, 298);
+        
+
+        pdf.setProperties({
+          title: name,
+          subject: name,
+          author: 'tripEvolve',
+        });
+        pdf.setFontSize(12);
+        pdf.save(name);
+
+      });
+    }, 1000);
+  }
+
+
+  initAfterDataLoaded(): void {
     this.tripDetails = this.tripInfoService.getTripInfo();
 
     console.log(this.tripDetails);
     this.tripDetails.forEach((item: any) => {
       if (item.itinerary_id == this.id) {
         console.log('Found itinerary:', item);
+        this.itinerary = item;
+        this.gasit = true;
+        this.tripExists = true;
         let start = new Date(item.startDate);
 
         this.tripDays = [];
@@ -98,8 +166,12 @@ export class ViewTripComponent {
         console.log(this.tripDays);
       }
     });
+    if (this.gasit == false) {
+      this.headerService.setShowHeader(true);
+      this.tripExists = false;
+    }
 
-
+    console.log(this.tripExists)
     this.saveItineraryService.getTripInfo(this.id).subscribe(
       (response: any[]) => {
         this.tripInfo = response;
@@ -118,7 +190,7 @@ export class ViewTripComponent {
                 location.lng = response.lng;
                 location.type = response.type;
                 location.photo = response.photo;
-              
+
               },
               error => {
                 console.error('Error fetching location data', error);
@@ -126,7 +198,7 @@ export class ViewTripComponent {
             );
         });
         setTimeout(() => {
-          this.showDayMarkers(1);
+          // this.showDayMarkers(1);
         }, 5000);
       },
       error => {
@@ -199,12 +271,12 @@ export class ViewTripComponent {
         position: { lat: item.lat, lng: item.lng },
         map: this.map,
         title: item.name,
-        label: {
-          text: `${item.order}`,
-          color: 'white',
-          fontSize: '12px',
-          fontWeight: 'bold'
-        }
+        // label: {
+        //   // text: `${item.visit_order}`,
+        //   color: 'white',
+        //   fontSize: '12px',
+        //   fontWeight: 'bold'
+        // }
       });
 
       if (index < dayItinerary.length - 1) {

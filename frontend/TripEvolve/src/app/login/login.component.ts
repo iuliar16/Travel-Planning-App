@@ -22,6 +22,9 @@ export class LoginComponent {
 
   ngOnInit(): void {
     this.headerService.setShowHeader(true);
+    if (this.authService.isLogin()) {
+      this.router.navigate(['/home']);
+    }
   }
   login(formData: any) {
     this.message = '';

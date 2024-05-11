@@ -38,9 +38,9 @@ public class LocationController {
     }
 
     @GetMapping("/name")
-    ResponseEntity<Optional<LocationDTO>> getLocationByName(@RequestParam String name) {
+    ResponseEntity<Optional<LocationDTO>> getLocationByNameAndAddress(@RequestParam String name,@RequestParam String address) {
         System.out.println(name);
-        Optional<LocationDTO> locationDTO = this.locationService.findByName(name);
+        Optional<LocationDTO> locationDTO = this.locationService.findByNameAndAddress(name,address);
         return new ResponseEntity<>(locationDTO, HttpStatus.OK);
 
     }

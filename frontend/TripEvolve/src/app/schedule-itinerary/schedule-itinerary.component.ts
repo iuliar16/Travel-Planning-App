@@ -5,6 +5,7 @@ import { HeaderService } from '../services/header/header.service';
 import { Router } from '@angular/router';
 import { AddTripService } from '../services/add-trip/add-trip.service';
 import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { SaveItineraryService } from '../services/save-itinerary/save-itinerary.service';
 import { StorageService } from '../services/storage/storage.service';
 import { TripInfoService } from '../services/trip-info/trip-info.service';
@@ -41,7 +42,9 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   cityName: string = '';
   showMoreOptions: boolean = false;
   tripPhoto: string = ''
-  duration:number = 1
+  duration: number = 1
+  tripSaved: boolean = false;
+  error: boolean = false;
 
   toggleMoreOptions() {
     this.showMoreOptions = !this.showMoreOptions;
@@ -83,18 +86,21 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     this.tripSummary = this.addTripService.getTripSummary();
   }
   saveTrip() {
+    if (this.tripSaved) {
+      // If trip is already saved, do nothing
+      return;
+    }
+
     this.utilizator = this.storageService.getUser()
-    if (this.tripSummary.selectedOption == 'dates')
-      {
-        const startDate = new Date(this.tripSummary.startDate);
-        const endDate = new Date(this.tripSummary.endDate);
-        const timeDifference = endDate.getTime() - startDate.getTime();
-        this.duration = Math.ceil(timeDifference / (1000 * 3600 * 24)) +1;
-      }
-      else
-      {
-        this.duration = this.tripSummary.tripLength
-      }
+    if (this.tripSummary.selectedOption == 'dates') {
+      const startDate = new Date(this.tripSummary.startDate);
+      const endDate = new Date(this.tripSummary.endDate);
+      const timeDifference = endDate.getTime() - startDate.getTime();
+      this.duration = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
+    }
+    else {
+      this.duration = this.tripSummary.tripLength
+    }
     const itineraryData = {
       user_id: this.utilizator.id_user,
       title: this.tripSummary.tripName,
@@ -112,7 +118,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
         response => {
           const itinerary_id = response.itinerary_id
           console.log('Itinerary saved successfully:', response);
-           
+
           this.itineraryResults.forEach(location => {
             const locationData = {
               name: location.name,
@@ -122,7 +128,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
               city: this.tripSummary.city,
               address: location.address,
               photo: location.photo[0].photo_reference,
-              tripDays:this.tripDays
+              tripDays: this.tripDays
 
             }
             console.log(locationData);
@@ -139,7 +145,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
                     visit_day: location.day,
                     arrival_hour: location.arrival_hour,
                     leave_hour: location.leave_hour,
-                    tripDays:this.tripDays
+                    tripDays: this.tripDays
                   };
                   this.saveItineraryService.saveItineraryLocations(itineraryLocationData).subscribe(
                     itineraryLocationResponse => {
@@ -155,6 +161,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
                 }
               );
           });
+          this.tripSaved = true;
         },
         error => {
           console.error('Error saving trip:', error);
@@ -169,6 +176,20 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     this.mapInitializer();
+  }
+  formatNiceDate(dateString: string): string {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    const formattedMonth = month < 10 ? '0' + month : month;
+    const formattedDay = day < 10 ? '0' + day : day;
+
+    return `${formattedMonth}/${formattedDay}/${year}`;
   }
 
   mapInitializer() {
@@ -279,7 +300,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
       fillOpacity: 1,
       scale: 3
     };
-    
+
     this.directionsService.route(
       {
         origin: { lat: origin.lat, lng: origin.lng },
@@ -335,7 +356,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     const preferences = {
       preferredLocations: this.tripSummary.selectedLocations,
       location: this.tripSummary.city,
-      trip_length: this.tripSummary.tripLength + 1,
+      trip_length: this.tripSummary.tripLength,
       startDate: this.tripSummary.startDate,
       endDate: this.tripSummary.endDate,
       selectedOption: this.tripSummary.selectedOption,
@@ -344,37 +365,45 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     };
 
 
-    this.scheduleService.generateSchedule(preferences).subscribe(result => {
-      this.itineraryResults = JSON.parse(result);
-      console.log(this.itineraryResults);
+    this.scheduleService.generateSchedule(preferences).subscribe(
+      result => {
+        try {
+          this.itineraryResults = JSON.parse(result);
+          console.log(this.itineraryResults);
 
-      this.loading = false;
-      this.showSchedule = true
-      this.showDayMarkers(1);
-      if (this.tripSummary.selectedOption == 'length') {
-        const bestDay = this.itineraryResults[0].best_start;
-        console.log(bestDay)
-        console.log(this.getFirstFutureDate(bestDay));
-        const start = this.getFirstFutureDate(bestDay)
+          this.loading = false;
+          this.showSchedule = true;
+          this.showDayMarkers(1);
 
-        this.tripDays = [];
-        let durata = this.tripSummary.tripLength;
-        for (let i = 0; i < durata; i++) {
-          const currentDate = new Date(start);
-          currentDate.setDate(start.getDate() + i);
-          const dayName = this.getDayName(currentDate.getDay());
-          const formattedDate = this.formatDate(currentDate);
-          this.tripDays.push({ dayNumber: i + 1, day: dayName, date: formattedDate, expanded: false });
+          if (this.tripSummary.selectedOption == 'length') {
+            const bestDay = this.itineraryResults[0].best_start;
+            console.log(bestDay)
+            console.log(this.getFirstFutureDate(bestDay));
+            const start = this.getFirstFutureDate(bestDay);
+
+            this.tripDays = [];
+            let durata = this.tripSummary.tripLength;
+            for (let i = 0; i < durata; i++) {
+              const currentDate = new Date(start);
+              currentDate.setDate(start.getDate() + i);
+              const dayName = this.getDayName(currentDate.getDay());
+              const formattedDate = this.formatDate(currentDate);
+              this.tripDays.push({ dayNumber: i + 1, day: dayName, date: formattedDate, expanded: false });
+            }
+            console.log(this.tripDays);
+          }
+        } catch (error) {
+          this.error = true;
+          this.headerService.setShowHeader(true);
+          console.error('Error parsing JSON response:', error);
         }
-        console.log(this.tripDays);
-      }
-    },
-      (error) => {
+      },
+      error => {
+        this.error = true;
         console.error('Error generating schedule:', error);
         this.loading = false;
       }
     );
-
   }
 
   ngOnInit(): void {
@@ -387,6 +416,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
       const endDate = new Date(this.tripSummary.endDate);
       const timeDifference = endDate.getTime() - startDate.getTime();
       this.daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
+      this.tripSummary.tripLength = this.daysDifference;
       console.log(this.daysDifference)
       this.nr_days = this.daysDifference > 1 ? 'days' : 'day';
 
@@ -446,38 +476,32 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   }
 
   generatePdf(): void {
-    const pdfContent = this.generatePdfContent();
-
-    const pdf = new jsPDF();
-
-    pdf.html(pdfContent, {
-      callback: (pdf) => {
-        pdf.save('trip_itinerary.pdf');
-      }
+    this.tripDays.forEach(day => {
+      day.expanded = true;
     });
-  }
 
-  generatePdfContent(): string {
-    let htmlContent = '<h4>Trip Itinerary</h4>';
+    setTimeout(() => {
+      const elem: any = document.getElementById('allDaysContent');
+      const tripInfoElem: string = this.tripSummary.city
 
-    htmlContent += `<h6>${this.tripSummary.city} (${this.tripSummary.tripLength} ${this.nr_days})</h6>`;
-    this.tripDays.forEach((day) => {
-      htmlContent += `<h6>${day.day}, ${day.date}</h6>`;
-      const dayItinerary = this.filterItineraryByDay(day.dayNumber);
-      dayItinerary.forEach((item) => {
-        htmlContent += `
-          <div>
-            <p>${item.order}. ${item.name}</p>
-            <p>${item.address}</p>
-            <p>Arrival: ${item.arrival_hour} - Departure: ${item.leave_hour}</p>
-            <p>Type: ${item.type === 'tourism_attraction' ? 'Must-see' : item.type}</p>
-          </div>
-        `;
+      html2canvas(elem, { scale: 2 }).then((canvas) => {
+        const pdf = new jsPDF();
+        const name = `Trip to ` + tripInfoElem;
+
+        pdf.addImage(canvas.toDataURL('/image/png'), 'PNG', 0, -40, 101, 298);
+
+        pdf.setProperties({
+          title: name,
+          subject: name,
+          author: 'tripEvolve',
+        });
+        pdf.setFontSize(12);
+        pdf.save(name);
+
       });
-    });
-
-    return htmlContent;
+    }, 1000);
   }
+
 
 
 }

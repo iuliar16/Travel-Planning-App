@@ -27,7 +27,10 @@ def calculate_probability(loc_list):
     for loc_type, locations in type_groups.items():
         ratings_totals = [loc['user_ratings_total'] for loc in locations]
         max_reviews = max(ratings_totals) if ratings_totals else 1
-        probabilities = [total / max_reviews for total in ratings_totals]
+        if max_reviews !=0:
+            probabilities = [total / max_reviews for total in ratings_totals]
+        else:
+            probabilities = [1 for total in ratings_totals]
 
         for loc, prob in zip(locations, probabilities):
             loc['score'] = prob
@@ -222,5 +225,12 @@ def fetch_api_data(destination, user_preferences):
                     }
                     locations.append(loc)
 
+    if not locations:
+        destination_parts = destination.split(',')
+        new_destination = destination_parts[0].strip()
+        return fetch_api_data(new_destination, user_preferences)
+
     calculate_probability(locations)
+
+
     return locations

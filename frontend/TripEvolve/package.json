@@ -26,11 +26,15 @@
     "angular-draggable-droppable": "^8.0.0",
     "bootstrap": "^5.3.3",
     "express": "^4.18.2",
+    "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.10.1",
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
+    "pdfmake": "^0.2.10",
     "rxjs": "~7.8.0",
     "save": "^2.9.0",
     "tslib": "^2.3.0",
+    "unsplash-js": "^7.0.19",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {

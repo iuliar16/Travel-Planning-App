@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" #container>
     <div class="info">
         <div class="trip-info">
             <h2 class="title">{{trip.title != ""? trip.title:"Trip to "+trip.city }}</h2>
@@ -21,8 +21,7 @@
 
             <mat-icon>edit</mat-icon><button (click)="navigateToViewTrip(trip.itinerary_id)" class="share-btn">Edit Trip
                 Info</button>
-            <mat-icon>delete</mat-icon><button (click)="openDialog(trip.itinerary_id)" class="share-btn">Delete
-                Trip</button>
+            <mat-icon>delete</mat-icon><button #deleteButton (click)="openDialog(trip.itinerary_id, container)" class="share-btn">Delete Trip</button>
         </div>
     </div>
     <div class="trip-photo">

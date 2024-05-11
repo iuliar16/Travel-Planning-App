@@ -84,12 +84,12 @@ else:
     option = 'dates'
     user_preferences = {
         "preferredLocations": ["restaurant", "park", "museum", "tourist_attraction"],
-        "location": "Iași, Romania",
+        "location": "Milan, Metropolitan City of Milan, Italy",
         "trip_length": 2,
         "start_date": "2024-03-03",
         "place_name": "",
         "percentages": {'Must-see Attractions': 10, 'Museums': 81, 'Parks': 79,
-                        'Casino': 30, 'Shopping Malls': 50, 'Places of worship': 30,'Zoo':55,'Wellness and Spas':35}
+                        'Casino': 30, 'Shopping Malls': 50, 'Places of worship': 30, 'Zoo': 55, 'Wellness and Spas': 35}
     }
 if option == "dates":
     start_date = user_preferences['start_date']
@@ -123,7 +123,6 @@ def get_locationsPerDay(nr_days, nr_locs):
 
 
 def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase, day_number):
-
     populatie = []
     for _ in range(dimensiune_populatie):
         restaurant_list = []
@@ -131,6 +130,7 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase,
         must_see_list = []
 
         for loc_id in locatii_ramase:
+
             if locatii[loc_id]['type'] == 'tourist_attraction':
                 must_see_list.append(loc_id)
                 locatii[loc_id]['visited'] = 0
@@ -190,7 +190,6 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase,
         mini = float('inf')
         mini3 = float('inf')
 
-
         lunch = restaurant_list[0]
         dinner = restaurant_list[0]
 
@@ -218,12 +217,14 @@ def initializare_populatie(dimensiune_populatie, nr_max_locatii, locatii_ramase,
     return populatie
 
 
-def crossover(parent1, parent2,prob_crossover):
-    crossover_point = random.randint(0, min(len(parent1) - 1, len(parent2)-1))
+def crossover(parent1, parent2, prob_crossover):
+    crossover_point = random.randint(0, min(len(parent1) - 1, len(parent2) - 1))
 
     if random.random() < prob_crossover:
-        child1 = parent1[:crossover_point] + [loc for loc in parent2[crossover_point:] if loc not in parent1[:crossover_point]]
-        child2 = parent2[:crossover_point] + [loc for loc in parent1[crossover_point:] if loc not in parent2[:crossover_point]]
+        child1 = parent1[:crossover_point] + [loc for loc in parent2[crossover_point:] if
+                                              loc not in parent1[:crossover_point]]
+        child2 = parent2[:crossover_point] + [loc for loc in parent1[crossover_point:] if
+                                              loc not in parent2[:crossover_point]]
 
         return child1, child2
     else:
@@ -231,7 +232,7 @@ def crossover(parent1, parent2,prob_crossover):
 
 
 def mutatie(ruta, probabilitate_mutatie):
-    if random.random() < probabilitate_mutatie and len(ruta)>=2:
+    if random.random() < probabilitate_mutatie and len(ruta) >= 2:
         idx1, idx2 = random.sample(range(len(ruta)), 2)
         ruta[idx1], ruta[idx2] = ruta[idx2], ruta[idx1]
 
@@ -298,6 +299,7 @@ def get_opening_hours(zi, timp_curent, hours):
                 break
     return g, opentime, closetime
 
+
 # desired_locs = extract_places(user_preferences['place_name'])
 # def getDesiredPlacesInChromosome(ruta):
 #     mustSee_count = 0  # contor in care vom retine cate locatii must-see contine cromozomul - alfa
@@ -330,7 +332,7 @@ def fitness(ruta, matrice_distantelor, day_number, ora_start, zi, colecteaza_ora
     penalizare_percentage = 0
     penalizare_ratings = 0
 
-    if len(ruta)<5:
+    if len(ruta) < 5:
         penalizare_nr_locatii += 10000
     for i in range(len(ruta) - 1):
         distanta_totala += matrice_distantelor[ruta[i]][ruta[i + 1]] * 10
@@ -432,14 +434,13 @@ def fitness(ruta, matrice_distantelor, day_number, ora_start, zi, colecteaza_ora
         # print(orar)
 
     # penalizare pentru locatii cerute de user
-        # penalizare_desiredPlaces = 0
-        # days_left = trip_length - day_number
-        # beta = unvisited_locations//days_left
-        # if beta > mustSee_count:
-        #     penalizare_desiredPlaces += (beta-mustSee_count)*1000
+    # penalizare_desiredPlaces = 0
+    # days_left = trip_length - day_number
+    # beta = unvisited_locations//days_left
+    # if beta > mustSee_count:
+    #     penalizare_desiredPlaces += (beta-mustSee_count)*1000
 
-
-        # unvisited_locations = unvisited_locations - maxi
+    # unvisited_locations = unvisited_locations - maxi
 
     if timp_curent < timp_in_minute('21:00'):
         penalizare_ora_final = 500
@@ -454,6 +455,8 @@ def fitness(ruta, matrice_distantelor, day_number, ora_start, zi, colecteaza_ora
 
 evolutie_finala = []
 evolutie_finala2 = []
+
+
 def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_populatie, nr_generatii, ora_start, zi):
     lungime_locatii = len(locatii)
     populatie = initializare_populatie(dimensiune_populatie, min(6, lungime_locatii), locatii, day_number)
@@ -463,7 +466,8 @@ def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_popula
 
     for generatie in range(nr_generatii):
         # sortare populatie dupa fitness
-        sorted_populatie = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, day_number, ora_start, zi),
+        sorted_populatie = sorted(populatie,
+                                  key=lambda ruta: fitness(ruta, matrice_distantelor, day_number, ora_start, zi),
                                   reverse=True)
 
         elitism_count = int(0.1 * dimensiune_populatie)
@@ -475,20 +479,21 @@ def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_popula
         urmasi = []
         while len(urmasi) < dimensiune_populatie - len(parinti):
             parinte1, parinte2 = random.sample(parinti, 2)
-            copil1, copil2 = crossover(parinte1, parinte2,0.7)
+            copil1, copil2 = crossover(parinte1, parinte2, 0.7)
 
             mutatie(copil1, 0.2)
             mutatie(copil2, 0.2)
             urmasi.extend([copil1, copil2])
 
         populatie = elitism + urmasi
-        sorted_populatie2 = sorted(populatie, key=lambda ruta: fitness(ruta, matrice_distantelor, day_number,ora_start, zi),
-                                  reverse=True)
+        sorted_populatie2 = sorted(populatie,
+                                   key=lambda ruta: fitness(ruta, matrice_distantelor, day_number, ora_start, zi),
+                                   reverse=True)
 
-        best_fitness_in_generation = fitness(sorted_populatie2[0], matrice_distantelor,day_number, ora_start, zi)
+        best_fitness_in_generation = fitness(sorted_populatie2[0], matrice_distantelor, day_number, ora_start, zi)
 
         average_fitness1 = sum(
-            fitness(ruta, matrice_distantelor,day_number, ora_start, zi) for ruta in populatie) / dimensiune_populatie
+            fitness(ruta, matrice_distantelor, day_number, ora_start, zi) for ruta in populatie) / dimensiune_populatie
 
         fitness_evolution1.append(average_fitness1)
         fitness_evolution2.append(best_fitness_in_generation)
@@ -504,10 +509,10 @@ def algoritm_genetic(locatii, matrice_distantelor, day_number, dimensiune_popula
     # determin cea mai buna ruta
     cea_mai_buna_ruta = sorted_populatie[0]
 
-    best_fitness, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor,day_number, ora_start, zi,
+    best_fitness, orar_cea_mai_buna_ruta = fitness(cea_mai_buna_ruta, matrice_distantelor, day_number, ora_start, zi,
                                                    colecteaza_orar=True)
 
-    return best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta,fitness_evolution1,fitness_evolution2
+    return best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta, fitness_evolution1, fitness_evolution2
 
 
 # locatii = data['places']
@@ -543,7 +548,8 @@ def ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor):
     all_results = []
     for start_day in days_of_week:
         start_date = find_first_day_of_week(start_day)
-        rezultate_zilnice, fitness_evolution = ruleaza_algoritm_pe_zile_start_day(locatii_ramase, matrice_distantelor, start_date)
+        rezultate_zilnice, fitness_evolution = ruleaza_algoritm_pe_zile_start_day(locatii_ramase, matrice_distantelor,
+                                                                                  start_date)
         all_results.append((start_day, rezultate_zilnice))
 
     best_result = min(all_results, key=lambda x: sum(fit[0] for fit in x[1]))
@@ -565,11 +571,12 @@ def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date)
     current_day_index = start_day_index
     for day_number in range(trip_length):
         current_day = days_of_week[current_day_index]
-        best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta, fitness_evolution1, fitness_evolution2 = algoritm_genetic(locatii_ramase, matrice_distantelor,
-                                                                                   day_number,
-                                                                                   dimensiune_populatie=500,
-                                                                                   nr_generatii=70,
-                                                                                   ora_start='09:00', zi=current_day)
+        best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta, fitness_evolution1, fitness_evolution2 = algoritm_genetic(
+            locatii_ramase, matrice_distantelor,
+            day_number,
+            dimensiune_populatie=500,
+            nr_generatii=70,
+            ora_start='09:00', zi=current_day)
         rezultate_zilnice.append((best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta))
         fitness_evolution_data1.append(fitness_evolution1)
         # print(fitness_evolution2)
@@ -671,4 +678,3 @@ else:
     best_rez = ruleaza_algoritm_pe_zile_trip_length(locatii, matrice_distantelor)
     # afiseaza_itinerarii(best_rez)
     afiseaza_itinerariu_best_day(best_rez)
-

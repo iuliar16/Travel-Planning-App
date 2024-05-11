@@ -13,18 +13,32 @@ import { HeaderService } from '../services/header/header.service';
 })
 export class HomeComponent {
   savedTrips: any[] = [];
-  option: String = 'upcoming'
+  option: String = 'upcoming';
+  isPopupOpen: any = false;
+  emptyMessage: string = '';
+
   constructor(private headerService: HeaderService,
     private saveItineraryService: SaveItineraryService,
     private storageService: StorageService, public dialog: MatDialog,
     private tripInfoService: TripInfoService
   ) { }
 
+  onPopupStateChanged(isOpen: any): void {
+    this.isPopupOpen = isOpen;
+    console.log(this.isPopupOpen)
+  }
+
   ngOnInit(): void {
-    this.option = 'upcoming'
     this.headerService.setShowHeader(true);
-    this.fetchUpcomingSavedTrips();
-    
+    if (this.option = 'upcoming')
+      this.fetchUpcomingSavedTrips();
+    else
+      this.fetchPastSavedTrips();
+    if (this.savedTrips.length == 0)
+      this.emptyMessage = 'Looks like you do not have any upcoming trips.'
+    else
+      this.emptyMessage='';
+
   }
   fetchUpcomingSavedTrips(): void {
     this.saveItineraryService.getUpcomingSavedTrips(this.storageService.getUser().id_user)
@@ -33,6 +47,10 @@ export class HomeComponent {
           this.savedTrips = response;
           this.tripInfoService.setTripInfo(this.savedTrips);
           console.log(response);
+          if (this.savedTrips.length == 0)
+            this.emptyMessage = 'Looks like you do not have any upcoming trips.'
+          else
+            this.emptyMessage = '';
         },
         error => {
           console.error('Error fetching saved trips:', error);
@@ -46,23 +64,31 @@ export class HomeComponent {
           this.savedTrips = response;
           this.tripInfoService.setTripInfo(this.savedTrips);
           console.log(response);
+          if (this.savedTrips.length == 0)
+            {console.log('yes');
+            this.emptyMessage = 'Looks like you do not have any past trips.'}
+          else
+            this.emptyMessage = '';
         },
         error => {
           console.error('Error fetching saved trips:', error);
         }
       );
   }
-  
+
   toggleOption(opt: String) {
     if (opt == 'upcoming') {
       this.option = 'upcoming';
       this.fetchUpcomingSavedTrips();
+     
     }
     else
       if (opt == 'past') {
         this.option = 'past';
         this.fetchPastSavedTrips();
+       
       }
+
   }
   onTripDeleted(deletedItineraryId: number) {
     const index = this.savedTrips.findIndex(trip => trip.itinerary_id === deletedItineraryId);

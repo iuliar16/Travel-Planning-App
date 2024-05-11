@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface LocationRepository extends JpaRepository<LocationDTO, Integer> {
-    @Query("SELECT l FROM Location l WHERE l.name=:name")
-    Optional<LocationDTO> findByName(@Param("name") String name);
+    @Query("SELECT l FROM Location l WHERE l.name=:name AND l.address=:address")
+    Optional<LocationDTO> findByNameAndAddress(@Param("name") String name,@Param("address") String address);
 }

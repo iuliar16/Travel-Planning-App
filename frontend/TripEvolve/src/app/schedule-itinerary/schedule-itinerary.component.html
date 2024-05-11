@@ -1,6 +1,6 @@
 <div class="trip">
   <div class="trip-info">
-    <div class="sub-header">
+    <div class="sub-header" *ngIf="!error">
       <div class="back-icon">
         <mat-icon (click)="goBack()">arrow_back</mat-icon>
       </div>
@@ -11,10 +11,12 @@
         </option>
       </select>
       <div class="share-btns">
-        <div *ngIf="showSchedule && isLoggedIn" class="more-options-wrapper">
+        <div *ngIf="showSchedule && isLoggedIn && !error" class="more-options-wrapper">
           <mat-icon class="dots" (click)="toggleMoreOptions()">more_vert</mat-icon>
           <div class="more-options" *ngIf="showMoreOptions">
-            <div class="save-trip"  (click)="saveTrip()">Save Trip</div>
+            <div class="save-trip" (click)="saveTrip()">
+              {{ tripSaved ? 'Trip Saved!' : 'Save Trip' }}
+            </div>
             <div class="share-trip">Share Trip</div>
             <div class="pdf" (click)="generatePdf()">Download as PDF</div>
           </div>
@@ -31,13 +33,14 @@
       <!-- <button class="regenerate-btn" *ngIf="showSchedule" (click)="generateSchedule()">Regenerate Schedule</button> -->
     </div>
 
-    <div class="trip-summary" *ngIf="!showSchedule && !loading">
+    <div class="trip-summary" *ngIf="!showSchedule && !loading && !error">
       <h3>Quick Summary of your trip:</h3>
       <div *ngIf="tripSummary.selectedOption=='length'">
-        <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
+        <p>{{ duration }} {{nr_days}} in {{tripSummary.city}}</p>
       </div>
       <div *ngIf="tripSummary.selectedOption=='dates'">
-        <p>{{tripSummary.city}} between {{ tripSummary.startDate }} - {{tripSummary.endDate}} </p>
+        <p>{{tripSummary.city}} between {{ formatNiceDate(tripSummary.startDate) }} -
+          {{formatNiceDate(tripSummary.endDate)}} </p>
       </div>
       <p>Preferences: </p>
       <div class="form-group">
@@ -51,64 +54,73 @@
       <button class="generate-btn" (click)="generateSchedule()">Generate Schedule</button>
     </div>
 
-    <div class="loading-photo" *ngIf="loading">
+    <div class="loading-photo" *ngIf="loading && !error">
       <img class="gif" src="./assets/images/loading.gif" alt="Loading...">
       <p class="loading-p">{{tripSummary.city}} is a great choice! We're gathering popular things to do, restaurants,
         and more...</p>
     </div>
 
 
-
-    <div class="schedule-content" *ngIf="showSchedule">
-      <img class="photo" [src]="getItineraryPhotoUrl()" alt="">
-      <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
-      <div class="dropdown" *ngFor="let day of tripDays">
-        <div class="dropdown-header" (click)="toggleDay(day)">
-          <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
-          <mat-icon id="loc-id"> location_on</mat-icon>
-          <h2 class="dropdown-name">{{ day.day }}, {{day.date}}</h2>
-        </div>
-        <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
-          <div *ngFor="let itineraryItem of filterItineraryByDay(day.dayNumber)">
-            <!-- <app-itinerary-item  [itineraryItem]="item"></app-itinerary-item> -->
-            <div class="itinerary-item">
-              <div class="description">
-                <div class="place-name">{{itineraryItem.order}}. {{itineraryItem.name}}</div>
-                <br>
-                <div class="place-info">{{ itineraryItem.address }}</div>
-                <div class="place">
-                  <div class="hours">
-                    <h4>{{ itineraryItem.arrival_hour }}</h4>
-                    <mat-icon class="hours-icon">arrow_forward</mat-icon>
-                    <h4>{{ itineraryItem.leave_hour }}</h4>
+    <div class="schedule-content" *ngIf="showSchedule && !error">
+      <div id="allDaysContent">
+        <img class="photo" [src]="getItineraryPhotoUrl()" alt="">
+        <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
+        <div class="dropdown" *ngFor="let day of tripDays">
+          <div class="dropdown-header" (click)="toggleDay(day)">
+            <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
+            <mat-icon id="loc-id"> location_on</mat-icon>
+            <h2 class="dropdown-name">{{ day.day }}, {{day.date}}</h2>
+          </div>
+          <div class="dropdown-content" [ngClass]="{'show': day.expanded}">
+            <div *ngFor="let itineraryItem of filterItineraryByDay(day.dayNumber)">
+              <!-- <app-itinerary-item  [itineraryItem]="item"></app-itinerary-item> -->
+              <div class="itinerary-item">
+                <div class="description">
+                  <div class="place-name">{{itineraryItem.order}}. {{itineraryItem.name}}</div>
+                  <br>
+                  <div class="place-info">{{ itineraryItem.address }}</div>
+                  <div class="place">
+                    <div class="hours">
+                      <h4>{{ itineraryItem.arrival_hour }}</h4>
+                      <mat-icon class="hours-icon">arrow_forward</mat-icon>
+                      <h4>{{ itineraryItem.leave_hour }}</h4>
+                    </div>
+                    <h4 class="type">{{ itineraryItem.type === 'tourism_attraction' ? 'must-see' : itineraryItem.type }}
+                    </h4>
                   </div>
-                  <h4 class="type">{{ itineraryItem.type === 'tourism_attraction' ? 'must-see' : itineraryItem.type }}
-                  </h4>
+                </div>
+                <div class="photo-container">
+                  <img *ngIf="itineraryItem.photo && itineraryItem.photo.length > 0" class="place-photo"
+                    [src]="getPhotoUrl(itineraryItem.photo[0].photo_reference)" alt="{{ itineraryItem.name }} Photo">
+
+                  <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0" class="place-photo"
+                    src="./assets/images/rome.jpg" alt="Default Placeholder">
                 </div>
               </div>
-              <div class="photo-container">
-                <img *ngIf="itineraryItem.photo && itineraryItem.photo.length > 0" class="place-photo"
-                  [src]="getPhotoUrl(itineraryItem.photo[0].photo_reference)" alt="{{ itineraryItem.name }} Photo">
-
-                <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0" class="place-photo"
-                  src="./assets/images/rome.jpg" alt="Default Placeholder">
+              <div *ngIf="itineraryItem.duration != -1" class="next-dest">
+                <mat-icon class="directions_bus">directions_bus</mat-icon>
+                <button (click)="openDirections(itineraryItem, getNextItineraryItem(itineraryItem))"
+                  class="directions-time">Get directions</button>
               </div>
-            </div>
-            <div *ngIf="itineraryItem.duration != -1" class="next-dest">
-              <mat-icon class="directions_bus">directions_bus</mat-icon>
-              <button (click)="openDirections(itineraryItem, getNextItineraryItem(itineraryItem))"
-                class="directions-time">Get directions</button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="map-container">
+  <div class="map-container" *ngIf="!error">
     <div class="day-btns">
       <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber"
         (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
     </div>
     <div #gmapContainer id="map"></div>
   </div>
+
+</div>
+<div class="error" *ngIf="error">
+  <div style="display: block;">
+    <div class="errorMes">An error occurred during this operation. Please try again later.</div>
+    <button class="add-trip" routerLink="/add-trip">Add new Trip</button>
+  </div>
+  <img class="gif" src="./assets/images/errorGif.gif" alt="Error!">
 </div>

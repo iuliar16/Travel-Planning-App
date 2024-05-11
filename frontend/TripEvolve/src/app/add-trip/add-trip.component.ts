@@ -24,6 +24,7 @@ export class AddTripComponent {
   minEndDate: string = '';
   maxEndDate: string = '';
   endDateControl = new FormControl();
+  
 
   @ViewChild('placesSearchInput', { static: false })
   placesSearchInput!: ElementRef;
@@ -95,6 +96,7 @@ export class AddTripComponent {
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
       if (!place.geometry || !place.formatted_address) {
+        this.autocompleteInput = '';
         console.error('Invalid place selected');
         return;
       }
@@ -120,15 +122,20 @@ export class AddTripComponent {
       console.log(this.formData.endDate)
 
       if (this.formData.startDate == '' || this.formData.endDate == '' || this.formData.startDate == null || this.formData.endDate == null) {
-        this.message = 'Please complete all required fields.';
+        this.message = 'Please complete the dates of your trip or choose the trip length.';
         return;
       }
     }
 
-    if (!(this.formData.location && this.formData.selectedLocations.length)) {
-      this.message = 'Please complete all required fields.';
+    if (!(this.formData.location)) {
+      this.message = 'Please complete the destination field.';
       return;
     }
+    if (!(this.formData.selectedLocations.length)) {
+      this.message = 'Please choose at least a category of preferences.';
+      return;
+    }
+    
 
 
     this.formData.locationPreferences = this.locationPreferences;

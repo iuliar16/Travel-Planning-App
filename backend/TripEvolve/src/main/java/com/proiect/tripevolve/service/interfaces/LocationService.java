@@ -9,7 +9,7 @@ public interface LocationService {
     List<LocationDTO> getAll();
     Optional<LocationDTO> findById(Integer location_id);
 
-    Optional<LocationDTO> findByName(String name);
+    Optional<LocationDTO> findByNameAndAddress(String name, String address);
 
     LocationDTO add(LocationDTO locationDTO);
     void deleteById(Integer location_id);
