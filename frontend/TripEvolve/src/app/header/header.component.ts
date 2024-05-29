@@ -15,6 +15,7 @@ export class HeaderComponent {
   public showLogout: boolean = false;
   showLogoutPopup: boolean = false;
   isLoggedIn: boolean;
+  name: string=''
 
   userRole: string = 'ADMIN';
 
@@ -23,6 +24,10 @@ export class HeaderComponent {
   constructor(public dialog: MatDialog, private storageService: StorageService, private router: Router) {
     this.ImagePath = '../../assets/images/logo.png';
     this.isLoggedIn = this.storageService.isLoggedIn();
+  }
+
+  getName():string{
+    return this.storageService.getUser().firstname;
   }
   onClickIcon(): void {
     this.showLogout = !this.showLogout;
@@ -56,7 +61,7 @@ export class HeaderComponent {
   openSignOutDialog(): void {
     const dialogRef = this.dialog.open(SignOutPopupComponent, {
       width: '700px',
-      height: '175px',
+      height: 'auto',
       position: {
         top: '-480px',
         left: '31%'

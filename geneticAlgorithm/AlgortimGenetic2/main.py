@@ -574,7 +574,7 @@ def ruleaza_algoritm_pe_zile_start_day(locatii, matrice_distantelor, start_date)
         best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta, fitness_evolution1, fitness_evolution2 = algoritm_genetic(
             locatii_ramase, matrice_distantelor,
             day_number,
-            dimensiune_populatie=500,
+            dimensiune_populatie=200,
             nr_generatii=70,
             ora_start='09:00', zi=current_day)
         rezultate_zilnice.append((best_fitness, cea_mai_buna_ruta, orar_cea_mai_buna_ruta))

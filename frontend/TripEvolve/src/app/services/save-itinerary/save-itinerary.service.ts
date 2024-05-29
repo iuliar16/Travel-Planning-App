@@ -57,6 +57,10 @@ export class SaveItineraryService {
         })
       );
   }
+
+  getAllSavedTrips(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/itinerary`);
+  }
   getSavedTrips(userId:any): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/itinerary/userId?userId=${userId}`);
   }
@@ -72,5 +76,14 @@ export class SaveItineraryService {
   }
   getLocationInfo(locationId:any): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/location/${locationId}`);
+  }
+
+  generateShareableLink(itineraryId: number): Observable<string> {
+    return this.http.post(`${this.baseUrl}/itinerary/${itineraryId}/generate-shareable-link`, {}, { responseType: 'text' });
+  }
+
+
+  getItineraryByShareableLink(shareableLink: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/itinerary/share/${shareableLink}`);
   }
 }

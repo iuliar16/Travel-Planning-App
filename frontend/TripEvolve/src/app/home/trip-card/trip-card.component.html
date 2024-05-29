@@ -17,11 +17,18 @@
                 Sharing</button> -->
 
             <mat-icon>share</mat-icon>
-            <button class="share-btn" (click)="openPublicShareDialog(trip.itinerary_id)">Public Share</button>
+            <button class="share-btn" (click)="shareTrip(trip.itinerary_id)">Share Trip</button>
+            <div  *ngIf="openLinkTab" class="link">
+                <div style="margin-top:8px; cursor:pointer">{{shareableLink}}</div>
+                <mat-icon class="copy-icon" (click)="copyLink()" [ngClass]="{'copied': linkCopied}">
+                    {{ linkCopied ? 'check' : 'content_copy' }}
+                </mat-icon>
+            </div>
 
-            <mat-icon>edit</mat-icon><button (click)="navigateToViewTrip(trip.itinerary_id)" class="share-btn">Edit Trip
+            <mat-icon>edit</mat-icon><button (click)="navigateToViewTrip(trip.itinerary_id)" class="share-btn">See Trip
                 Info</button>
-            <mat-icon>delete</mat-icon><button #deleteButton (click)="openDialog(trip.itinerary_id, container)" class="share-btn">Delete Trip</button>
+            <mat-icon>delete</mat-icon><button #deleteButton (click)="openDialog(trip.itinerary_id, container)"
+                class="share-btn">Delete Trip</button>
         </div>
     </div>
     <div class="trip-photo">

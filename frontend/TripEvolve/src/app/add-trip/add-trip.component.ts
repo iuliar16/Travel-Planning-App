@@ -61,7 +61,7 @@ export class AddTripComponent {
     console.log(selectedStartDate);
 
     const maxDate = new Date(selectedStartDate);
-    maxDate.setDate(maxDate.getDate() + 7);
+    maxDate.setDate(maxDate.getDate() + 6);
     this.maxEndDate = maxDate.toISOString().split('T')[0];
 
     const selectedEndDate = this.endDateControl.value;
@@ -173,10 +173,23 @@ export class AddTripComponent {
     const inputElement = event.target as HTMLInputElement;
     const percentage = parseInt(inputElement.value, 10);
     this.locationPreferences.set(location, percentage);
-    this.toggleLocation(location, percentage);
+    this.updateSelectedLocations(location, percentage);
+    // this.toggleLocation(location, percentage);
     console.log(percentage);
   }, 100);
 
+  updateSelectedLocations(location: string, percentage: number): void {
+    if (percentage > 0) {
+      if (!this.selectedLocations.includes(location)) {
+        this.selectedLocations.push(location);
+      }
+    } else {
+      const index = this.selectedLocations.indexOf(location);
+      if (index !== -1) {
+        this.selectedLocations.splice(index, 1);
+      }
+    }
+  }
 
   toggleLocation(location: string, percentage: number): void {
     const index = this.selectedLocations.indexOf(location);

@@ -9,6 +9,7 @@ import html2canvas from 'html2canvas';
 import { SaveItineraryService } from '../services/save-itinerary/save-itinerary.service';
 import { StorageService } from '../services/storage/storage.service';
 import { TripInfoService } from '../services/trip-info/trip-info.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface DayAbbreviationMap {
   [key: string]: number;
@@ -75,16 +76,26 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     lastname: 'Nume',
     email: 'email@example.com',
   };
-
+  legendItems: { day: string, color: string }[] = [];
+  isLoading: boolean = false;
 
   constructor(private router: Router, private scheduleService: ScheduleService,
     private headerService: HeaderService, private addTripService: AddTripService,
     private saveItineraryService: SaveItineraryService, private storageService: StorageService,
-    private tripInfoService: TripInfoService,
+    private tripInfoService: TripInfoService, private snackBar: MatSnackBar
   ) {
     this.isLoggedIn = this.storageService.isLoggedIn();
     this.tripSummary = this.addTripService.getTripSummary();
   }
+
+  showNotification(message: string) {
+    this.snackBar.open(message, '', {
+      panelClass: ['custom-snackbar'] 
+    });
+  }
+  
+
+
   saveTrip() {
     if (this.tripSaved) {
       // If trip is already saved, do nothing
@@ -137,7 +148,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
                 response => {
                   const location_id = response.location_id;
                   console.log('Location saved successfully:', response);
-
+          
                   const itineraryLocationData = {
                     itinerary_id: itinerary_id,
                     location_id: location_id,
@@ -153,6 +164,7 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
                     },
                     error => {
                       console.error('Error saving ItineraryLocations:', error);
+                    
                     }
                   );
                 },
@@ -223,11 +235,14 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
 
   }
   getItineraryPhotoUrl(): string {
-    if (this.itineraryResults[0].photo[0].photo_reference) {
+    let i=0
+    while (this.itineraryResults[i].photo) {
       this.tripPhoto = this.getPhotoUrl(this.itineraryResults[0].photo[0].photo_reference);
-      return this.tripPhoto;
+      i++;
+      if(this.tripPhoto)
+        break;
     }
-    return './assets/images/rome.jpg';
+    return this.tripPhoto;
   }
 
   openDirections(startLocation: any, endLocation: any): void {
@@ -254,6 +269,10 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     const dayItinerary = this.itineraryResults.filter(item => item.day === dayNumber);
 
     dayItinerary.forEach((item, index) => {
+      const markerColor = this.markerColors[item.day % this.markerColors.length];
+
+      let url = "https://maps.google.com/mapfiles/ms/icons/";
+      url += markerColor + ".png";
       const marker = new google.maps.Marker({
         position: { lat: item.lat, lng: item.lng },
         map: this.map,
@@ -263,6 +282,10 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
           color: 'white',
           fontSize: '12px',
           fontWeight: 'bold'
+        },
+        icon: {
+          url: url,
+          scaledSize: new google.maps.Size(40, 40)
         }
       });
       if (index < dayItinerary.length - 1) {
@@ -293,12 +316,71 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     this.fitMapToMarkers();
   }
 
+  markerColors = ['grey', 'red', 'blue', 'green', 'pink', 'purple', 'orange'];
+  displayAllLocationsAndRoutes(): void {
+    this.clearMarkers();
+    this.clearPaths();
+
+    this.legendItems = [];
+    const uniqueDays = new Set<number>();
+    this.itineraryResults.forEach((item, index) => {
+      const markerColor = this.markerColors[item.day % this.markerColors.length];
+
+      if (!uniqueDays.has(item.day)) {
+        uniqueDays.add(item.day);
+        this.legendItems.push({ day: `Day ${item.day}`, color: markerColor });
+      }
+
+      let url = "https://maps.google.com/mapfiles/ms/icons/";
+      url += markerColor + ".png";
+      const marker = new google.maps.Marker({
+        position: { lat: item.lat, lng: item.lng },
+        map: this.map,
+        title: item.name,
+        label: {
+          text: `${item.order}`,
+          color: 'black',
+          fontSize: '12px',
+          fontWeight: 'bold'
+        },
+        icon: {
+          url: url,
+          scaledSize: new google.maps.Size(40, 40)
+        }
+      });
+      if (index < this.itineraryResults.length - 1) {
+        const nextItem = this.itineraryResults[index + 1];
+        this.calculateAndDisplayRoute(item, nextItem);
+      }
+
+      const infoWindowContent = `
+        <div>
+          <h3>${item.name}</h3>
+          <h4>${item.address}</h4>
+        </div>
+      `;
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContent
+      });
+
+      marker.addListener('click', () => {
+        infoWindow.open(this.map, marker);
+      });
+
+      this.markers.push(marker);
+    });
+
+    this.fitMapToMarkers();
+  }
+
+
   calculateAndDisplayRoute(origin: any, destination: any): void {
     var circle = {
       path: google.maps.SymbolPath.CIRCLE,
       strokeOpacity: 1,
       fillOpacity: 1,
-      scale: 3
+      scale: 2
     };
 
     this.directionsService.route(
@@ -373,7 +455,8 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
 
           this.loading = false;
           this.showSchedule = true;
-          this.showDayMarkers(1);
+          // this.showDayMarkers(1);
+          this.displayAllLocationsAndRoutes();
 
           if (this.tripSummary.selectedOption == 'length') {
             const bestDay = this.itineraryResults[0].best_start;
@@ -438,9 +521,11 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
     }
 
     const initialDayNumber = this.tripDays[0]?.dayNumber || 1;
-    this.showDayMarkers(initialDayNumber);
+    // this.showDayMarkers(initialDayNumber);
 
   }
+
+
   getFirstFutureDate(dayAbbreviation: string): Date {
     const today = new Date();
     let currentDayIndex = today.getDay();
@@ -476,6 +561,8 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
   }
 
   generatePdf(): void {
+    this.isLoading = true;
+
     this.tripDays.forEach(day => {
       day.expanded = true;
     });
@@ -497,6 +584,8 @@ export class ScheduleItineraryComponent implements AfterViewInit, OnInit {
         });
         pdf.setFontSize(12);
         pdf.save(name);
+        this.isLoading = false; 
+                   
 
       });
     }, 1000);

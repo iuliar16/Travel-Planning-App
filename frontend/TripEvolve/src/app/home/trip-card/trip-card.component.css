@@ -1,6 +1,6 @@
 .container {
     width: 90%;
-    margin-left:45px;
+    margin-left: 45px;
     height: 225px;
     border: 1px solid rgb(219, 214, 214);
     border-radius: 15px;
@@ -44,6 +44,33 @@ h3 {
     display: flex;
     margin-left: 20px;
 }
+
+.copy-icon {
+    margin-top: 8px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: color 0.3s;
+}
+
+.copy-icon.copied {
+    color: green;
+}
+
+.link {
+    display: flex;
+    border-radius: 10px;
+    justify-content: center;
+    text-align: center;
+    margin-top: 30px;
+    font-size: 20px;
+    color: white;
+    width: 600px;
+    height: 40px;
+    z-index: 100;
+    background-color: #a2a7a7;
+    position: absolute;
+}
+
 
 .info {
     flex: 1;

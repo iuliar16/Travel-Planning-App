@@ -29,6 +29,7 @@ export class HomeComponent {
   }
 
   ngOnInit(): void {
+    
     this.headerService.setShowHeader(true);
     if (this.option = 'upcoming')
       this.fetchUpcomingSavedTrips();

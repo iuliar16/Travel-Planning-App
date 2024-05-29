@@ -1,13 +1,12 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { HeaderService } from '../services/header/header.service';
 import { SaveItineraryService } from '../services/save-itinerary/save-itinerary.service';
-import { ScheduleService } from '../services/generate-itinerary/schedule-itinerary.service';
-import { AddTripService } from '../services/add-trip/add-trip.service';
 import { StorageService } from '../services/storage/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TripInfoService } from '../services/trip-info/trip-info.service';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 
 
@@ -18,6 +17,7 @@ import html2canvas from 'html2canvas';
 })
 export class ViewTripComponent {
   selectedDay: number | null = null;
+  shareableLink: string = '';
   id: number = 0;
   tripInfo: any[] = [];
   tripDetails: any[] = [];
@@ -25,6 +25,8 @@ export class ViewTripComponent {
   tripPhoto: string = ''
   showMoreOptions: boolean = false;
   nr_days: string = 'days'
+  openLinkTab: boolean = false;
+  isLinkShared: boolean = false;
 
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
@@ -43,12 +45,37 @@ export class ViewTripComponent {
   tripExists: boolean = true;
   gasit: boolean = false;
   itinerary: any = '';
+  loggedIn: boolean = false;
+  linkCopied: boolean = false;
+  isLoading: boolean = false;
 
   constructor(private saveItineraryService: SaveItineraryService,
     private storageService: StorageService, private route: ActivatedRoute,
     private router: Router, private headerService: HeaderService,
-    private tripInfoService: TripInfoService
-  ) { }
+    private tripInfoService: TripInfoService, private clipboard: Clipboard,
+  ) {
+    this.loggedIn = this.storageService.isLoggedIn();
+
+
+  }
+
+  copyLink() {
+    this.clipboard.copy(this.shareableLink);
+    this.linkCopied = true;
+    setTimeout(() => {
+      this.linkCopied = false;
+    }, 1000);
+  }
+  shareTrip(tripId: number) {
+    this.saveItineraryService.generateShareableLink(tripId)
+      .subscribe(response => {
+        this.shareableLink = response;
+        this.openLinkTab = !this.openLinkTab;
+
+      }, error => {
+        console.error('Error generating link:', error);
+      });
+  }
 
 
   goBack(): void {
@@ -57,6 +84,7 @@ export class ViewTripComponent {
 
   toggleMoreOptions() {
     this.showMoreOptions = !this.showMoreOptions;
+    if (this.showMoreOptions === false) this.openLinkTab = false;
   }
   getPhotoUrl(photoReference: string): string {
     const apiKey = 'AIzaSyCbqdF-F4bLlH8giQESqHFfi0tIyTtEuPw';
@@ -65,11 +93,14 @@ export class ViewTripComponent {
 
   }
   getItineraryPhotoUrl(): string {
-    if (this.tripInfo[0].photo) {
-      this.tripPhoto = this.getPhotoUrl(this.tripInfo[0].photo);
-      return this.tripPhoto;
+    let i=0
+    while (this.tripInfo[i].photo) {
+      this.tripPhoto = this.getPhotoUrl(this.tripInfo[i].photo);
+      i++;
+      if(this.tripPhoto)
+        break;
     }
-    return './assets/images/rome.jpg';
+    return this.tripPhoto;
   }
   getDayName(dayNumber: number): string {
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -79,6 +110,23 @@ export class ViewTripComponent {
   formatDate(date: Date): string {
     const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
+  }
+
+
+  fetchAllSavedTrips(): void {
+    this.saveItineraryService.getAllSavedTrips()
+      .subscribe(
+        (response: any[]) => {
+          this.tripInfoService.setTripInfo(response);
+          console.log(response);
+          this.dataLoaded = true;
+
+          this.initAfterDataLoaded();
+        },
+        error => {
+          console.error('Error fetching saved trips:', error);
+        }
+      );
   }
   fetchSavedTrips(): void {
     this.saveItineraryService.getSavedTrips(this.storageService.getUser().id_user)
@@ -101,19 +149,49 @@ export class ViewTripComponent {
   }
 
   ngOnInit(): void {
-    this.headerService.setShowHeader(false);
+    if (!(this.loggedIn || this.tripExists))
+      this.headerService.setShowHeader(true);
+    else
+      this.headerService.setShowHeader(false);
+
     this.id = this.route.snapshot.queryParams['id'];
+    if (!this.id) {
+      this.route.params.subscribe(params => {
+        const tripId = params['id'];
+        if (tripId) {
+          this.isLinkShared = true;
+          this.loadTripByShareableLink(tripId);
+
+        }
+      });
+    }
 
     if (!this.tripInfoService.getTripInfo()) //s-a dat refresh sau s-a cautat id-ul
     {
-      this.fetchSavedTrips();
+      if (this.id) // se cauta ?id=.. (cautam doar in trip-urile userului logat)
+        this.fetchSavedTrips();
+      else
+        this.fetchAllSavedTrips(); //trip shared
     }
     else {
       this.initAfterDataLoaded(); //am ajuns in view-trip din home
     }
   }
 
+  loadTripByShareableLink(tripId: string) {
+    this.saveItineraryService.getItineraryByShareableLink(tripId)
+      .subscribe(trip => {
+        console.log(trip);
+        this.id = trip.itinerary_id;
+        this.tripExists = true;
+      }, error => {
+        console.error('Error fetching trip by shareable link:', error);
+      });
+    console.log(this.tripExists)
+  }
+
   generatePdf(): void {
+    this.isLoading = true;
     this.tripDays.forEach(day => {
       day.expanded = true;
     });
@@ -124,10 +202,10 @@ export class ViewTripComponent {
 
       html2canvas(elem, { scale: 2 }).then((canvas) => {
         const pdf = new jsPDF();
-        const name = `Trip to `+tripInfoElem;
+        const name = `Trip to ` + tripInfoElem;
 
         pdf.addImage(canvas.toDataURL('/image/png'), 'PNG', 0, -40, 101, 298);
-        
+
 
         pdf.setProperties({
           title: name,
@@ -136,6 +214,7 @@ export class ViewTripComponent {
         });
         pdf.setFontSize(12);
         pdf.save(name);
+        this.isLoading = false;
 
       });
     }, 1000);
@@ -166,6 +245,7 @@ export class ViewTripComponent {
         console.log(this.tripDays);
       }
     });
+    // if(this.isLinkShared == false)
     if (this.gasit == false) {
       this.headerService.setShowHeader(true);
       this.tripExists = false;
@@ -254,8 +334,12 @@ export class ViewTripComponent {
   }
 
   getNextItineraryItem(currentItem: any): any {
-    const currentIndex = this.tripInfo.findIndex(item => item === currentItem);
-    return this.tripInfo[currentIndex + 1];
+
+    console.log(currentItem);
+    const dayItinerary = this.tripInfo.filter(item => item.visit_day === currentItem.visit_day);
+    console.log(dayItinerary)
+    const currentIndex = dayItinerary.findIndex(item => item === currentItem);
+    return dayItinerary[currentIndex + 1];
   }
 
   showDayMarkers(dayNumber: number): void {
@@ -272,7 +356,7 @@ export class ViewTripComponent {
         map: this.map,
         title: item.name,
         // label: {
-        //   // text: `${item.visit_order}`,
+        //   text: `${item.visit_order}`,
         //   color: 'white',
         //   fontSize: '12px',
         //   fontWeight: 'bold'

@@ -11,6 +11,8 @@ p,label{
 .form-group{
     display: flex;
 }
+
+
 mat-icon{
     color:#004AAD;
     cursor: pointer;

@@ -4,6 +4,9 @@
         <img align="left" [src]="ImagePath" alt="nope" style="width: 200px; height: 60px" class="logo" />
     </a>
     <div class="buttons-container">
+        <div class="name" *ngIf="isLoggedIn">
+            Hello, {{getName()}}
+        </div>
         <button id="home" mat-raised-button routerLink="/home" [disabled]="showLogoutPopup" routerLinkActive="active_route"
             [routerLinkActiveOptions]="{ exact: true }" *ngIf="isLoggedIn">
             <mat-icon>home</mat-icon>

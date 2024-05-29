@@ -30,7 +30,7 @@ export class LoginComponent {
     this.message = '';
 
     if (!formData.email || !formData.password) {
-      this.message = 'Invalid username or password.';
+      this.message = 'Please complete all required fields.';
       return;
     }
 

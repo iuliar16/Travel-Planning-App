@@ -17,7 +17,6 @@
             <div class="save-trip" (click)="saveTrip()">
               {{ tripSaved ? 'Trip Saved!' : 'Save Trip' }}
             </div>
-            <div class="share-trip">Share Trip</div>
             <div class="pdf" (click)="generatePdf()">Download as PDF</div>
           </div>
         </div>
@@ -63,8 +62,18 @@
 
     <div class="schedule-content" *ngIf="showSchedule && !error">
       <div id="allDaysContent">
-        <img class="photo" [src]="getItineraryPhotoUrl()" alt="">
+        <div style="display: flex; ">
+          <img class="photo" [src]="getItineraryPhotoUrl()" alt="">
+          <div class="map-legend">
+            <div *ngFor="let item of legendItems" class="legend-item">
+              <div class="legend-color" [style.background-color]="item.color"></div>
+              <div class="legend-label">{{ item.day }}</div>
+            </div>
+          </div>
+        </div>
+
         <p>{{ tripSummary.tripLength }} {{nr_days}} in {{tripSummary.city}}</p>
+
         <div class="dropdown" *ngFor="let day of tripDays">
           <div class="dropdown-header" (click)="toggleDay(day)">
             <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
@@ -89,13 +98,15 @@
                     </h4>
                   </div>
                 </div>
+
                 <div class="photo-container">
                   <img *ngIf="itineraryItem.photo && itineraryItem.photo.length > 0" class="place-photo"
                     [src]="getPhotoUrl(itineraryItem.photo[0].photo_reference)" alt="{{ itineraryItem.name }} Photo">
 
-                  <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0" class="place-photo"
-                    src="./assets/images/rome.jpg" alt="Default Placeholder">
+                  <!-- <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0" class="place-photo"
+                    src="./assets/images/rome.jpg" alt="Default Placeholder"> -->
                 </div>
+
               </div>
               <div *ngIf="itineraryItem.duration != -1" class="next-dest">
                 <mat-icon class="directions_bus">directions_bus</mat-icon>
@@ -112,6 +123,7 @@
     <div class="day-btns">
       <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber"
         (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
+      <button (click)="displayAllLocationsAndRoutes()">All days</button>
     </div>
     <div #gmapContainer id="map"></div>
   </div>
@@ -123,4 +135,8 @@
     <button class="add-trip" routerLink="/add-trip">Add new Trip</button>
   </div>
   <img class="gif" src="./assets/images/errorGif.gif" alt="Error!">
+</div>
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner"></div>
 </div>

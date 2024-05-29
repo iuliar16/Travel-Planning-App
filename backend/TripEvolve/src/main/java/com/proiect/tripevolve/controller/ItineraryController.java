@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tripEvolve/api/itinerary")
@@ -27,6 +28,7 @@ public class ItineraryController {
     public String generateItinerary(@RequestBody PreferencesDTO preferences) {
         return itineraryService.generateItinerary(preferences);
     }
+
     @GetMapping
     ResponseEntity<?> getAllItineraries() {
         return new ResponseEntity<>(this.itineraryService.getAll(), HttpStatus.OK);
@@ -60,14 +62,33 @@ public class ItineraryController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
+
     @GetMapping("/userId/{id}/future")
     public ResponseEntity<List<ItineraryDTO>> getFutureItinerariesForUser(@PathVariable Integer id) {
         List<ItineraryDTO> futureItineraries = itineraryService.findFutureItinerariesByUserId(id);
         return new ResponseEntity<>(futureItineraries, HttpStatus.OK);
     }
+
     @GetMapping("/userId/{id}/past")
     public ResponseEntity<List<ItineraryDTO>> getPastItinerariesForUser(@PathVariable Integer id) {
         List<ItineraryDTO> pastItineraries = itineraryService.findPastItinerariesByUserId(id);
         return new ResponseEntity<>(pastItineraries, HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/generate-shareable-link")
+    public ResponseEntity<String> generateShareableLink(@PathVariable Integer id) {
+        String link = itineraryService.generateShareableLink(id);
+        if (link != null) {
+            return ResponseEntity.ok("http://localhost:4200/trip/" + link);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Itinerary not found");
+    }
+
+    @GetMapping("/share/{shareableLink}")
+    public ResponseEntity<ItineraryDTO> getItineraryByShareableLink(@PathVariable String shareableLink) {
+        Optional<ItineraryDTO> itineraryOptional = itineraryService.findByShareableLink(shareableLink);
+        return itineraryOptional.map(itineraryDTO -> new ResponseEntity<>(itineraryDTO, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
 }

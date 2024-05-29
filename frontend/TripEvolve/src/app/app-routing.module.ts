@@ -7,7 +7,6 @@ import { LoginComponent } from './login/login.component';
 import { AddTripComponent } from './add-trip/add-trip.component';
 import { HomeComponent } from './home/home.component';
 import { MyAccountComponent } from './my-account/my-account.component';
-import { EditInfoComponent } from './edit-info/edit-info.component';
 import { ForgotPassComponent } from './forgot-pass/forgot-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { PastTripsComponent } from './past-trips/past-trips.component';
@@ -50,11 +49,6 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
-    path: 'edit-info',
-    component: EditInfoComponent,
-    canActivate: [AuthGuardService]
-  },
-  {
     path: 'forgot-pass',
     component: ForgotPassComponent,
   },
@@ -78,9 +72,12 @@ const routes: Routes = [
     component: ConfirmAccountComponent,
   },
   {
-    path: 'view-trip',
-    component: ViewTripComponent,
-    canActivate: [AuthGuardService]
+    path: 'view-trip', //for saved trips
+    component: ViewTripComponent
+  },
+  {
+    path: 'trip/:id', //for shared trips
+    component: ViewTripComponent
   },
   {
     path: '**',

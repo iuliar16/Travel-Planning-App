@@ -4,6 +4,8 @@ import { DeleteTripPopupComponent } from '../../delete-trip-popup/delete-trip-po
 import { Router } from '@angular/router';
 import { PublicShareComponent } from '../../public-share/public-share.component';
 import { MatButton } from '@angular/material/button';
+import { SaveItineraryService } from '../../services/save-itinerary/save-itinerary.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-trip-card',
@@ -16,8 +18,13 @@ export class TripCardComponent {
   @Input() isPopupOpen: any;
   @Output() itineraryDeleted = new EventEmitter<number>();
   @Output() popupStateChanged = new EventEmitter<any>();
+  shareableLink: string = '';
+  linkCopied: boolean = false;
+  openLinkTab: boolean = false;
 
-  constructor(public dialog: MatDialog, private router: Router) { }
+  constructor(public dialog: MatDialog, private router: Router,
+    private clipboard: Clipboard, private saveItineraryService: SaveItineraryService
+  ) { }
 
   openDialog(itineraryId: number, container: HTMLElement): void {
     const containerRect = container.getBoundingClientRect();
@@ -37,13 +44,15 @@ export class TripCardComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-      this.isPopupOpen = !this.isPopupOpen;
-      this.popupStateChanged.emit(this.isPopupOpen);
+      this.isPopupOpen = false;
+      this.popupStateChanged.emit(false);
     });
     dialogRef.componentInstance.itineraryDeleted.subscribe((itineraryId: number) => {
       this.itineraryDeleted.emit(itineraryId);
+      this.isPopupOpen = false;
+      this.popupStateChanged.emit(false);
     });
-    this.isPopupOpen = !this.isPopupOpen;
+    this.isPopupOpen = true;
     this.popupStateChanged.emit(this.isPopupOpen);
   }
   getPhotoUrl(photoReference: string): string {
@@ -56,23 +65,23 @@ export class TripCardComponent {
     this.router.navigate(['/view-trip'], { queryParams: { id: id } });
   }
 
-
-  openPublicShareDialog(itineraryId: number): void {
-    const dialogRef = this.dialog.open(PublicShareComponent, {
-      data: { itineraryId: itineraryId },
-      width: '700px',
-      height: '175px',
-      position: {
-        top: '-400px',
-        left: '27%'
-      },
-      backdropClass: 'bdrop',
-      autoFocus: false,
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
+  copyLink() {
+    this.clipboard.copy(this.shareableLink);
+    this.linkCopied = true;
+    setTimeout(() => {
+      this.linkCopied = false;
+    }, 1000);
   }
+  shareTrip(tripId: number) {
+    this.saveItineraryService.generateShareableLink(tripId)
+      .subscribe(response => {
+        this.shareableLink = response;
+        this.openLinkTab = !this.openLinkTab;
+
+      }, error => {
+        console.error('Error generating link:', error);
+      });
+  }
+
 
 }

@@ -4,6 +4,8 @@ import com.proiect.tripevolve.auth.config.jwt.TokenProvider;
 import com.proiect.tripevolve.auth.dto.*;
 import com.proiect.tripevolve.auth.model.User;
 import com.proiect.tripevolve.auth.service.UserHandlingService;
+import com.proiect.tripevolve.auth.util.EmailValidator;
+import com.proiect.tripevolve.auth.util.PasswordValidator;
 import com.proiect.tripevolve.notification.entity.EmailDTO;
 import com.proiect.tripevolve.notification.exception.MessageSentException;
 import com.proiect.tripevolve.notification.service.IEmailService;
@@ -26,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 
 @RestController
@@ -134,6 +137,15 @@ public class AuthController {
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody UserRegisterDTO userDTO)
     {
         try{
+
+            if (!PasswordValidator.isValid(userDTO.getPassword())) {
+                return new ResponseEntity<>(new RegisterResponseDTO("Password is not strong enough"), HttpStatus.BAD_REQUEST);
+            }
+
+            if (!EmailValidator.isValid(userDTO.getEmail())) {
+                return new ResponseEntity<>(new RegisterResponseDTO("Invalid email format"), HttpStatus.BAD_REQUEST);
+            }
+
             User u = userHandlingService.registerUser(userDTO);
 
             String token = tokenProvider.createEmailConfirmationToken(u.getEmail());
@@ -144,7 +156,7 @@ public class AuthController {
             return new ResponseEntity<>(new RegisterResponseDTO("User " + u.getEmail() + " created. Confirmation email sent."), HttpStatus.OK);
         } catch (DataIntegrityViolationException e)
         {
-            return new ResponseEntity<>(new RegisterResponseDTO("User already exists"), HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>(new RegisterResponseDTO("User already exists"), HttpStatus.CONFLICT);
         } catch (PersistenceException e)
         {
             return new ResponseEntity<>(new RegisterResponseDTO("DB ERROR"), HttpStatus.INTERNAL_SERVER_ERROR);

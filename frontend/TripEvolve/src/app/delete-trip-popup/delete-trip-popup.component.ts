@@ -25,6 +25,7 @@ export class DeleteTripPopupComponent {
   }
 
   onConfirmClick(): void {
+    this.dialogRef.close();
     this.deleteTripService.deleteItineraryLocations(this.data.itineraryId).subscribe({
       next: () => {
         console.log('Itinerary locations deleted successfully');
@@ -42,7 +43,8 @@ export class DeleteTripPopupComponent {
         console.error('Error deleting itinerary locations:', error);
       }
     });
-  }
 
+  }
+  
   
 }

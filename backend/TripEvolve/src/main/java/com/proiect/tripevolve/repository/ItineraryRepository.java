@@ -19,4 +19,5 @@ public interface ItineraryRepository extends JpaRepository<ItineraryDTO, Integer
     @Query("SELECT l FROM Itinerary l WHERE l.user_id = :user_id AND l.startDate < :current_date")
     List<ItineraryDTO> findPastItinerariesByUserId(@Param("user_id") Integer user_id, @Param("current_date") Date current_date);
 
+    Optional<ItineraryDTO> findByShareableLink(String shareableLink);
 }

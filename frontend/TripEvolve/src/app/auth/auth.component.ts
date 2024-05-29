@@ -18,7 +18,7 @@ export class AuthComponent {
     private router: Router
   ) { }
 
-  ngOnInit(){
+  ngOnInit() {
     if (this.authService.isLogin()) {
       this.router.navigate(['/home']);
     }
@@ -27,16 +27,11 @@ export class AuthComponent {
     console.log('submit');
     this.message = '';
     if (!formData.firstname || !formData.lastname || !formData.email || !formData.password) {
-      this.message = 'Toate câmpurile sunt obligatorii!';
-      console.log('here1');
+      this.message = 'Please complete all required fields.';
       console.log(this.message)
       return;
     }
-    // if (formData.password !== formData.confirmPassword) {
-    //   this.message = 'Parolele nu se potrivesc!';
-    //   console.log('here2');
-    //   return;
-    // }
+
     if (formData.email) {
       const emailDetails = {
         recipient: formData.email,
@@ -46,10 +41,21 @@ export class AuthComponent {
         (response) => {
           console.log('Register successful', response);
           console.log(emailDetails);
-          this.showBtn=false;
+          this.showBtn = false;
           this.message = 'In order to complete the subscription process, simply check your inbox and click on the link in the email we have just sent you.'
         },
         (error) => {
+          if (error.status === 409) {
+            this.message = 'This email is already in use. Please use another one.';
+        } else if (error.status === 400 && error.error.message === 'Password is not strong enough') {
+            this.message = 'The password is not strong enough. Please ensure it has at least 8 characters, including upper and lower case letters, and digits.';
+        } else if (error.status === 400 && error.error.message === 'Invalid email format') {
+            this.message = 'The email format is invalid. Please enter a valid email address.';
+        } else if (error.error && error.error.message === 'Error sending confirmation email.') {
+            this.message = 'There was an error sending the confirmation email. Please try again later.';
+        } else {
+            this.message = 'An unexpected error occurred. Please try again later.';
+        }
           console.error('Register failed!', error);
         }
       );

@@ -27,16 +27,17 @@ ul {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.emptyMes{
+.emptyMes {
     color: #004AAD;
     text-align: center;
     font-size: 40px;
     margin-top: 5%;
 }
+
 .start {
     text-align: center;
-    margin-left:45%;
-    margin-top:20px;
+    margin-left: 45%;
+    margin-top: 20px;
     width: 200px;
     padding: 5px 10px;
     background-color: white;
@@ -52,6 +53,7 @@ ul {
     background-color: #004AAD;
     color: white;
 }
+
 .nav-ul li a {
     margin-right: 20px;
     display: block;

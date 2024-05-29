@@ -1,48 +1,57 @@
 .container {
-    box-shadow:8px 8px 8px rgb(148, 179, 211);
-    border:none;
+    box-shadow: 8px 8px 8px rgb(148, 179, 211);
+    border: none;
     background-color: white;
-    width: 90%;
-    height:630px;
+    width: 95%;
+    height: 770px;
     text-align: center;
-    margin:0 auto;
-    margin-top:3%;
-    display:flex;
+    margin: 0 auto;
+    margin-top: 3%;
+    display: flex;
 }
-.photo-container{
-    width:60%;
+
+.photo-container {
+    width: 60%;
 }
+
 .message {
     color: red;
     font-size: 20px;
-    margin-top:35px;
+    margin-top: 35px;
 
-  }
-  
+}
+
+.has-error .form-control {
+    border-color: red;
+}
+
+
 /* .photo{
     width:140%;
     margin-top:-8%;
     margin-left: -19%;
     height:125%;
 } */
-.photo{
-    width:100%;
-    margin-top:-16.5%;
+.photo {
+    width: 100%;
+    margin-top: -16.5%;
     margin-left: -10%;
-    height:135%;
+    height: 135%;
 }
-.form{
+
+.form {
     border-left: 1px double #004AAD;
     background-color: white;
-    margin-left:0px;
-    width:40%;
+    margin-left: 0px;
+    width: 40%;
     text-align: center;
 }
+
 .form-group {
-    margin:0 auto;
+    margin: 0 auto;
     margin-bottom: 20px;
     text-align: center;
-    width:90%;
+    width: 90%;
 }
 
 input[type="text"],
@@ -53,27 +62,31 @@ input[type="password"] {
     font-size: 16px;
 }
 
-.signin{
+.signin {
     font-size: large;
     text-decoration: none;
     color: #004AAD;
 }
-.signin:hover{
-    color:#1778e0;
+
+.signin:hover {
+    color: #1778e0;
 }
-mat-checkbox{
+
+mat-checkbox {
     font-size: large;
     margin-left: 10%;
 }
-.signin-a{
+
+.signin-a {
     font-size: large;
     margin-left: 30%;
     text-decoration: none;
     color: #004AAD;
-    
+
 }
-.signin-a:hover{
-    color:#1778e0;
+
+.signin-a:hover {
+    color: #1778e0;
 }
 
 .btn {
@@ -83,9 +96,9 @@ mat-checkbox{
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 7px;
-    width:80%;
+    width: 80%;
 }
 
-.btn:hover{
+.btn:hover {
     background-color: #1778e0;
 }

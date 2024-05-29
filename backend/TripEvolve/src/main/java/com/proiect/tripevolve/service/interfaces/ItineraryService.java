@@ -19,4 +19,7 @@ public interface ItineraryService{
     List<ItineraryDTO> findFutureItinerariesByUserId(Integer userId);
 
     List<ItineraryDTO> findPastItinerariesByUserId(Integer userId);
+
+    String generateShareableLink(Integer itineraryId);
+    Optional<ItineraryDTO> findByShareableLink(String shareableLink);
 }

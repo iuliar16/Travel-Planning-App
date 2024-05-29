@@ -1,4 +1,4 @@
-<div class="trip" *ngIf="tripExists">
+<div class="trip" *ngIf="tripExists && loggedIn">
     <div class="trip-info">
         <div class="sub-header">
             <div class="back-icon">
@@ -9,8 +9,14 @@
                 <div class="more-options-wrapper">
                     <mat-icon class="dots" (click)="toggleMoreOptions()">more_vert</mat-icon>
                     <div class="more-options" *ngIf="showMoreOptions">
-                        <div class="share-trip">Share Trip</div>
+                        <div (click)="shareTrip(id)" class="share-trip">Share Trip</div>
                         <div class="pdf" (click)="generatePdf()">Download as PDF</div>
+                    </div>
+                    <div *ngIf="openLinkTab" class="link">
+                        <div style="margin-top:8px;cursor:pointer;">{{shareableLink}}</div>
+                        <mat-icon class="copy-icon" (click)="copyLink()" [ngClass]="{'copied': linkCopied}">
+                            {{ linkCopied ? 'check' : 'content_copy' }}
+                        </mat-icon>
                     </div>
                 </div>
 
@@ -48,8 +54,8 @@
                                         class="place-photo" [src]="getPhotoUrl(itineraryItem.photo)"
                                         alt="{{ itineraryItem.name }} Photo">
 
-                                    <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0"
-                                        class="place-photo" src="./assets/images/rome.jpg" alt="Default Placeholder">
+                                    <!-- <img *ngIf="!itineraryItem.photo || itineraryItem.photo.length === 0"
+                                        class="place-photo" src="./assets/images/rome.jpg" alt="Default Placeholder"> -->
                                 </div>
                             </div>
                             <div *ngIf="getNextItineraryItem(itineraryItem)" class="next-dest">
@@ -71,10 +77,13 @@
         <div #gmapContainer id="map"></div>
     </div>
 </div>
-<div class="error" *ngIf="!tripExists">
+<div class="error" *ngIf="!tripExists || !loggedIn">
     <div style="display: block;">
         <div class="errorMes">Sorry, we could not find this trip.</div>
         <button class="add-trip" routerLink="/add-trip">Add new Trip</button>
     </div>
     <img class="gif" src="./assets/images/errorGif.gif" alt="Error!">
+</div>
+<div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
 </div>

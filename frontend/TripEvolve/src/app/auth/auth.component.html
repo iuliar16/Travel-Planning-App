@@ -9,24 +9,26 @@
         <h1>Sign Up</h1>
         <br><br>
         <form action="#" (ngSubmit)="register(registerForm.value)" #registerForm="ngForm">
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-error': message === 'Please complete all required fields.'}">
                 <input type="text" class="form-control" id="firstname" ngModel name="firstname" placeholder="First name"
                     required>
             </div>
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-error': message === 'Please complete all required fields.'}">
                 <input type="text" class="form-control" id="lastname" ngModel name="lastname" placeholder="Last name"
                     required>
             </div>
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-error': message === 'Please complete all required fields.'}">
                 <input type="email" class="form-control" id="email" ngModel name="email" placeholder="Email Address"
                     required>
             </div>
-            <div class="form-group">
+            <div class="form-group" [ngClass]="{'has-error': message === 'Please complete all required fields.'}">
                 <input type="password" class="form-control" id="password" ngModel name="password" placeholder="Password"
                     required>
             </div>
             <br>
-            <p class="message">{{message}}</p>
+            <div class="message" [ngClass]="{'message-success': message === 'In order to complete the subscription process, simply check your inbox and click on the link in the email we have just sent you.', 'message-error': message !== 'In order to complete the subscription process, simply check your inbox and click on the link in the email we have just sent you.'}">
+                {{ message }}
+            </div>
             <button type="submit"  *ngIf="showBtn"class="btn btn-primary">Create an Account</button>
         </form>
         <br>

@@ -22,7 +22,6 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { TripCardComponent } from './home/trip-card/trip-card.component';
 import { MyAccountComponent } from './my-account/my-account.component';
-import { EditInfoComponent } from './edit-info/edit-info.component';
 import { ForgotPassComponent } from './forgot-pass/forgot-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { SubHeaderComponent } from './sub-header/sub-header.component';
@@ -36,6 +35,7 @@ import { SignOutPopupComponent } from './sign-out-popup/sign-out-popup.component
 import { ConfirmAccountComponent } from './confirm-account/confirm-account.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { ViewTripComponent } from './view-trip/view-trip.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,7 +48,6 @@ import { ViewTripComponent } from './view-trip/view-trip.component';
     AddTripComponent,
     TripCardComponent,
     MyAccountComponent,
-    EditInfoComponent,
     ForgotPassComponent,
     ResetPassComponent,
     SubHeaderComponent,
@@ -75,7 +74,8 @@ import { ViewTripComponent } from './view-trip/view-trip.component';
     MatFormFieldModule,
     MatDialogModule,
     ReactiveFormsModule,
-    MatSliderModule
+    MatSliderModule,
+    MatSnackBarModule,
   ],
   providers: [
     provideClientHydration(),

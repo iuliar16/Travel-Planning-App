@@ -2,3 +2,21 @@
 body {
     margin: 0;
 }
+
+.custom-snackbar {
+    background-color: #c85c5c;
+    color: #000000;
+    font-size: 16px;
+    text-align: center;
+   
+} 
+/* .mat-mdc-snack-bar-label.ng-tns-c3412835194-0, .mat-mdc-snack-bar-label.mdc-snackbar__label {
+    position:absolute;
+    width:300px;
+    right: -800px;
+    background-color: #c85c5c;
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    margin-top:-1800px;
+} */

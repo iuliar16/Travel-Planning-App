@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ItineraryServiceImpl implements ItineraryService {
@@ -115,5 +116,27 @@ public class ItineraryServiceImpl implements ItineraryService {
     public List<ItineraryDTO> findPastItinerariesByUserId(Integer userId) {
         Date currentDate = new Date(); // Get current date
         return itineraryRepository.findPastItinerariesByUserId(userId, currentDate);
+    }
+
+    @Override
+    public String generateShareableLink(Integer itineraryId) {
+        Optional<ItineraryDTO> itineraryOptional = itineraryRepository.findById(itineraryId);
+        if (itineraryOptional.isPresent()) {
+            ItineraryDTO itinerary = itineraryOptional.get();
+            if (itinerary.getShareableLink() != null) {
+                return itinerary.getShareableLink();
+            } else {
+                String newLink = UUID.randomUUID().toString();
+                itinerary.setShareableLink(newLink);
+                itineraryRepository.save(itinerary);
+                return newLink;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Optional<ItineraryDTO> findByShareableLink(String shareableLink) {
+        return itineraryRepository.findByShareableLink(shareableLink);
     }
 }

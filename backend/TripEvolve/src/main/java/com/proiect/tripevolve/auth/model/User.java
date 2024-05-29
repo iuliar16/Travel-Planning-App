@@ -25,6 +25,8 @@ public class User implements UserDetails {
     private int id_user;
     private String firstname;
     private String lastname;
+
+    @Column(unique = true)
     private String email;
     private String password;
     private boolean is_enabled;
