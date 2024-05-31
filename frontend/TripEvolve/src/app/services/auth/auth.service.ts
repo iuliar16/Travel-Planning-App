@@ -22,7 +22,7 @@ export class AuthService {
     return null;
   }
 
-  user = this.getWindow()?.sessionStorage.getItem(USER_KEY);
+  user = this.getWindow()?.sessionStorage.getItem(USER_KEY) || this.getWindow()?.localStorage.getItem(USER_KEY);
 
   private isAuthenticated = this.user ? true : false;
 

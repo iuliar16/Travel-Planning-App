@@ -8,7 +8,7 @@
         <br><br><br><br><br>
         <h1>Sign In</h1>
         <br><br>
-        <form (ngSubmit)="login(loginForm.value)" action="#" #loginForm="ngForm">
+        <form (ngSubmit)="login(loginForm.value,keepMeSignedIn)" action="#" #loginForm="ngForm">
             <div class="form-group" [ngClass]="{'has-error': message === 'Please complete all required fields.'}">
                 <input type="email" class="form-control" id="email" ngModel name="email" placeholder="Email Address"
                     required>
@@ -19,7 +19,8 @@
             </div>
             <br>
             <div style=" display:flex; font-size: 15px;">
-                <mat-checkbox>&nbsp;&nbsp;&nbsp;Keep me signed in.</mat-checkbox>
+                <mat-checkbox [(ngModel)]="keepMeSignedIn" name="keepMeSignedIn">&nbsp;&nbsp;&nbsp;Keep me signed
+                    in.</mat-checkbox>
                 <a class="signin-a" routerLink="/forgot-pass">Forgot password?</a>
             </div>
             <br><br>

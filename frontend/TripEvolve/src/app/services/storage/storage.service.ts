@@ -14,6 +14,7 @@ export class StorageService {
   ) {}
 
   private isLoggedInSubject = new Subject<boolean>();
+
   private getWindow(): Window | null {
     if (isPlatformBrowser(this.platformId)) {
       return this._doc.defaultView;
@@ -23,20 +24,30 @@ export class StorageService {
 
   clean(): void {
     this.getWindow()?.sessionStorage.clear();
+    this.getWindow()?.localStorage.clear();
   }
 
   public saveUser(user: any): void {
-    sessionStorage.removeItem(USER_KEY);
-    sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-    this.isLoggedInSubject.next(true); // Emite eveniment pentru notificarea componentelor
+    this.getWindow()?.sessionStorage.removeItem(USER_KEY);
+    this.getWindow()?.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+    this.isLoggedInSubject.next(true); // Emit event to notify components
+  }
+
+  public saveUserWithPersistence(user: any): void {
+    this.getWindow()?.localStorage.removeItem(USER_KEY);
+    this.getWindow()?.localStorage.setItem(USER_KEY, JSON.stringify(user));
+    this.isLoggedInSubject.next(true);
   }
 
   public getUser(): any {
-    const user = this.getWindow()?.sessionStorage.getItem(USER_KEY);
-    if (user) {
-      return JSON.parse(user);
+    const sessionUser = this.getWindow()?.sessionStorage.getItem(USER_KEY);
+    if (sessionUser) {
+      return JSON.parse(sessionUser);
     }
-
+    const localUser = this.getWindow()?.localStorage.getItem(USER_KEY);
+    if (localUser) {
+      return JSON.parse(localUser);
+    }
     return {};
   }
 
@@ -44,21 +55,24 @@ export class StorageService {
     const user = this.getUser();
     return user ? user.role : 'ADMIN';
   }
+
   public isUserAdmin(): boolean {
     const userRole = this.getUserRole();
     return userRole === 'ADMIN';
   }
 
   public isLoggedIn(): boolean {
-    const user = this.getWindow()?.sessionStorage.getItem(USER_KEY);
-    // console.log('IsLoggedIn:', user ? true : false);
-    return user ? true : false;
+    const sessionUser = this.getWindow()?.sessionStorage.getItem(USER_KEY);
+    const localUser = this.getWindow()?.localStorage.getItem(USER_KEY);
+    return !!sessionUser || !!localUser;
   }
 
   public logout(): void {
     this.getWindow()?.sessionStorage.removeItem(USER_KEY);
+    this.getWindow()?.localStorage.removeItem(USER_KEY);
     this.isLoggedInSubject.next(false);
   }
+
   getIsLoggedInSubject(): Subject<boolean> {
     return this.isLoggedInSubject;
   }

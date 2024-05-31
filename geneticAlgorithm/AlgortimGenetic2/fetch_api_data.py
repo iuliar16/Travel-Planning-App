@@ -1,5 +1,4 @@
 import json
-
 import requests
 import redis
 
@@ -22,19 +21,17 @@ def calculate_probability(loc_list):
             type_groups[loc_type] = []
         type_groups[loc_type].append(loc)
 
-
     # calculare probabilitati pentru fiecare locatie relativ la tipul acesteia
     for loc_type, locations in type_groups.items():
         ratings_totals = [loc['user_ratings_total'] for loc in locations]
         max_reviews = max(ratings_totals) if ratings_totals else 1
-        if max_reviews !=0:
+        if max_reviews != 0:
             probabilities = [total / max_reviews for total in ratings_totals]
         else:
             probabilities = [1 for total in ratings_totals]
 
         for loc, prob in zip(locations, probabilities):
             loc['score'] = prob
-
 
     return loc_list
 
@@ -99,20 +96,11 @@ def getDesiredPlace_details(place_id):
         return None
 
 
-def isInCity(address, city):
-    address_lower = address.lower()
-    city_lower = city.lower()
-
-    if city_lower in address_lower:
-        return True
-
-    return False
-
-
 def extract_places(text):
     places = text.split(',')
     places = [place.strip() for place in places]
     return places
+
 
 def fetch_api_data(destination, user_preferences):
     results = []
@@ -152,7 +140,7 @@ def fetch_api_data(destination, user_preferences):
                     place_details = json.loads(details_data.decode('utf-8'))
                 else:
                     place_details = get_place_details(place_id['place_id'])
-                    redis_client.set(details_key, json.dumps(place_details,ensure_ascii=False))
+                    redis_client.set(details_key, json.dumps(place_details, ensure_ascii=False))
                     redis_client.expire(details_key, 6 * 30 * 24 * 3600)
 
                 if place_details:
@@ -199,31 +187,29 @@ def fetch_api_data(destination, user_preferences):
             else:
                 location = getDesiredPlace_details(id['place_id'])
 
-                # verific daca locul dat de user e in orasul destinatie:
-                if isInCity(location['formatted_address'], destination):
-                    types = location.get('types') if location.get('types') else None
-                    for t in types:
-                        if t in user_preferences['preferredLocations']:
-                            tip = t
-                            break
-                    try:
-                        hours = extract_hours(location['opening_hours']['weekday_text'])
-                    except Exception as e:
-                        print('')
-                    loc = {
-                        'name': location['name'],
-                        'place_id': location['place_id'],
-                        'lat': location['geometry']['location']['lat'],
-                        'long': location['geometry']['location']['lng'],
-                        'address': location['formatted_address'],
-                        'rating': location.get('rating', 'N/A'),
-                        'user_ratings_total': location.get('user_ratings_total', 0),
-                        'photo': location.get('photos', [{}]),
-                        'opening_hours': hours,
-                        "type": tip,
-                        'desired': 'true'
-                    }
-                    locations.append(loc)
+                types = location.get('types') if location.get('types') else None
+                for t in types:
+                    if t in user_preferences['preferredLocations']:
+                        tip = t
+                        break
+                try:
+                    hours = extract_hours(location['opening_hours']['weekday_text'])
+                except Exception as e:
+                    print('')
+                loc = {
+                    'name': location['name'],
+                    'place_id': location['place_id'],
+                    'lat': location['geometry']['location']['lat'],
+                    'long': location['geometry']['location']['lng'],
+                    'address': location['formatted_address'],
+                    'rating': location.get('rating', 'N/A'),
+                    'user_ratings_total': location.get('user_ratings_total', 0),
+                    'photo': location.get('photos', [{}]),
+                    'opening_hours': hours,
+                    "type": tip,
+                    'desired': 'true'
+                }
+                locations.append(loc)
 
     if not locations:
         destination_parts = destination.split(',')
@@ -231,6 +217,5 @@ def fetch_api_data(destination, user_preferences):
         return fetch_api_data(new_destination, user_preferences)
 
     calculate_probability(locations)
-
 
     return locations

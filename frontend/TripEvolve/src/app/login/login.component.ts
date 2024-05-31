@@ -12,6 +12,7 @@ import { HeaderService } from '../services/header/header.service';
 })
 export class LoginComponent {
   message: string = '';
+  keepMeSignedIn: boolean = false;
   constructor(
     private el: ElementRef,
     private headerService: HeaderService,
@@ -26,7 +27,7 @@ export class LoginComponent {
       this.router.navigate(['/home']);
     }
   }
-  login(formData: any) {
+  login(formData: any, keepMeSignedIn: boolean) {
     this.message = '';
 
     if (!formData.email || !formData.password) {
@@ -37,7 +38,11 @@ export class LoginComponent {
     this.authService.login(formData).subscribe(
       (response) => {
         console.log('Login successful', response);
-        this.storageService.saveUser(response);
+        if (keepMeSignedIn) {
+          this.storageService.saveUserWithPersistence(response);
+        } else {
+          this.storageService.saveUser(response);
+        }
         this.router.navigate(['/home']);
       },
       (error) => {
