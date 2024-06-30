@@ -1,11 +1,17 @@
-<div class="trip" *ngIf="tripExists && loggedIn">
+<div class="trip" *ngIf="tripExists && !err">
     <div class="trip-info">
         <div class="sub-header">
             <div class="back-icon">
                 <mat-icon (click)="goBack()">arrow_back</mat-icon>
             </div>
             <button class="trip-evolve" routerLink="/home">Trip Evolve</button>
+            <!-- 
+            <p class="tripSharedInfo" *ngIf="isLinkShared && !idEquals(userIdShared)">Trip shared with you by
+                {{name}}</p> -->
+
             <div class="share-btns">
+                <!-- <button (click)="exportToGoogleCalendar()">Export to Google Calendar</button> -->
+
                 <div class="more-options-wrapper">
                     <mat-icon class="dots" (click)="toggleMoreOptions()">more_vert</mat-icon>
                     <div class="more-options" *ngIf="showMoreOptions">
@@ -24,8 +30,23 @@
         </div>
         <div class="schedule-content">
             <div id="allDaysContent">
-                <img class="photo" id="itineraryPhoto" [src]="getItineraryPhotoUrl()" alt="">
-                <div class="dropdown" *ngFor="let day of tripDays">
+                <div style="display: flex; ">
+                    <img class="photo" id="itineraryPhoto" [src]="getItineraryPhotoUrl()" alt="">
+                    <div class="map-legend">
+                        <div *ngFor="let item of legendItems" class="legend-item">
+                            <div class="legend-color" [style.background-color]="item.color"></div>
+                            <div class="legend-label">{{ item.day }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>{{ itinerary.tripLength }} {{nr_days}} in {{itinerary.city}} </p>
+
+
+                <div class="tripSharedInfo" *ngIf="isLinkShared && !idEquals(userIdShared)">
+                    {{name}} shared this trip with you!</div>
+
+                <div class="dropdown" *ngFor="let day of tripDays"  id="day-{{day.dayNumber}}-content">
                     <div class="dropdown-header" (click)="toggleDay(day)">
                         <mat-icon id="expand-id">{{ day.expanded ? 'expand_more' : 'chevron_right' }}</mat-icon>
                         <mat-icon id="loc-id"> location_on</mat-icon>
@@ -73,11 +94,12 @@
         <div class="day-btns">
             <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber"
                 (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
+            <button [class.selected]="selectedDay === 10" (click)="displayAllLocationsAndRoutes()">All days</button>
         </div>
         <div #gmapContainer id="map"></div>
     </div>
 </div>
-<div class="error" *ngIf="!tripExists || !loggedIn">
+<div class="error" *ngIf="!tripExists || err">
     <div style="display: block;">
         <div class="errorMes">Sorry, we could not find this trip.</div>
         <button class="add-trip" routerLink="/add-trip">Add new Trip</button>

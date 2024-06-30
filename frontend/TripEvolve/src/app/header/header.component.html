@@ -7,6 +7,12 @@
         <div class="name" *ngIf="isLoggedIn">
             Hello, {{getName()}}
         </div>
+
+        <button id="addTrip" mat-raised-button routerLink="/add-trip"  routerLinkActive="active_route"
+        [routerLinkActiveOptions]="{ exact: true }" *ngIf="isLoggedIn">
+        <mat-icon>add</mat-icon>
+        Add Trip
+    </button>
         <button id="home" mat-raised-button routerLink="/home" [disabled]="showLogoutPopup" routerLinkActive="active_route"
             [routerLinkActiveOptions]="{ exact: true }" *ngIf="isLoggedIn">
             <mat-icon>home</mat-icon>

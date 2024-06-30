@@ -28,11 +28,9 @@ export class ForgotPassComponent {
 
   submitForm_reset() {
     if (this.formGroup.valid) {
-      console.log(this.formGroup.value);
 
       this.auth.forgotPassword(this.formGroup.value.email).subscribe(
         (response) => {
-          console.log('Mail sent', response);
           // Show "Sent" text on the button
           this.isSent = true;
           this.message="We've just sent you an email to reset your password."

@@ -14,7 +14,6 @@ export class LoginComponent {
   message: string = '';
   keepMeSignedIn: boolean = false;
   constructor(
-    private el: ElementRef,
     private headerService: HeaderService,
     private authService: AuthService,
     private storageService: StorageService,
@@ -37,7 +36,6 @@ export class LoginComponent {
 
     this.authService.login(formData).subscribe(
       (response) => {
-        console.log('Login successful', response);
         if (keepMeSignedIn) {
           this.storageService.saveUserWithPersistence(response);
         } else {
@@ -46,7 +44,6 @@ export class LoginComponent {
         this.router.navigate(['/home']);
       },
       (error) => {
-        console.error('Login failed!', error);
         this.message = 'Invalid username or password.';
       }
     );

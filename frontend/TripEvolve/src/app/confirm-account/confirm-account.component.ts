@@ -19,10 +19,6 @@ export class ConfirmAccountComponent {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.email = params["email"];
-      this.token = params["token"];
-      console.log(this.email)
-      console.log(this.token)
       this.authService.confirmEmail(this.email, this.token).subscribe(
         (response) => {
           console.log('user activated', response);

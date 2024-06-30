@@ -33,12 +33,10 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     public String generateItinerary(PreferencesDTO preferences) {
-        logger.info("Generating schedule...");
         try {
 
             ObjectMapper mapper = new ObjectMapper();
             String preferencesJson = mapper.writeValueAsString(preferences);
-            System.out.println(preferencesJson);
 
             String fetching = "python " + filePath + "/main.py \"" + preferencesJson.replace("\"", "\\\"") + "\"";
             String[] commandToExecute = new String[]{"cmd.exe", "/c", fetching};

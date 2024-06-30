@@ -7,13 +7,9 @@
             <input type="password" class="form-control" id="password" formControlName="password" name="password"
                 placeholder="Enter Password" required>
         </div>
-        <!-- <p style="font-size: 18px;">Confirm Password</p>
-        <div class="form-group">
-            <input type="password" class="form-control" id="confirm_pass" name="confirm_pass"
-                placeholder="Confirm Password" formControlName="confirm_pass" required>
-        </div> -->
-        <mat-error *ngIf="password.hasError('minLength') && password.touched">
-            The password has to contain at least 8 letters.
+        <mat-error *ngIf="password.hasError('minlength') ||password.hasError('noUppercase') ||
+        password.hasError('noNumberOrSpecial') && password.touched">
+            The password has to contain at least 8 letters, one uppercase letter and a number or a special character.
         </mat-error>
         <mat-error *ngIf="password.hasError('required') && password.touched">
             Password field is mandatory.

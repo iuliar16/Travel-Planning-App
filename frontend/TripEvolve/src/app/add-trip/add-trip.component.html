@@ -59,10 +59,10 @@
                     <tr class="preference" *ngFor="let location of locations">
                         <td>{{ location }}</td>
                         <td>
-                            <input type="range" min="0" max="100" value="0"[value]="locationPreferences.get(location)" 
-                            (input)="onRangeInputDebounced(location, $event)">
-                                
-                            <output>{{ locationPreferences.get(location) }}%</output> 
+                            <input type="range" min="0" max="100" value="0" [value]="locationPreferences.get(location)"
+                                (input)="onRangeInputDebounced(location, $event)">
+
+                            <output>{{ locationPreferences.get(location) }}%</output>
                         </td>
                     </tr>
 
@@ -73,13 +73,22 @@
 
     <div class="form-group">
         <h3>Are there any places that you don't want to miss?</h3>
-        <p style="color:#757575">Enter places separated by a comma.</p>
+        <p style="color:#757575">Use the plus icon to add new places.</p>
         <br>
-        <div class="place-container">
-            <input type="text" placeholder="Place 1, Place 2..." id="placeName" name="placeName"
-                [(ngModel)]="formData.placeName" required>
+        <div class="icon-container">
+            <mat-icon  class="mat-icon-custom" (click)="addPlace()">add</mat-icon>
         </div>
+        <br><br>
+        <div class="place-container">
+            <div *ngFor="let place of formData.places; let i = index" class="place-input">
+                <input id="placeInput" type="text" placeholder="Place {{i + 1}}" [(ngModel)]="place.name" name="place-{{i}}" required>
+                <button type="button" class="removePlace" (click)="removePlace(i)">X</button>
+            </div>
+        </div>
+
+
     </div>
+
 
     <div class="error-message">
         {{ message }}

@@ -45,21 +45,35 @@
   border-top: 8px solid white;
   width: 60px;
   height: 60px;
-  -webkit-animation: spin 1s linear infinite; /* Safari */
+  -webkit-animation: spin 1s linear infinite;
+  /* Safari */
   animation: spin 1s linear infinite;
 }
 
 /* Safari */
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
+.gif{
+  margin-top:10%;
+}
 
 .link {
   display: flex;
@@ -76,6 +90,34 @@
   background-color: #a2a7a7;
   position: absolute;
 }
+
+.map-legend {
+  width: 8%;
+  bottom: 10px;
+  left: 10px;
+  background: white;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.legend-label {
+  font-size: 14px;
+}
+
 
 .loading-photo img {
   margin-left: -20%;
@@ -123,7 +165,7 @@
 
 .schedule-content p {
   position: absolute;
-  top: 450px;
+  top: 550px;
   left: 20%;
   transform: translate(-50%, -50%);
   text-align: center;
@@ -131,11 +173,18 @@
   width: 30%;
   padding: 5px 5px;
   border-radius: 15px;
-  background-color: rgb(255, 255, 255, 0.4);
+  background-color: rgba(77, 75, 75, 0.7);
   border: 1px solid rgb(255, 255, 255)fff;
   color: rgb(255, 255, 255);
 }
 
+.tripSharedInfo{
+  background-color:  rgba(142, 121, 121, 0.3);
+  color:#004AAD;
+  width:1050px;
+  font-size:30px;
+  text-align: center;
+}
 .regenerate-btn {
   background-color: #004AAD;
   color: #fff;
@@ -152,8 +201,9 @@
 .share-btns {
   color: #004AAD;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   margin-left: 35%;
+  justify-content: end;
   width: 40%;
 }
 

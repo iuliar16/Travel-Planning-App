@@ -54,8 +54,7 @@ const routes: Routes = [
   },
   {
     path: 'reset-pass',
-    component: ResetPassComponent,
-    canActivate: [AuthGuardService]
+    component: ResetPassComponent
   },
   {
     path: 'past-trips',

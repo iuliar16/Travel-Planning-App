@@ -9,7 +9,8 @@
   position: sticky;
   top: 0;
   background-color: white;
-  position: relative; 
+  position: fixed;
+  width:99%;
 }
 
 .buttons-container {
@@ -24,7 +25,7 @@
   font-size: 30px;
 }
 
-
+#addTrip,
 #home,
 #sign-up,
 #sign-in {
@@ -143,6 +144,7 @@ mat-icon {
   outline: none;
 }
 
+#addTrip:hover,
 #home:hover,
 #sign-up:hover,
 #sign-in:hover {

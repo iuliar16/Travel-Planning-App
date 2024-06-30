@@ -38,6 +38,7 @@ export class AddTripComponent {
     endDate: '',
     tripLength: this.value,
     selectedOption: '',
+    places: [{ name: '' }] as { name: string }[],
     placeName: '',
     locationPreferences: new Map<string, number>()
     // city:''
@@ -58,8 +59,6 @@ export class AddTripComponent {
     const selectedStartDate = event.target.value;
     this.minEndDate = selectedStartDate;
 
-    console.log(selectedStartDate);
-
     const maxDate = new Date(selectedStartDate);
     maxDate.setDate(maxDate.getDate() + 6);
     this.maxEndDate = maxDate.toISOString().split('T')[0];
@@ -74,6 +73,14 @@ export class AddTripComponent {
     this.formData.startDate = selectedStartDate;
     this.formData.endDate = selectedEndDate;
 
+  }
+
+  addPlace() {
+    this.formData.places.push({ name: '' });
+  }
+
+  removePlace(index: number) {
+    this.formData.places.splice(index, 1);
   }
 
   ngAfterViewInit(): void {
@@ -116,10 +123,14 @@ export class AddTripComponent {
     this.formData.selectedLocations = this.selectedLocations;
     this.formData.selectedOption = this.selectedOption;
 
-    console.log(this.formData.selectedOption);
+    this.formData.places = this.formData.places.filter(place => place.name.trim() !== '');
+
+    if (!this.formData.startDate && !this.formData.endDate && !this.formData.location && !this.formData.selectedLocations.length) {
+      this.message = 'Please complete all required fields.';
+      return;
+    }
+
     if (this.formData.selectedOption == 'dates') {
-      console.log(this.formData.startDate);
-      console.log(this.formData.endDate)
 
       if (this.formData.startDate == '' || this.formData.endDate == '' || this.formData.startDate == null || this.formData.endDate == null) {
         this.message = 'Please complete the dates of your trip or choose the trip length.';
@@ -135,11 +146,20 @@ export class AddTripComponent {
       this.message = 'Please choose at least a category of preferences.';
       return;
     }
+
+    const invalidPlace = this.formData.places.find(place => !/^[a-zA-Z\s]{1,20}$/.test(place.name));
+  
+    
+    if (invalidPlace) {
+      this.message = 'Place names should only contain letters and be no more than 20 characters.';
+      return;
+    }
     
 
 
+    this.formData.placeName = this.formData.places.map(place => place.name).join(', ');
     this.formData.locationPreferences = this.locationPreferences;
-    console.log(this.formData);
+
     this.addTripService.setFormData(this.formData);
 
     this.tripInfoService.submitTrip();
@@ -175,7 +195,6 @@ export class AddTripComponent {
     this.locationPreferences.set(location, percentage);
     this.updateSelectedLocations(location, percentage);
     // this.toggleLocation(location, percentage);
-    console.log(percentage);
   }, 100);
 
   updateSelectedLocations(location: string, percentage: number): void {

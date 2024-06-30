@@ -7,7 +7,7 @@ import { TripInfoService } from '../services/trip-info/trip-info.service';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Clipboard } from '@angular/cdk/clipboard';
-
+import { AuthService } from '../services/auth/auth.service';
 
 
 @Component({
@@ -27,6 +27,8 @@ export class ViewTripComponent {
   nr_days: string = 'days'
   openLinkTab: boolean = false;
   isLinkShared: boolean = false;
+  legendItems: { day: string, color: string }[] = [];
+  itineraryPhotoURL: string ='';
 
   @ViewChild('gmapContainer', { static: false })
   gmap!: ElementRef;
@@ -47,17 +49,23 @@ export class ViewTripComponent {
   itinerary: any = '';
   loggedIn: boolean = false;
   linkCopied: boolean = false;
+  err:boolean=false;
   isLoading: boolean = false;
+  userIdShared:number=-10;
+  name:string='';
 
   constructor(private saveItineraryService: SaveItineraryService,
     private storageService: StorageService, private route: ActivatedRoute,
     private router: Router, private headerService: HeaderService,
-    private tripInfoService: TripInfoService, private clipboard: Clipboard,
+    private tripInfoService: TripInfoService, 
+    private authService: AuthService,
+    private clipboard: Clipboard
   ) {
     this.loggedIn = this.storageService.isLoggedIn();
 
 
   }
+
 
   copyLink() {
     this.clipboard.copy(this.shareableLink);
@@ -93,14 +101,7 @@ export class ViewTripComponent {
 
   }
   getItineraryPhotoUrl(): string {
-    let i=0
-    while (this.tripInfo[i].photo) {
-      this.tripPhoto = this.getPhotoUrl(this.tripInfo[i].photo);
-      i++;
-      if(this.tripPhoto)
-        break;
-    }
-    return this.tripPhoto;
+    return this.itineraryPhotoURL;
   }
   getDayName(dayNumber: number): string {
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -118,7 +119,6 @@ export class ViewTripComponent {
       .subscribe(
         (response: any[]) => {
           this.tripInfoService.setTripInfo(response);
-          console.log(response);
           this.dataLoaded = true;
 
           this.initAfterDataLoaded();
@@ -128,18 +128,24 @@ export class ViewTripComponent {
         }
       );
   }
+
+  idEquals(id:number):boolean{
+    if (this.storageService.getUser().id_user == id)
+      return true;
+    return false;
+  }
   fetchSavedTrips(): void {
     this.saveItineraryService.getSavedTrips(this.storageService.getUser().id_user)
       .subscribe(
         (response: any[]) => {
           this.tripInfoService.setTripInfo(response);
-          console.log(response);
           this.dataLoaded = true;
 
           this.initAfterDataLoaded();
         },
         error => {
           console.error('Error fetching saved trips:', error);
+          this.err=true;
         }
       );
   }
@@ -171,64 +177,74 @@ export class ViewTripComponent {
       if (this.id) // se cauta ?id=.. (cautam doar in trip-urile userului logat)
         this.fetchSavedTrips();
       else
-        this.fetchAllSavedTrips(); //trip shared
+      {
+        this.fetchAllSavedTrips(); // shared trip
+      }
     }
     else {
       this.initAfterDataLoaded(); //am ajuns in view-trip din home
     }
   }
 
+  getUserInfoShared(id:number): any{
+    this.authService.getUser(id)
+    .subscribe(user => {
+      this.name= user.firstname +' '+ user.lastname
+    }, error => {
+      console.error('Error fetching trip by shareable link:', error);
+    });
+  }
   loadTripByShareableLink(tripId: string) {
     this.saveItineraryService.getItineraryByShareableLink(tripId)
       .subscribe(trip => {
-        console.log(trip);
+        this.userIdShared=trip.user_id;
+        this.getUserInfoShared(this.userIdShared);
         this.id = trip.itinerary_id;
         this.tripExists = true;
       }, error => {
         console.error('Error fetching trip by shareable link:', error);
       });
-    console.log(this.tripExists)
   }
 
   generatePdf(): void {
     this.isLoading = true;
-    this.tripDays.forEach(day => {
+    const pdf = new jsPDF();
+    
+    let completedDays = 0;
+  
+
+    this.tripDays.forEach((day, index) => {
       day.expanded = true;
-    });
+      
+      setTimeout(() => {
+        const elem: any = document.getElementById(`day-${day.dayNumber}-content`);
+        
+        html2canvas(elem, { scale: 2 }).then((canvas) => {
+          if (index !== 0) {
+            pdf.addPage();
+          }
+          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297); 
 
-    setTimeout(() => {
-      const elem: any = document.getElementById('allDaysContent');
-      const tripInfoElem: string = this.tripInfo[0].city
+          completedDays++;
 
-      html2canvas(elem, { scale: 2 }).then((canvas) => {
-        const pdf = new jsPDF();
-        const name = `Trip to ` + tripInfoElem;
-
-        pdf.addImage(canvas.toDataURL('/image/png'), 'PNG', 0, -40, 101, 298);
-
-
-        pdf.setProperties({
-          title: name,
-          subject: name,
-          author: 'tripEvolve',
+          if (completedDays === this.tripDays.length) {
+            pdf.save('trip-itinerary-to-'+this.itinerary.city+'.pdf');
+            this.isLoading = false;
+          }
         });
-        pdf.setFontSize(12);
-        pdf.save(name);
-        this.isLoading = false;
-
-      });
-    }, 1000);
+      }, 1000);
+    });
   }
+  
 
 
   initAfterDataLoaded(): void {
     this.tripDetails = this.tripInfoService.getTripInfo();
 
-    console.log(this.tripDetails);
     this.tripDetails.forEach((item: any) => {
       if (item.itinerary_id == this.id) {
-        console.log('Found itinerary:', item);
         this.itinerary = item;
+        this.itineraryPhotoURL=item.photo;
         this.gasit = true;
         this.tripExists = true;
         let start = new Date(item.startDate);
@@ -242,7 +258,6 @@ export class ViewTripComponent {
           const formattedDate = this.formatDate(currentDate);
           this.tripDays.push({ dayNumber: i + 1, day: dayName, date: formattedDate, expanded: false });
         }
-        console.log(this.tripDays);
       }
     });
     // if(this.isLinkShared == false)
@@ -251,17 +266,14 @@ export class ViewTripComponent {
       this.tripExists = false;
     }
 
-    console.log(this.tripExists)
     this.saveItineraryService.getTripInfo(this.id).subscribe(
       (response: any[]) => {
         this.tripInfo = response;
-        console.log(response);
 
         this.tripInfo.forEach(location => {
           this.saveItineraryService.getLocationInfo(location.location_id)
             .subscribe(
               (response: any) => {
-                console.log(response);
 
                 location.name = response.name;
                 location.address = response.address;
@@ -278,8 +290,8 @@ export class ViewTripComponent {
             );
         });
         setTimeout(() => {
-          // this.showDayMarkers(1);
-        }, 5000);
+          this.displayAllLocationsAndRoutes();
+        }, 1000);
       },
       error => {
         console.error('Error fetching saved trips:', error);
@@ -321,7 +333,6 @@ export class ViewTripComponent {
   }
   toggleDay(day: any) {
     day.expanded = !day.expanded;
-    console.log(day.expanded)
   }
   openDirections(startLocation: any, endLocation: any): void {
     const startLat = startLocation.lat;
@@ -335,12 +346,70 @@ export class ViewTripComponent {
 
   getNextItineraryItem(currentItem: any): any {
 
-    console.log(currentItem);
     const dayItinerary = this.tripInfo.filter(item => item.visit_day === currentItem.visit_day);
-    console.log(dayItinerary)
     const currentIndex = dayItinerary.findIndex(item => item === currentItem);
     return dayItinerary[currentIndex + 1];
   }
+
+  markerColors = ['grey', 'red', 'blue', 'green', 'pink', 'purple', 'orange'];
+  displayAllLocationsAndRoutes(): void {
+    this.selectedDay = 10;
+    this.clearMarkers();
+    this.clearPaths();
+
+    this.legendItems = [];
+    const uniqueDays = new Set<number>();
+    this.tripInfo.forEach((item, index) => {
+      const markerColor = this.markerColors[item.visit_day % this.markerColors.length];
+
+      if (!uniqueDays.has(item.visit_day)) {
+        uniqueDays.add(item.visit_day);
+        this.legendItems.push({ day: `Day ${item.visit_day}`, color: markerColor });
+      }
+
+      let url = "https://maps.google.com/mapfiles/ms/icons/";
+      url += markerColor + ".png";
+      const marker = new google.maps.Marker({
+        position: { lat: item.lat, lng: item.lng },
+        map: this.map,
+        title: item.name,
+        label: {
+          text: `${item.visit_order}`,
+          color: 'black',
+          fontSize: '12px',
+          fontWeight: 'bold'
+        },
+        icon: {
+          url: url,
+          scaledSize: new google.maps.Size(40, 40)
+        }
+      });
+      if (index < this.tripInfo.length - 1) {
+        const nextItem = this.tripInfo[index + 1];
+        this.calculateAndDisplayRoute(item, nextItem);
+      }
+
+      const infoWindowContent = `
+        <div>
+          <h3>${item.name}</h3>
+          <h4>${item.address}</h4>
+        </div>
+      `;
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContent
+      });
+
+      marker.addListener('click', () => {
+        infoWindow.open(this.map, marker);
+      });
+
+      this.markers.push(marker);
+    });
+
+    this.fitMapToMarkers();
+  }
+
 
   showDayMarkers(dayNumber: number): void {
     this.clearMarkers();
@@ -351,16 +420,23 @@ export class ViewTripComponent {
     const dayItinerary = this.tripInfo.filter(item => item.visit_day === dayNumber);
 
     dayItinerary.forEach((item, index) => {
+      const markerColor = this.markerColors[item.visit_day % this.markerColors.length];
+      let url = "https://maps.google.com/mapfiles/ms/icons/";
+      url += markerColor + ".png";
       const marker = new google.maps.Marker({
         position: { lat: item.lat, lng: item.lng },
         map: this.map,
         title: item.name,
-        // label: {
-        //   text: `${item.visit_order}`,
-        //   color: 'white',
-        //   fontSize: '12px',
-        //   fontWeight: 'bold'
-        // }
+        label: {
+          text: `${item.visit_order}`,
+          color: 'white',
+          fontSize: '12px',
+          fontWeight: 'bold'
+        },
+        icon: {
+          url: url,
+          scaledSize: new google.maps.Size(40, 40)
+        }
       });
 
       if (index < dayItinerary.length - 1) {
@@ -396,16 +472,9 @@ export class ViewTripComponent {
       path: google.maps.SymbolPath.CIRCLE,
       strokeOpacity: 1,
       fillOpacity: 1,
-      scale: 3
+      scale: 2
     };
 
-    console.log("item")
-    console.log(parseFloat(origin.lat))
-    console.log(parseFloat(origin.lng))
-
-    console.log("nextItem")
-    console.log(parseFloat(destination.lat))
-    console.log(parseFloat(destination.lng))
     this.directionsService.route(
       {
         origin: { lat: origin.lat, lng: origin.lng },
@@ -430,7 +499,7 @@ export class ViewTripComponent {
 
           this.paths.push(path);
         } else {
-          window.alert('Directions request failed due to ' + status);
+          console.error('Directions request failed due to ' + status);
         }
       }
     );

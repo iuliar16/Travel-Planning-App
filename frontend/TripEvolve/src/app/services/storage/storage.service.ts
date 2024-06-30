@@ -36,7 +36,7 @@ export class StorageService {
   public saveUserWithPersistence(user: any): void {
     this.getWindow()?.localStorage.removeItem(USER_KEY);
     this.getWindow()?.localStorage.setItem(USER_KEY, JSON.stringify(user));
-    this.isLoggedInSubject.next(true);
+    this.isLoggedInSubject.next(true); // // Emit event to notify components
   }
 
   public getUser(): any {

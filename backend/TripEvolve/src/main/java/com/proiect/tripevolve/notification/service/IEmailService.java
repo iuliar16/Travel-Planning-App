@@ -14,5 +14,4 @@ public interface IEmailService {
 
     void sendPasswordResetMail(EmailDTO details, String token) throws MessageSentException;
 
-    void sendNewTestNotification(EmailDTO details, String testName) throws MessageSentException;
 }

@@ -24,11 +24,9 @@ export class AuthComponent {
     }
   }
   register(formData: any) {
-    console.log('submit');
     this.message = '';
     if (!formData.firstname || !formData.lastname || !formData.email || !formData.password) {
       this.message = 'Please complete all required fields.';
-      console.log(this.message)
       return;
     }
 
@@ -39,8 +37,6 @@ export class AuthComponent {
 
       this.authService.signup(formData).subscribe(
         (response) => {
-          console.log('Register successful', response);
-          console.log(emailDetails);
           this.showBtn = false;
           this.message = 'In order to complete the subscription process, simply check your inbox and click on the link in the email we have just sent you.'
         },

@@ -36,6 +36,8 @@ import { ConfirmAccountComponent } from './confirm-account/confirm-account.compo
 import { MatSliderModule } from '@angular/material/slider';
 import { ViewTripComponent } from './view-trip/view-trip.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {MatTooltipModule } from '@angular/material/tooltip';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +63,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     ViewTripComponent,
   ],
   imports: [
+    MatTooltipModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,

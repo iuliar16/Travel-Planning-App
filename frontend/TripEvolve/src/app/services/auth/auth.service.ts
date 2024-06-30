@@ -55,7 +55,6 @@ export class AuthService {
   }
 
   login(user: any): Observable<any> {
-    console.log(user);
     const url = `${this.backendUrl}/login`;
     this.isAuthenticated = true;
     return this.http.post(url, user, httpOptions);
@@ -67,5 +66,9 @@ export class AuthService {
 
   isLogin() {
     return this.isAuthenticated;
+  }
+
+  getUser(user_id: number): Observable<any> {
+    return this.http.get<any>(`${this.backendUrl}/users/${user_id}`);
   }
 }

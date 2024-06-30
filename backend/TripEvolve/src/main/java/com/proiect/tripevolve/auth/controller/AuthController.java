@@ -56,7 +56,7 @@ public class AuthController {
        if(!tokenProvider.validateToken(us.getToken()))
         {
 
-            return new ResponseEntity<>("{\"msg\":\"Token expired\"}", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("{\"msg\":\"Token expired\"}", HttpStatus.UNAUTHORIZED);
         }
 
         userHandlingService.enableUser(us.getEmail());
@@ -72,7 +72,7 @@ public class AuthController {
             e.setRecipient(email);
             emailService.sendPasswordResetMail(e, token);
         } catch (MessageSentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>("{\"msg\":\"Mail sent successfully\"}", HttpStatus.OK);
     }
@@ -82,7 +82,7 @@ public class AuthController {
     {
         if(!tokenProvider.validateToken(pw.getToken()))
         {
-            return new ResponseEntity<>("{\"msg\":\"Token expired\"}", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("{\"msg\":\"Token expired\"}", HttpStatus.UNAUTHORIZED);
         }
         String email = tokenProvider.extractEmail(pw.getToken());
         userHandlingService.resetPassword(email, pw.getPassword());
@@ -217,22 +217,7 @@ public class AuthController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
-    @GetMapping("/send-new-test-notification")
-    public ResponseEntity<String> sendNewTestNotificationToAllUsers(@RequestParam String testName) {
-        List<User> users = userHandlingService.getAllUsers();
 
-        for (User user : users) {
-            try {
-                EmailDTO emailDTO = new EmailDTO();
-                emailDTO.setRecipient(user.getEmail());
-                emailService.sendNewTestNotification(emailDTO, testName);
-            } catch (MessageSentException e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<>("{\"msg\":\"Mail sent successfully to all users\"}", HttpStatus.OK);
-    }
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userHandlingService.getAllUsers();

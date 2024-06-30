@@ -25,8 +25,9 @@
                 </mat-icon>
             </div>
 
-            <mat-icon>edit</mat-icon><button (click)="navigateToViewTrip(trip.itinerary_id)" class="share-btn">See Trip
+            <mat-icon>visibility</mat-icon><button (click)="navigateToViewTrip(trip.itinerary_id)" class="share-btn">See Trip
                 Info</button>
+
             <mat-icon>delete</mat-icon><button #deleteButton (click)="openDialog(trip.itinerary_id, container)"
                 class="share-btn">Delete Trip</button>
         </div>

@@ -11,6 +11,8 @@
         </option>
       </select>
       <div class="share-btns">
+        <button *ngIf="showSchedule && isLoggedIn && !error" (click)="saveTrip()" class="save-btn">{{ tripSaved ? 'Trip
+          Saved!' : 'Save Trip' }}</button>
         <div *ngIf="showSchedule && isLoggedIn && !error" class="more-options-wrapper">
           <mat-icon class="dots" (click)="toggleMoreOptions()">more_vert</mat-icon>
           <div class="more-options" *ngIf="showMoreOptions">
@@ -20,16 +22,9 @@
             <div class="pdf" (click)="generatePdf()">Download as PDF</div>
           </div>
         </div>
-        <!-- <button (click)="generatePdf()">Download as PDF</button>
 
-        <button class="save-trip" *ngIf="showSchedule">Save Trip</button> -->
-        <!-- <mat-icon class="icons">share</mat-icon>
-        <button class="share-btn">Public Share</button>
-
-        <mat-icon class="icons">person_add</mat-icon>
-        <button class="share-btn2">Invite Trip Mate</button> -->
       </div>
-      <!-- <button class="regenerate-btn" *ngIf="showSchedule" (click)="generateSchedule()">Regenerate Schedule</button> -->
+
     </div>
 
     <div class="trip-summary" *ngIf="!showSchedule && !loading && !error">
@@ -123,7 +118,7 @@
     <div class="day-btns">
       <button *ngFor="let day of tripDays" [class.selected]="selectedDay === day.dayNumber"
         (click)="showDayMarkers(day.dayNumber)">Day {{ day.dayNumber }}</button>
-      <button (click)="displayAllLocationsAndRoutes()">All days</button>
+      <button [class.selected]="selectedDay === 10" (click)="displayAllLocationsAndRoutes()">All days</button>
     </div>
     <div #gmapContainer id="map"></div>
   </div>
@@ -139,4 +134,10 @@
 
 <div class="loading-overlay" *ngIf="isLoading">
   <div class="spinner"></div>
+</div>
+
+<div *ngIf="showPopup" class="overlay">
+  <div class="popup-notification">
+    Trip saved successfully!
+  </div>
 </div>

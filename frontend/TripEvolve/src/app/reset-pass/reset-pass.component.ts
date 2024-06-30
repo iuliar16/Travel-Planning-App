@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
 import { StorageService } from '../services/storage/storage.service';
@@ -14,10 +14,26 @@ export class ResetPassComponent {
   token: string = ""
   password: FormControl = new FormControl('', [
     Validators.required,
-    Validators.minLength(8),
+    Validators.minLength(6),
+    this.containsUppercase(),
+    this.containsNumberOrSpecial()
   ]);
   isSent: boolean = false;
   timer: any;
+
+  containsUppercase(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const hasUppercase = /[A-Z]/.test(control.value);
+      return hasUppercase ? null : { noUppercase: true };
+    };
+  }
+  
+  containsNumberOrSpecial(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const hasNumberOrSpecial = /[0-9\W]/.test(control.value);
+      return hasNumberOrSpecial ? null : { noNumberOrSpecial: true };
+    };
+  }
 
   constructor(private router: Router,private storageService: StorageService,
      private auth: AuthService, private route: ActivatedRoute) {}
@@ -37,7 +53,6 @@ export class ResetPassComponent {
 
       this.auth.resetPassword(this.formGroup.value.password, this.token).subscribe(
         (response) => {
-          console.log('Password reset', response);
           this.storageService.logout();
           this.router.navigateByUrl("login");
         },

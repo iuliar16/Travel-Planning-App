@@ -8,25 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@Getter
-//@Setter
-//@ToString
-//@Entity(name="Preferences")
-//public class PreferencesDTO {
-//    @EmbeddedId
-//    private PreferencesKey preferencesKey;
-//
-//    @ElementCollection
-//    private List<String> preferred_locations;
-//
-//    @ElementCollection
-//    private List<String> preferred_restaurants;
-//
-//    @ElementCollection
-//    private List<String> preferred_transport;
-//}
 @Getter
 @Setter
 public class PreferencesDTO {

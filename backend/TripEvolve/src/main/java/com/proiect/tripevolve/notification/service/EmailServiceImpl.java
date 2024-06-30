@@ -133,31 +133,6 @@ public class EmailServiceImpl implements IEmailService {
             throw new MessageSentException("Eroare la trimiterea email-ului pentru resetarea parolei.");
         }
     }
-    @Override
-    public void sendNewTestNotification(EmailDTO details, String testName) throws MessageSentException {
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-
-            mimeMessageHelper.setFrom(sender);
-            mimeMessageHelper.setTo(details.getRecipient());
-
-            String htmlBody = "<html><body><h3>Bună ziua!</h3>"
-                    + "<p>Am adăugat un nou test pe platforma QuizMatrix pentru a-ți testa cunoștințele.</p>"
-                    + "<p>Noul test se numește: <strong>" + testName + "</strong></p>"
-
-                    + "<p>Te invităm să îl accesezi și să îți verifici cunoștințele.</p>"
-                    + "<p>Mulțumim că folosești QuizMatrix!</p></body></html>";
-
-            mimeMessageHelper.setText(htmlBody, true);
-            mimeMessageHelper.setSubject("Nou test adăugat: " + testName);
-
-            javaMailSender.send(mimeMessage);
-        } catch (Exception e) {
-            System.err.println("Eroare " + e.getMessage());
-            throw new MessageSentException("Eroare la trimiterea notificării pentru noul test.");
-        }
-    }
 
 
 }

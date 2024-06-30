@@ -43,7 +43,6 @@ export class TripCardComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
       this.isPopupOpen = false;
       this.popupStateChanged.emit(false);
     });

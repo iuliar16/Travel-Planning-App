@@ -10,10 +10,20 @@ redis_host = 'localhost'
 redis_port = 6379
 redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
+default_opening_hours = {
+    "Mo": [{"start": " 09:00", "end": "18:00"}],
+    "Tu": [{"start": "09:00", "end": "18:00"}],
+    "We": [{"start": " 09:00", "end": " 18:00"}],
+    "Th": [{"start": " 09:00", "end": " 18:00"}],
+    "Fr": [{"start": " 09:00", "end": " 18:00"}],
+    "Sa": [{"start": "09:00", "end": "18:00"}],
+    "Su": [{"start": "09:00", "end": "18:00"}],
+}
+
+f = open("logFile.txt", "a")
+
 
 def calculate_probability(loc_list):
-    # print(loc_list)
-    # grupare locatii dupa tip
     type_groups = {}
     for loc in loc_list:
         loc_type = loc['type']
@@ -21,14 +31,26 @@ def calculate_probability(loc_list):
             type_groups[loc_type] = []
         type_groups[loc_type].append(loc)
 
-    # calculare probabilitati pentru fiecare locatie relativ la tipul acesteia
     for loc_type, locations in type_groups.items():
         ratings_totals = [loc['user_ratings_total'] for loc in locations]
+        average_ratings = [loc['rating'] if 'rating' in loc and loc['rating'] != 'N/A' else 1 for loc in locations]
+
         max_reviews = max(ratings_totals) if ratings_totals else 1
+        max_rating = 5
+
         if max_reviews != 0:
-            probabilities = [total / max_reviews for total in ratings_totals]
+            normalized_reviews = [total / max_reviews for total in ratings_totals]
+            normalized_ratings = [rating / max_rating for rating in average_ratings]
         else:
-            probabilities = [1 for total in ratings_totals]
+            normalized_reviews = [1 for _ in ratings_totals]
+            normalized_ratings = [1 for _ in ratings_totals]
+
+        review_weight = 0.5
+        rating_weight = 0.5
+        probabilities = [
+            review_weight * review + rating_weight * rating
+            for review, rating in zip(normalized_reviews, normalized_ratings)
+        ]
 
         for loc, prob in zip(locations, probabilities):
             loc['score'] = prob
@@ -43,7 +65,7 @@ def search_places(city, type):
         results = response.json()
         return results.get('results', [])
     else:
-        print(f'Error searching for places. Status code: {response.status_code}')
+        f.write(f'Error searching for places. Status code: {response.status_code}')
         return None
 
 
@@ -54,13 +76,12 @@ def get_place_id(place_name):
         place_data = response.json()
         if place_data['status'] == 'OK' and place_data['candidates']:
             place_info = place_data['candidates'][0]
-            # print(place_data['candidates'][0])
             return place_info
         else:
-            print(f'No results found for place: {place_name}')
+            f.write(f'No results found for place: {place_name}')
             return None
     else:
-        print(f'Error searching for place: {place_name}. Status code: {response.status_code}')
+        f.write(f'Error searching for place: {place_name}. Status code: {response.status_code}')
         return None
 
 
@@ -72,10 +93,10 @@ def get_place_details(place_id):
         if place_details['status'] == 'OK':
             return place_details['result']
         else:
-            print(f'Error retrieving place details. Status: {place_details["status"]}')
+            f.write(f'Error retrieving place details. Status: {place_details["status"]}')
             return None
     else:
-        print(f'Error retrieving place details. Status code: {response.status_code}')
+        f.write(f'Error retrieving place details. Status code: {response.status_code}')
         return None
 
 
@@ -89,10 +110,10 @@ def getDesiredPlace_details(place_id):
         if place_details['status'] == 'OK':
             return place_details['result']
         else:
-            print(f'Error retrieving place details. Status: {place_details["status"]}')
+            f.write(f'Error retrieving place details. Status: {place_details["status"]}')
             return None
     else:
-        print(f'Error retrieving place details. Status code: {response.status_code}')
+        f.write(f'Error retrieving place details. Status code: {response.status_code}')
         return None
 
 
@@ -144,6 +165,7 @@ def fetch_api_data(destination, user_preferences):
                     redis_client.expire(details_key, 6 * 30 * 24 * 3600)
 
                 if place_details:
+                    type = "must-see"
                     types = location.get('types') if location.get('types') else None
                     for tip in types:
                         if tip in user_preferences['preferredLocations']:
@@ -154,8 +176,9 @@ def fetch_api_data(destination, user_preferences):
                         hours = extract_hours(place_details['opening_hours']['weekday_text'])
 
                     except Exception as e:
-                        print(e)
-                        break
+                        f.write(str(e))
+                        hours = default_opening_hours
+
                     loc = {
                         'name': location['name'],
                         'place_id': location['place_id'],
@@ -170,51 +193,57 @@ def fetch_api_data(destination, user_preferences):
                         "type": type,
                         "desired": "false"
                     }
+
                     locations.append(loc)
 
             else:
-                print("Failed to fetch place details.")
+                f.write("Failed to fetch place details.")
+
+    if not locations:
+        destination_parts = destination.split(',')
+        new_destination = destination_parts[0].strip()
+        f.write("The api did not work for this destination, trying to split the name of the city" + str(destination_parts))
+        return fetch_api_data(new_destination, user_preferences)
 
     if user_preferences['place_name']:
         desired_loc = extract_places(user_preferences['place_name'])
         for i in desired_loc:
             id = get_place_id(i)
             # cautam daca locatia aleasa de user exista deja in locatiile alese
-            place = [loc for loc in locations if loc['place_id'] == id['place_id']]
+            if id is not None:
+                place = [loc for loc in locations if loc['place_id'] == id['place_id']]
 
-            if place:
-                place[0]['desired'] = 'true'
-            else:
-                location = getDesiredPlace_details(id['place_id'])
+                if place:
+                    place[0]['desired'] = 'true'
+                else:
+                    location = getDesiredPlace_details(id['place_id'])
+                    if location is not None:
+                        tip = "must-see"
+                        types = location.get('types') if location.get('types') else None
+                        for t in types:
+                            if t in user_preferences['preferredLocations']:
+                                tip = t
+                                break
+                        try:
+                            hours = extract_hours(location['opening_hours']['weekday_text'])
+                        except Exception as e:
+                            f.write(str(e))
+                            hours = default_opening_hours
+                        loc = {
+                            'name': location['name'],
+                            'place_id': location['place_id'],
+                            'lat': location['geometry']['location']['lat'],
+                            'long': location['geometry']['location']['lng'],
+                            'address': location['formatted_address'],
+                            'rating': location.get('rating', 'N/A'),
+                            'user_ratings_total': location.get('user_ratings_total', 0),
+                            'photo': location.get('photos', [{}]),
+                            'opening_hours': hours,
+                            "type": tip,
+                            'desired': 'true'
+                        }
+                        locations.append(loc)
 
-                types = location.get('types') if location.get('types') else None
-                for t in types:
-                    if t in user_preferences['preferredLocations']:
-                        tip = t
-                        break
-                try:
-                    hours = extract_hours(location['opening_hours']['weekday_text'])
-                except Exception as e:
-                    print('')
-                loc = {
-                    'name': location['name'],
-                    'place_id': location['place_id'],
-                    'lat': location['geometry']['location']['lat'],
-                    'long': location['geometry']['location']['lng'],
-                    'address': location['formatted_address'],
-                    'rating': location.get('rating', 'N/A'),
-                    'user_ratings_total': location.get('user_ratings_total', 0),
-                    'photo': location.get('photos', [{}]),
-                    'opening_hours': hours,
-                    "type": tip,
-                    'desired': 'true'
-                }
-                locations.append(loc)
-
-    if not locations:
-        destination_parts = destination.split(',')
-        new_destination = destination_parts[0].strip()
-        return fetch_api_data(new_destination, user_preferences)
 
     calculate_probability(locations)
 

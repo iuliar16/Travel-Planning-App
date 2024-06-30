@@ -25,7 +25,6 @@ export class HomeComponent {
 
   onPopupStateChanged(isOpen: any): void {
     this.isPopupOpen = isOpen;
-    console.log(this.isPopupOpen)
   }
 
   ngOnInit(): void {
@@ -47,7 +46,6 @@ export class HomeComponent {
         (response: any[]) => {
           this.savedTrips = response;
           this.tripInfoService.setTripInfo(this.savedTrips);
-          console.log(response);
           if (this.savedTrips.length == 0)
             this.emptyMessage = 'Looks like you do not have any upcoming trips.'
           else
@@ -64,7 +62,6 @@ export class HomeComponent {
         (response: any[]) => {
           this.savedTrips = response;
           this.tripInfoService.setTripInfo(this.savedTrips);
-          console.log(response);
           if (this.savedTrips.length == 0)
             {console.log('yes');
             this.emptyMessage = 'Looks like you do not have any past trips.'}

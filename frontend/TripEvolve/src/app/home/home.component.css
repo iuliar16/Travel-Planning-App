@@ -6,6 +6,7 @@ ul {
 .nav-container {
     justify-content: space-between;
     margin: 0 auto;
+    margin-top: 4%;
     text-align: center;
 }
 
@@ -27,11 +28,16 @@ ul {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.img{
+    width: 1400px;
+    margin-left: 5%;
+}
 .emptyMes {
+    z-index:100;
     color: #004AAD;
     text-align: center;
     font-size: 40px;
-    margin-top: 5%;
+    margin-top: 4%;
 }
 
 .start {

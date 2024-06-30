@@ -21,10 +21,8 @@ def extract_hours(opening_hours):
             start_time = hours_list[0]
             end_time = hours_list[1]
 
-
-            start_time=f(start_time)
-            end_time=f(end_time)
-
+            start_time = f(start_time)
+            end_time = f(end_time)
 
             am_pm_start = start_time.find('AM') if 'AM' in start_time else start_time.find('PM')
             if am_pm_start != -1:
@@ -70,6 +68,7 @@ def is_format0(input_str):
     pattern = r'^\d{2}:\d{2}$'
     return bool(re.match(pattern, input_str))
 
+
 def find_first_day_of_week(day_of_week):
     days_dict = {"Mo": 0, "Tu": 1, "We": 2, "Th": 3, "Fr": 4, "Sa": 5, "Su": 6}
     current_date = datetime.now()
@@ -77,7 +76,7 @@ def find_first_day_of_week(day_of_week):
     days_difference = (days_dict[day_of_week] - current_day_of_week) % 7
     first_day_of_week = current_date + timedelta(days=days_difference)
     return first_day_of_week
-#
+
 # opening_hours_list = ['Monday: 12:30\u2009–\u200912:00\u202fAM',
 #                       'Tuesday: 9:00\u202fAM\u2009–\u200912:00\u202fAM',
 #                       'Wednesday: 9:00\u202fAM\u2009–\u200912:00\u202fAM',
@@ -87,4 +86,4 @@ def find_first_day_of_week(day_of_week):
 #                       'Sunday: Closed']
 #
 # result_dict = extract_hours(opening_hours_list)
-
+# print(result_dict)
